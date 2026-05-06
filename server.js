@@ -1,9 +1,10 @@
 const express = require("express");
 const Database = require("better-sqlite3");
-
+const TelegramBot = require("node-telegram-bot-api");
 const app = express();
 const port = process.env.PORT || 3000;
-
+const token = "8610203796:AAEorm73zD4pZ0-nyWSPZ6l-QvZMC9zoETU";
+const bot = new TelegramBot(token, { polling: true });
 app.use(express.urlencoded({ extended: true }));
 
 const username = "admin";
@@ -34,10 +35,15 @@ CREATE TABLE IF NOT EXISTS transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   type TEXT,
   amount INTEGER,
+  category TEXT,
   note TEXT,
   date DATETIME DEFAULT CURRENT_TIMESTAMP
 )
 `).run();
+
+try {
+  db.prepare("ALTER TABLE transactions ADD COLUMN category TEXT").run();
+} catch (e) {}
 
 db.prepare(`
 CREATE TABLE IF NOT EXISTS vehicles (
@@ -52,10 +58,11 @@ CREATE TABLE IF NOT EXISTS vehicles (
 `).run();
 
 app.post("/add", (req, res) => {
-  const { type, amount, note } = req.body;
+  const { type, amount, category, note } = req.body;
 
-  db.prepare("INSERT INTO transactions (type, amount, note) VALUES (?, ?, ?)")
-    .run(type, Number(amount), note);
+  db.prepare(
+    "INSERT INTO transactions (type, amount, category, note) VALUES (?, ?, ?, ?)"
+  ).run(type, Number(amount), category, note);
 
   res.redirect("/");
 });
@@ -87,14 +94,47 @@ app.get("/", (req, res) => {
   let income = 0;
   let expense = 0;
 
-  rows.forEach(r => {
+  rows.forEach((r) => {
     if (r.type === "income") income += r.amount;
     if (r.type === "expense") expense += r.amount;
   });
 
+  const balance = income - expense;
+
+  let aiComment = "";
+
+  if (income === 0 && expense === 0) {
+    aiComment = "Henüz yeterli veri yok. Gelir ve gider girdikçe yorum yapabilirim.";
+  } else if (income > expense) {
+    aiComment = `Şirket şu an artıda görünüyor. Toplam gelir ${income} TL, toplam gider ${expense} TL. Net bakiye ${balance} TL.`;
+  } else if (expense > income) {
+    aiComment = `Dikkat: Giderler gelirden yüksek. Toplam gelir ${income} TL, toplam gider ${expense} TL. Açık ${expense - income} TL.`;
+  } else {
+    aiComment = "Gelir ve gider eşit görünüyor. Kasa şu an dengede.";
+  }
+
+  const categoryTotals = {};
+
+  rows.forEach((r) => {
+    const category = r.category || "Belirsiz";
+    if (!categoryTotals[category]) categoryTotals[category] = 0;
+    categoryTotals[category] += r.amount;
+  });
+
+  let categoryRows = "";
+
+  Object.entries(categoryTotals).forEach(([category, total]) => {
+    categoryRows += `
+      <tr>
+        <td>${category}</td>
+        <td>${total} TL</td>
+      </tr>
+    `;
+  });
+
   let vehicleRows = "";
 
-  vehicles.forEach(v => {
+  vehicles.forEach((v) => {
     vehicleRows += `
       <tr>
         <td>${v.id}</td>
@@ -112,12 +152,13 @@ app.get("/", (req, res) => {
 
   let tableRows = "";
 
-  rows.forEach(r => {
+  rows.forEach((r) => {
     tableRows += `
       <tr>
         <td>${r.id}</td>
         <td>${r.type === "income" ? "Gelir" : "Gider"}</td>
         <td>${r.amount} TL</td>
+        <td>${r.category || "-"}</td>
         <td>${r.note}</td>
         <td>${r.date}</td>
         <td>
@@ -136,12 +177,17 @@ app.get("/", (req, res) => {
       body { font-family: Arial; background:#eef1f5; padding:25px; }
       .card { background:white; padding:20px; margin-bottom:20px; border-radius:14px; }
       .top { display:grid; grid-template-columns:1fr 1fr 2fr; gap:20px; }
+      .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
       table { width:100%; border-collapse:collapse; }
       th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
       input, select, button { padding:10px; margin:5px; }
+      button { background:#0d6efd; color:white; border:none; border-radius:6px; cursor:pointer; }
       .pie { width:240px; height:240px; margin:auto; }
       .line { height:260px; }
       a { color:#2563eb; font-weight:bold; }
+      .good { color:#15803d; }
+      .bad { color:#dc2626; }
+      .ai { font-size:18px; font-weight:bold; line-height:1.5; }
     </style>
   </head>
   <body>
@@ -157,7 +203,7 @@ app.get("/", (req, res) => {
         <h3>Özet</h3>
         <h2>Gelir: ${income} TL</h2>
         <h2>Gider: ${expense} TL</h2>
-        <h2>Bakiye: ${income - expense} TL</h2>
+        <h2 class="${balance >= 0 ? "good" : "bad"}">Bakiye: ${balance} TL</h2>
       </div>
 
       <div class="card">
@@ -167,15 +213,33 @@ app.get("/", (req, res) => {
     </div>
 
     <div class="card">
-      <h3>🚗 Araç Kayıt</h3>
-      <form method="POST" action="/vehicle/add">
-        <input name="plate" placeholder="Plaka" required />
-        <input name="brand" placeholder="Marka" required />
-        <input name="model" placeholder="Model" required />
-        <input name="year" placeholder="Yıl" required />
-        <input name="km" placeholder="KM" required />
-        <button type="submit">Araç Ekle</button>
-      </form>
+      <h3>🤖 AI Finans Yorumu</h3>
+      <p class="ai">${aiComment}</p>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>📂 Kategori Özeti</h3>
+        <table>
+          <tr>
+            <th>Kategori</th>
+            <th>Toplam</th>
+          </tr>
+          ${categoryRows}
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>🚗 Araç Kayıt</h3>
+        <form method="POST" action="/vehicle/add">
+          <input name="plate" placeholder="Plaka" required />
+          <input name="brand" placeholder="Marka" required />
+          <input name="model" placeholder="Model" required />
+          <input name="year" placeholder="Yıl" required />
+          <input name="km" placeholder="KM" required />
+          <button type="submit">Araç Ekle</button>
+        </form>
+      </div>
     </div>
 
     <div class="card">
@@ -201,8 +265,21 @@ app.get("/", (req, res) => {
           <option value="income">Gelir</option>
           <option value="expense">Gider</option>
         </select>
+
         <input name="amount" placeholder="Tutar" required />
+
+        <select name="category" required>
+          <option value="Müşteri Ödeme">Müşteri Ödeme</option>
+          <option value="Yakıt">Yakıt</option>
+          <option value="Personel">Personel</option>
+          <option value="Bakım">Bakım</option>
+          <option value="Sigorta">Sigorta</option>
+          <option value="Araç Gideri">Araç Gideri</option>
+          <option value="Diğer">Diğer</option>
+        </select>
+
         <input name="note" placeholder="Açıklama" required />
+
         <button type="submit">Ekle</button>
       </form>
     </div>
@@ -214,6 +291,7 @@ app.get("/", (req, res) => {
           <th>ID</th>
           <th>Tip</th>
           <th>Tutar</th>
+          <th>Kategori</th>
           <th>Açıklama</th>
           <th>Tarih</th>
           <th>İşlem</th>
@@ -248,7 +326,44 @@ app.get("/", (req, res) => {
   </html>
   `);
 });
+bot.on("message", (msg) => {
+  const text = msg.text;
 
+  if (!text) return;
+
+  const parts = text.split(" ");
+
+  if (parts.length < 4) {
+    bot.sendMessage(
+      msg.chat.id,
+      "Kullanım:\n+ 5000 Yakıt Shell\n- 3000 Bakım Yağ değişimi"
+    );
+    return;
+  }
+
+  const symbol = parts[0];
+  const amount = Number(parts[1]);
+  const category = parts[2];
+  const note = parts.slice(3).join(" ");
+
+  let type = "";
+
+  if (symbol === "+") type = "income";
+  else if (symbol === "-") type = "expense";
+  else {
+    bot.sendMessage(msg.chat.id, "Mesaj + veya - ile başlamalı");
+    return;
+  }
+
+  db.prepare(
+    "INSERT INTO transactions (type, amount, category, note) VALUES (?, ?, ?, ?)"
+  ).run(type, amount, category, note);
+
+  bot.sendMessage(
+    msg.chat.id,
+    `✅ Kayıt eklendi\nTip: ${type}\nTutar: ${amount} TL\nKategori: ${category}`
+  );
+});
 app.listen(port, () => {
   console.log(`Panel çalışıyor: ${port}`);
 });
