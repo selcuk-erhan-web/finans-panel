@@ -39,6 +39,18 @@ CREATE TABLE IF NOT EXISTS transactions (
 )
 `).run();
 
+db.prepare(`
+CREATE TABLE IF NOT EXISTS vehicles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  plate TEXT,
+  brand TEXT,
+  model TEXT,
+  year TEXT,
+  km INTEGER,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+`).run();
+
 app.post("/add", (req, res) => {
   const { type, amount, note } = req.body;
 
@@ -53,8 +65,24 @@ app.get("/delete/:id", (req, res) => {
   res.redirect("/");
 });
 
+app.post("/vehicle/add", (req, res) => {
+  const { plate, brand, model, year, km } = req.body;
+
+  db.prepare(
+    "INSERT INTO vehicles (plate, brand, model, year, km) VALUES (?, ?, ?, ?, ?)"
+  ).run(plate, brand, model, year, Number(km));
+
+  res.redirect("/");
+});
+
+app.get("/vehicle/delete/:id", (req, res) => {
+  db.prepare("DELETE FROM vehicles WHERE id = ?").run(req.params.id);
+  res.redirect("/");
+});
+
 app.get("/", (req, res) => {
   const rows = db.prepare("SELECT * FROM transactions ORDER BY date DESC").all();
+  const vehicles = db.prepare("SELECT * FROM vehicles ORDER BY id DESC").all();
 
   let income = 0;
   let expense = 0;
@@ -62,6 +90,24 @@ app.get("/", (req, res) => {
   rows.forEach(r => {
     if (r.type === "income") income += r.amount;
     if (r.type === "expense") expense += r.amount;
+  });
+
+  let vehicleRows = "";
+
+  vehicles.forEach(v => {
+    vehicleRows += `
+      <tr>
+        <td>${v.id}</td>
+        <td>${v.plate}</td>
+        <td>${v.brand}</td>
+        <td>${v.model}</td>
+        <td>${v.year}</td>
+        <td>${v.km} km</td>
+        <td>
+          <a href="/vehicle/delete/${v.id}" onclick="return confirm('Araç silinsin mi?')">Sil</a>
+        </td>
+      </tr>
+    `;
   });
 
   let tableRows = "";
@@ -91,10 +137,11 @@ app.get("/", (req, res) => {
       .card { background:white; padding:20px; margin-bottom:20px; border-radius:14px; }
       .top { display:grid; grid-template-columns:1fr 1fr 2fr; gap:20px; }
       table { width:100%; border-collapse:collapse; }
-      th, td { padding:10px; border-bottom:1px solid #ddd; }
+      th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
       input, select, button { padding:10px; margin:5px; }
       .pie { width:240px; height:240px; margin:auto; }
       .line { height:260px; }
+      a { color:#2563eb; font-weight:bold; }
     </style>
   </head>
   <body>
@@ -117,6 +164,34 @@ app.get("/", (req, res) => {
         <h3>Günlük Grafik</h3>
         <div class="line"><canvas id="line"></canvas></div>
       </div>
+    </div>
+
+    <div class="card">
+      <h3>🚗 Araç Kayıt</h3>
+      <form method="POST" action="/vehicle/add">
+        <input name="plate" placeholder="Plaka" required />
+        <input name="brand" placeholder="Marka" required />
+        <input name="model" placeholder="Model" required />
+        <input name="year" placeholder="Yıl" required />
+        <input name="km" placeholder="KM" required />
+        <button type="submit">Araç Ekle</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>🚘 Araç Listesi</h3>
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Plaka</th>
+          <th>Marka</th>
+          <th>Model</th>
+          <th>Yıl</th>
+          <th>KM</th>
+          <th>İşlem</th>
+        </tr>
+        ${vehicleRows}
+      </table>
     </div>
 
     <div class="card">
