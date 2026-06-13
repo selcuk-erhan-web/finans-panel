@@ -1,10 +1,10 @@
+const profitabilityService = require("../services/profitabilityService");
 const {
   money,
   getTotals,
   getAllVehicleSummaries,
   getExpenseByCategory,
   getTypeTotals,
-  getBestWorst,
   getStatusCounts,
   getTopExpenseCategory,
   getHighestExpenseVehicle,
@@ -28,9 +28,31 @@ function registerReports(app) {
   app.get("/reports", (req, res) => {
     try {
       const summaries = getAllVehicleSummaries().sort((a, b) => b.net - a.net);
+      const profitRows = profitabilityService.getVehicleProfitability();
+      const topProfit = profitabilityService.getTopProfitableVehicles(1, profitRows)[0];
+      const worstProfit = profitRows
+        .filter((r) => !r.isUnassigned && (r.income > 0 || r.totalExpense > 0))
+        .sort((a, b) => a.netProfit - b.netProfit)[0];
+      const costlyRow = profitRows
+        .filter((r) => !r.isUnassigned)
+        .sort((a, b) => b.totalExpense - a.totalExpense)[0];
+      const costly = costlyRow
+        ? { plate: costlyRow.plate, expense: costlyRow.totalExpense }
+        : getHighestExpenseVehicle(summaries);
+      const profitRankSummaries = profitabilityService.getTopProfitableVehicles(12, profitRows).map((r) => ({
+        id: r.vehicleId,
+        plate: r.plate,
+        income: r.income,
+        expense: r.totalExpense,
+        net: r.netProfit,
+      }));
+      const best = topProfit
+        ? { plate: topProfit.plate, net: topProfit.netProfit, id: topProfit.vehicleId }
+        : { plate: "—", net: null, id: null };
+      const worst = worstProfit
+        ? { plate: worstProfit.plate, net: worstProfit.netProfit, id: worstProfit.vehicleId }
+        : { plate: "—", net: null, id: null };
       const totals = getTotals();
-      const { best, worst } = getBestWorst(summaries);
-      const costly = getHighestExpenseVehicle(summaries);
       const servis = getTypeTotals(summaries, "Servis");
       const turizm = getTypeTotals(summaries, "Turizm");
       const expenseByCat = getExpenseByCategory();
@@ -121,10 +143,13 @@ function registerReports(app) {
           </div>
           <section class="fade-in" style="--delay:160ms">
             <header class="section-head">
-              <h2 class="section-head__title">Araç kârlılık sıralaması</h2>
-              <p class="section-head__desc">Premium sıralama kartları</p>
+              <div>
+                <h2 class="section-head__title">Araç kârlılık sıralaması</h2>
+                <p class="section-head__desc">Kârlılık motoru · net kâra göre sıralama</p>
+              </div>
+              <a href="/profitability" class="btn btn--ghost btn--sm">Araç Karlılık Merkezi →</a>
             </header>
-            ${vehicleRankCards(summaries, 12)}
+            ${vehicleRankCards(profitRankSummaries.length ? profitRankSummaries : summaries, 12)}
           </section>
         </div>
         ${chartBoot([

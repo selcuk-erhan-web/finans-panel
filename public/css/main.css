@@ -1214,7 +1214,7 @@ input:focus, select:focus {
 .rank-card__plate { display: block; font-weight: 800; font-size: 16px; margin-bottom: 6px; }
 .rank-card__net { font-weight: 800; margin-left: auto; }
 
-.section-head { margin-bottom: 18px; }
+.section-head { margin-bottom: 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .section-head__title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
 .section-head__desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
@@ -2557,6 +2557,220 @@ input:focus, select:focus {
 
 @media (max-width: 640px) {
   .expense-cat-grid { grid-template-columns: 1fr; }
+}
+
+/* Araç Karlılık Merkezi — PROFIT-01 */
+.profit-hub {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.profit-hub__header {
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(255, 255, 255, 0.96) 58%, rgba(16, 185, 129, 0.06) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  box-shadow: 0 10px 36px rgba(15, 23, 42, 0.05);
+}
+
+.profit-hub__eyebrow {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(99, 102, 241, 0.85);
+}
+
+.profit-hub__title {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.profit-hub__desc {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+
+.profit-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.profit-kpi-card {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.04);
+}
+
+.profit-kpi-card__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.profit-kpi-card__value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.profit-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+  align-items: start;
+}
+
+.profit-table-wrap {
+  overflow-x: auto;
+}
+
+.profit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.profit-table th,
+.profit-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  white-space: nowrap;
+}
+
+.profit-table th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.profit-table__plate {
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.profit-table__plate--muted {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.profit-table__row--unassigned {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.profit-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profit-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+
+.profit-rank-item:hover {
+  transform: translateX(3px);
+  box-shadow: var(--shadow);
+}
+
+.profit-rank-item--up { border-left: 3px solid var(--green-d); }
+.profit-rank-item--down { border-left: 3px solid var(--red-d); }
+
+.profit-rank-item__n {
+  font-weight: 800;
+  color: var(--muted);
+  min-width: 22px;
+}
+
+.profit-rank-item__plate {
+  flex: 1;
+  font-weight: 700;
+}
+
+.profit-rank-item__net {
+  font-weight: 800;
+}
+
+.profit-rank-empty,
+.profit-empty__hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.profit-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 56px 24px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.profit-empty__ring {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.12), rgba(255, 255, 255, 0.92));
+}
+
+.profit-empty__title {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.profit-empty__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+@media (max-width: 1100px) {
+  .profit-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .profit-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .profit-kpi-row { grid-template-columns: 1fr; }
 }
 
 .cmd-ops__link--maint { color: var(--blue-d); }

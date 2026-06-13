@@ -10,6 +10,7 @@ const registerIncome = require("./routes/income");
 const registerMaintenance = require("./routes/maintenance");
 const registerFuel = require("./routes/fuel");
 const registerReports = require("./routes/reports");
+const registerProfitability = require("./routes/profitability");
 const registerSettings = require("./routes/settings");
 const registerExport = require("./routes/export");
 const registerHgs = require("./routes/hgs");
@@ -36,6 +37,7 @@ registerMaintenance(app);
 registerFuel(app);
 registerHgs(app);
 registerReports(app);
+registerProfitability(app);
 registerSettings(app, port);
 registerExport(app);
 

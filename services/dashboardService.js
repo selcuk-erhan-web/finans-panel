@@ -31,9 +31,14 @@ function getUpcomingPayments() {
 }
 
 function getVehicleRanking() {
-  return getAllVehicleSummaries()
-    .sort((a, b) => b.net - a.net)
-    .slice(0, 6);
+  const profitabilityService = require("./profitabilityService");
+  return profitabilityService.getTopProfitableVehicles(6).map((r) => ({
+    id: r.vehicleId,
+    plate: r.plate,
+    income: r.income,
+    expense: r.totalExpense,
+    net: r.netProfit,
+  }));
 }
 
 function getAlerts() {
