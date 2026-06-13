@@ -1,90 +1,93 @@
-const db = require("../lib/db");
-const { VEHICLE_TARGET } = require("../lib/constants");
-const { getThisMonthRange } = require("../lib/dates");
+const { getExpenseByCategory, getTypeTotals } = require("../lib/finance");
+const { generateFinanceInsight } = require("../lib/insights");
+const { chartOpts } = require("../lib/charts");
+const dashboardService = require("../services/dashboardService");
 const {
-  money,
-  getTotals,
-  getAllVehicleSummaries,
-  getExpenseByCategory,
-  getTypeTotals,
-  getBestWorst,
-  getAverageVehicleNet,
-  getTotalsInRange,
-} = require("../lib/finance");
-const {
-  pageHeader,
-  kpiCard,
-  kpiGrid,
-  vehicleSummaryRow,
-  dataTable,
-  chartScripts,
-  renderLayout,
-  escapeHtml,
-} = require("../lib/ui");
+  renderPage,
+  chartBoot,
+  commandHeader,
+  executiveFinancialPanel,
+  commandInsightCompact,
+  operationsCenter,
+  financeTrendsPanel,
+  financialMovementsPanel,
+  splitInsightText,
+} = require("../lib/components");
 
-const CHART_COLORS = {
-  income: "#059669",
-  expense: "#e11d48",
-  net: "#4f46e5",
-  servis: "#6366f1",
-  turizm: "#f59e0b",
+const CHART = {
+  incomeFill: "rgba(16, 185, 129, 0.2)",
+  expenseFill: "rgba(244, 63, 94, 0.2)",
 };
 
 function registerDashboard(app) {
   app.get("/", (req, res) => {
-    const summaries = getAllVehicleSummaries();
-    const totals = getTotals();
-    const vehicleCount = db.prepare("SELECT COUNT(*) as c FROM vehicles").get().c;
-    const { best, worst } = getBestWorst(summaries);
-    const avgNet = getAverageVehicleNet(summaries);
-    const monthRange = getThisMonthRange();
-    const monthTotals = getTotalsInRange(monthRange.date_from, monthRange.date_to);
+    const bundle = dashboardService.getDashboardBundle();
+    const { totals, fleetStatus, vehicleCount, monthly, summaries, alerts } = bundle;
     const servis = getTypeTotals(summaries, "Servis");
     const turizm = getTypeTotals(summaries, "Turizm");
     const expenseByCat = getExpenseByCategory();
-    const catLabels = Object.keys(expenseByCat);
-    const catValues = catLabels.map((k) => expenseByCat[k]);
+    const insightRaw = generateFinanceInsight({
+      totals,
+      summaries,
+      servis,
+      turizm,
+      expenseByCat,
+    });
+    const insightParts = splitInsightText(insightRaw);
+    const netTone = totals.balance >= 0 ? "profit" : "loss";
+
+    const fuelExpenseTotal = expenseByCat["Yakıt"] || alerts.fuel30?.totalCost || 0;
+    const fuelPct =
+      totals.expense > 0
+        ? Math.round((fuelExpenseTotal / totals.expense) * 100)
+        : 0;
 
     const content = `
-      ${pageHeader("Ana Sayfa", "Filo finans özeti — yalnızca analiz ekranı")}
-      ${kpiGrid([
-        kpiCard("Toplam Gelir", money(totals.income), "green"),
-        kpiCard("Toplam Gider", money(totals.expense), "red"),
-        kpiCard("Net Kâr", money(totals.balance), totals.balance >= 0 ? "green" : "red"),
-        kpiCard("Araç Sayısı", String(vehicleCount), "blue", `${vehicleCount} / ${VEHICLE_TARGET}`),
-        kpiCard("Ortalama Araç Neti", money(avgNet), avgNet >= 0 ? "green" : "red"),
-        kpiCard("En Kârlı Araç", escapeHtml(best.plate), "green", best.net !== null ? money(best.net) : "-"),
-        kpiCard("En Masraflı Araç", escapeHtml(worst.plate), "red", worst.net !== null ? money(worst.net) : "-"),
-        kpiCard("Bu Ay Gelir", money(monthTotals.income), "green"),
-        kpiCard("Bu Ay Gider", money(monthTotals.expense), "red"),
-      ])}
-      <div class="grid2">
-        <div class="card"><h2>Gelir / Gider Dağılımı</h2><div class="chart-box"><canvas id="pieChart"></canvas></div></div>
-        <div class="card"><h2>Gelir · Gider · Net</h2><div class="chart-box"><canvas id="barChart"></canvas></div></div>
+      <div class="dash page-enter command-center cockpit">
+        ${commandHeader({
+          vehicleCount,
+          fleetStatus,
+          fuelRecordCount: alerts.fuel30?.count || 0,
+          maintenanceCount: alerts.upcomingCount || 0,
+        })}
+        ${executiveFinancialPanel({
+          totals,
+          netTone,
+          servisIncome: servis.income,
+          turizmIncome: turizm.income,
+        })}
+        <div class="cmd-mid">
+          ${financeTrendsPanel()}
+          <div class="cmd-ops-stack">
+            ${commandInsightCompact(insightParts)}
+            ${operationsCenter({ alerts, fuelPct, fuelExpenseTotal })}
+          </div>
+        </div>
+        ${financialMovementsPanel(bundle.recentTransactions)}
       </div>
-      <div class="grid2">
-        <div class="card"><h2>Gider Kategori Dağılımı</h2><div class="chart-box"><canvas id="expenseCatChart"></canvas></div></div>
-        <div class="card"><h2>Servis vs Turizm</h2><div class="chart-box"><canvas id="fleetChart"></canvas></div></div>
-      </div>
-      <div class="card">
-        <h2>Araç Finans Özeti</h2>
-        ${dataTable(
-          ["Plaka", "Araç Tipi", "Toplam Gelir", "Toplam Gider", "Net Kâr", "Durum", ""],
-          summaries.map(vehicleSummaryRow),
-          { icon: "🚗", title: "Araç yok", desc: "Özet için araç ekleyin.", action: '<a class="btn" href="/vehicles">Araç Ekle</a>' }
-        )}
-      </div>
-      ${chartScripts([
-        `const C=${JSON.stringify(CHART_COLORS)};`,
-        `new Chart(document.getElementById("pieChart"),{type:"doughnut",data:{labels:["Gelir","Gider"],datasets:[{data:[${totals.income},${totals.expense}],backgroundColor:[C.income,C.expense]}]},options:{responsive:true,maintainAspectRatio:false}});`,
-        `new Chart(document.getElementById("barChart"),{type:"bar",data:{labels:["Gelir","Gider","Net"],datasets:[{data:[${totals.income},${totals.expense},${totals.balance}],backgroundColor:[C.income,C.expense,C.net],borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});`,
-        catLabels.length
-          ? `new Chart(document.getElementById("expenseCatChart"),{type:"doughnut",data:{labels:${JSON.stringify(catLabels)},datasets:[{data:${JSON.stringify(catValues)}}]},options:{responsive:true,maintainAspectRatio:false}});`
-          : "",
-        `new Chart(document.getElementById("fleetChart"),{type:"bar",data:{labels:["Gelir","Gider","Net"],datasets:[{label:"Servis",data:[${servis.income},${servis.expense},${servis.net}],backgroundColor:C.servis,borderRadius:6},{label:"Turizm",data:[${turizm.income},${turizm.expense},${turizm.net}],backgroundColor:C.turizm,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true}}}});`,
+      ${chartBoot([
+        `new Chart(document.getElementById("monthlyChart"),{
+          type:"line",
+          data:{labels:${JSON.stringify(monthly.labels)},datasets:[
+            {label:"Gelir",data:${JSON.stringify(monthly.incomeData)},borderColor:"#10b981",backgroundColor:"${CHART.incomeFill}",fill:true,tension:0.45,borderWidth:3,pointRadius:0,pointHoverRadius:6},
+            {label:"Gider",data:${JSON.stringify(monthly.expenseData)},borderColor:"#f43f5e",backgroundColor:"${CHART.expenseFill}",fill:true,tension:0.45,borderWidth:3,pointRadius:0,pointHoverRadius:6}
+          ]},
+          options:${chartOpts({
+            scales: {
+              y: { grid: { color: "rgba(15, 23, 42, 0.1)", drawTicks: false } },
+              x: { grid: { display: true, color: "rgba(15, 23, 42, 0.07)", drawTicks: false } },
+            },
+          })}
+        });`,
       ])}`;
 
-    renderLayout(res, "Ana Sayfa", content, "/", req);
+    renderPage(res, {
+      title: "Ana Ekran",
+      subtitle: "Filo Operasyon Merkezi · Executive Dashboard",
+      content,
+      path: "/",
+      req,
+    });
   });
 }
 

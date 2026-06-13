@@ -1,11 +1,18 @@
 const express = require("express");
 const path = require("path");
+const LAYOUT_VERSION = require("./lib/layout-version");
 
+const registerAuth = require("./routes/auth");
 const registerDashboard = require("./routes/dashboard");
 const { registerVehicles } = require("./routes/vehicles");
 const registerTransactions = require("./routes/transactions");
+const registerMaintenance = require("./routes/maintenance");
+const registerFuel = require("./routes/fuel");
 const registerReports = require("./routes/reports");
 const registerSettings = require("./routes/settings");
+const registerExport = require("./routes/export");
+const registerHgs = require("./routes/hgs");
+const { requireAuth } = require("./middleware/auth");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,29 +20,35 @@ const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const username = "admin";
-const password = "1234";
-
-app.use((req, res, next) => {
-  const auth = req.headers.authorization;
-  if (!auth) {
-    res.setHeader("WWW-Authenticate", "Basic");
-    return res.status(401).send("Giriş gerekli");
-  }
-  const encoded = auth.split(" ")[1];
-  const decoded = Buffer.from(encoded, "base64").toString();
-  const [user, pass] = decoded.split(":");
-  if (user === username && pass === password) return next();
-  res.setHeader("WWW-Authenticate", "Basic");
-  return res.status(401).send("Hatalı giriş");
+app.get(["/css/app.css", "/js/app.js"], (_req, res) => {
+  res.status(410).type("text/plain").send("Kaldırıldı. Yeni arayüz: /css/main.css");
 });
+
+registerAuth(app);
+app.use(requireAuth);
 
 registerDashboard(app);
 registerVehicles(app);
 registerTransactions(app);
+registerMaintenance(app);
+registerFuel(app);
+registerHgs(app);
 registerReports(app);
 registerSettings(app, port);
+registerExport(app);
+
+app.use((err, _req, res, _next) => {
+  console.error("Sunucu hatası:", err);
+  if (res.headersSent) return;
+  try {
+    const { errorPage } = require("./lib/ui");
+    res.status(500).send(errorPage("Hata", "İşlem sırasında beklenmeyen bir sorun oluştu."));
+  } catch {
+    res.status(500).send("Bir hata oluştu.");
+  }
+});
 
 app.listen(port, () => {
-  console.log(`Finans paneli: http://localhost:${port}`);
+  console.log(`MISTUR FleetOS (${LAYOUT_VERSION}): http://localhost:${port}`);
+  console.log("Giriş: /login · admin / 1234 (ilk kurulum)");
 });
