@@ -2,6 +2,8 @@ const db = require("../lib/db");
 const { VEHICLE_TARGET } = require("../lib/constants");
 const { redirectWithFlash } = require("../lib/flash");
 const { getAllVehicleSummaries } = require("../lib/finance");
+const { formatPlateDisplay } = require("../utils/plate");
+const { validatePlateForSave } = require("../services/vehiclePlateService");
 const {
   escapeHtml,
   fleetCardGrid,
@@ -64,10 +66,29 @@ function registerVehicles(app) {
     if (!plate?.trim()) {
       return redirectWithFlash(res, "/vehicles?err=1&msg=" + encodeURIComponent("Plaka gerekli."), "vehicle_add_failed");
     }
-    db.prepare(
-      `INSERT INTO vehicles (plate, brand, model, year, km, current_km, type) VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).run(plate.trim(), brand || "", model || "", year || "", currentKm, currentKm, vehicleType);
-    redirectWithFlash(res, "/vehicles", "vehicle_added");
+    try {
+      const prepared = validatePlateForSave(plate);
+      db.prepare(
+        `INSERT INTO vehicles (plate, plate_normalized, brand, model, year, km, current_km, type)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        prepared.display,
+        prepared.normalized,
+        brand || "",
+        model || "",
+        year || "",
+        currentKm,
+        currentKm,
+        vehicleType
+      );
+      redirectWithFlash(res, "/vehicles", "vehicle_added");
+    } catch (e) {
+      return redirectWithFlash(
+        res,
+        "/vehicles?err=1&msg=" + encodeURIComponent(e.message || "Araç eklenemedi."),
+        "vehicle_add_failed"
+      );
+    }
   });
 
   app.get("/vehicle/edit/:id", (req, res) => {
@@ -80,7 +101,7 @@ function registerVehicles(app) {
         ${glassPanel({
           title: "Araç bilgileri",
           body: `<form method="POST" action="/vehicle/edit/${v.id}" class="form-grid" style="max-width:520px">
-            <input name="plate" value="${escapeHtml(v.plate)}" required />
+            <input name="plate" value="${escapeHtml(formatPlateDisplay(v.plate) || v.plate)}" required />
             <input name="brand" value="${escapeHtml(v.brand || "")}" placeholder="Marka" />
             <input name="model" value="${escapeHtml(v.model || "")}" placeholder="Model" />
             <input name="year" value="${escapeHtml(v.year || "")}" placeholder="Yıl" />
@@ -108,10 +129,29 @@ function registerVehicles(app) {
     if (!plate?.trim()) {
       return redirectWithFlash(res, `/vehicle/edit/${req.params.id}?err=1&msg=` + encodeURIComponent("Plaka gerekli."), "vehicle_update_failed");
     }
-    db.prepare(
-      `UPDATE vehicles SET plate=?, brand=?, model=?, year=?, km=?, current_km=?, type=? WHERE id=?`
-    ).run(plate.trim(), brand || "", model || "", year || "", currentKm, currentKm, vehicleType, req.params.id);
-    redirectWithFlash(res, "/vehicles", "vehicle_updated");
+    try {
+      const prepared = validatePlateForSave(plate, req.params.id);
+      db.prepare(
+        `UPDATE vehicles SET plate=?, plate_normalized=?, brand=?, model=?, year=?, km=?, current_km=?, type=? WHERE id=?`
+      ).run(
+        prepared.display,
+        prepared.normalized,
+        brand || "",
+        model || "",
+        year || "",
+        currentKm,
+        currentKm,
+        vehicleType,
+        req.params.id
+      );
+      redirectWithFlash(res, "/vehicles", "vehicle_updated");
+    } catch (e) {
+      return redirectWithFlash(
+        res,
+        `/vehicle/edit/${req.params.id}?err=1&msg=` + encodeURIComponent(e.message || "Güncellenemedi."),
+        "vehicle_update_failed"
+      );
+    }
   });
 
   app.get("/vehicle/delete/:id", (req, res) => {

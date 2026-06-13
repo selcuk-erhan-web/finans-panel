@@ -2,7 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const XLSX = require("xlsx");
 const db = require("../lib/db");
-const { buildVehiclePlateMap, findVehicleByPlate, normalizePlate, platesMatch } = require("../utils/plate");
+const { buildVehiclePlateMap, findVehicleByPlate, normalizePlate, platesEqual, formatPlateDisplay } = require("../utils/plate");
+const { preparePlateInput, assertUniquePlate } = require("./vehiclePlateService");
 const { parseTrNumber, parseTrMoney } = require("../utils/numbers");
 const { backupDatabase } = require("../utils/backup");
 const auditService = require("./auditService");
@@ -247,7 +248,7 @@ function round2(n) {
 }
 
 function plateKey(plateText) {
-  return normalizePlateFlexible(plateText) || normalizePlate(plateText) || trNorm(plateText);
+  return normalizePlate(plateText) || String(plateText || "").trim().toUpperCase();
 }
 
 function summarizeFuelRows(rows) {
@@ -409,15 +410,10 @@ function buildDedupKey(row) {
   if (row.transaction_no) {
     return `tx:${String(row.transaction_no).trim()}`;
   }
-  const plate = normalizePlateFlexible(row.plate_text) || normalizePlate(row.plate_text);
+  const plate = normalizePlate(row.plate_text);
   const station = trNorm(row.station || row.distributor || "");
   const liter = Math.round(parseTrNumber(row.liter) * 100) / 100;
   return `c:${plate}|${row.fuel_date}|${liter}|${row.total_amount}|${station}`;
-}
-
-function normalizePlateFlexible(plate) {
-  const { normalizePlateFlexible: flex } = require("../utils/plate");
-  return flex(plate);
 }
 
 function dedupExists(dedupKey) {
@@ -604,13 +600,24 @@ function importFromBuffers({
     let vehicleId = vehicle?.id || null;
 
     if (!vehicleId && autoCreateVehicle) {
-      const info = db
-        .prepare(`INSERT INTO vehicles (plate, type) VALUES (?, 'Servis')`)
-        .run(row.plate_text.trim());
-      vehicleId = info.lastInsertRowid;
-      vehicleMap = buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all());
-      result.autoCreated++;
-      vehicle = { id: vehicleId, plate: row.plate_text };
+      const prepared = preparePlateInput(row.plate_text);
+      if (prepared.normalized) {
+        try {
+          assertUniquePlate(prepared.normalized);
+          const info = db
+            .prepare(`INSERT INTO vehicles (plate, plate_normalized, type) VALUES (?, ?, 'Servis')`)
+            .run(prepared.display, prepared.normalized);
+          vehicleId = info.lastInsertRowid;
+          vehicleMap = buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all());
+          result.autoCreated++;
+          vehicle = { id: vehicleId, plate: prepared.display, plate_normalized: prepared.normalized };
+        } catch (e) {
+          if (e.code === "DUPLICATE_PLATE") {
+            vehicle = findVehicleByPlate(row.plate_text, vehicleMap);
+            vehicleId = vehicle?.id || null;
+          }
+        }
+      }
     }
 
     if (!vehicleId) {
@@ -732,17 +739,28 @@ function createVehicleAndLinkPlate(plateText, batchId = null) {
   const plate = String(plateText || "").trim();
   if (!plate) throw new Error("Plaka gerekli.");
 
-  const existing = findVehicleByPlate(
-    plate,
-    buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all())
-  );
+  const vehicleMap = buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all());
+  const existing = findVehicleByPlate(plate, vehicleMap);
   if (existing) {
     return linkFuelRecordsToVehicle(existing.id, plate, batchId);
   }
 
-  const info = db.prepare(`INSERT INTO vehicles (plate, type) VALUES (?, 'Servis')`).run(plate);
+  const prepared = preparePlateInput(plate);
+  if (!prepared.normalized) throw new Error("Geçerli plaka gerekli.");
+  assertUniquePlate(prepared.normalized);
+
+  const info = db
+    .prepare(`INSERT INTO vehicles (plate, plate_normalized, type) VALUES (?, ?, 'Servis')`)
+    .run(prepared.display, prepared.normalized);
   const out = linkFuelRecordsToVehicle(info.lastInsertRowid, plate, batchId);
-  auditService.log("fuel_create_vehicle", "vehicle", out.vehicleId, null, { plate, linked: out.linked }, "Import sonrası araç oluşturuldu");
+  auditService.log(
+    "fuel_create_vehicle",
+    "vehicle",
+    out.vehicleId,
+    null,
+    { plate: prepared.display, plate_normalized: prepared.normalized, linked: out.linked },
+    "Import sonrası araç oluşturuldu"
+  );
   return out;
 }
 
@@ -754,7 +772,7 @@ function linkFuelRecordsToVehicle(vehicleId, plateText, batchId) {
     )
     .all(...(batchId ? [batchId] : []));
 
-  const ids = unmatched.filter((r) => platesMatch(r.plate_text, plateText)).map((r) => r.id);
+  const ids = unmatched.filter((r) => platesEqual(r.plate_text, plateText)).map((r) => r.id);
   if (!ids.length) return { vehicleId, linked: 0, expensesCreated: 0 };
 
   const placeholders = ids.map(() => "?").join(",");
