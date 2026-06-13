@@ -18,7 +18,7 @@
     f.addEventListener("submit", showLoader);
   });
 
-  document.querySelectorAll("a.btn, a.vehicle-card__cta, a.fleet-card__cta, a.nav-link, a.rank-card").forEach((a) => {
+  document.querySelectorAll("a.btn, a.vehicle-card__cta, a.fleet-card__cta, a.nav-link, a.rank-card, a.expense-cat-card").forEach((a) => {
     a.addEventListener("click", () => {
       if (!a.getAttribute("onclick")) showLoader();
     });
@@ -94,4 +94,16 @@
     Chart.defaults.borderColor = "rgba(15,23,42,0.06)";
     Chart.defaults.plugins.tooltip.enabled = true;
   }
+
+  /* Gider Yönetimi sidebar accordion */
+  document.querySelectorAll(".nav-group__toggle").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var group = btn.closest(".nav-group");
+      if (!group) return;
+      var sub = group.querySelector(".nav-group__sub");
+      var open = group.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (sub) sub.hidden = !open;
+    });
+  });
 })();

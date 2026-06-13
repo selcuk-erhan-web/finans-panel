@@ -275,8 +275,8 @@ function createExpenseForFuel(fuelId, vehicleId, row) {
 
   const info = db
     .prepare(
-      `INSERT INTO transactions (vehicle_id, type, category, amount, note, date, fuel_record_id)
-       VALUES (?, 'expense', 'Yakıt', ?, ?, ?, ?)`
+      `INSERT INTO transactions (vehicle_id, type, category, category_slug, amount, note, date, fuel_record_id)
+       VALUES (?, 'expense', 'Yakıt', 'yakit', ?, ?, ?, ?)`
     )
     .run(
       vehicleId,

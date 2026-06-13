@@ -42,7 +42,9 @@ function getAlerts() {
   const fuel30 = fuelService.getFleetFuelLast30Days();
   const topFuel = fuelService.getTopFuelVehicle();
   const hgsService = require("./hgsService");
+  const expenseCategoryService = require("./expenseCategoryService");
   const hgs = hgsService.getDashboardHgsSummary();
+  const expenseOps = expenseCategoryService.getDashboardOpsSummary();
   return {
     hasUpcomingMaintenance: upcoming.length > 0,
     upcomingCount: upcoming.length,
@@ -51,6 +53,7 @@ function getAlerts() {
     fuel30,
     topFuel,
     hgs,
+    expenseOps,
   };
 }
 

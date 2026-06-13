@@ -60,7 +60,7 @@ function registerDashboard(app) {
           ${financeTrendsPanel()}
           <div class="cmd-ops-stack">
             ${commandInsightCompact(insightParts)}
-            ${operationsCenter({ alerts, fuelPct, fuelExpenseTotal })}
+            ${operationsCenter({ alerts })}
           </div>
         </div>
         ${financialMovementsPanel(bundle.recentTransactions)}
