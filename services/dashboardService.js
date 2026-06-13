@@ -41,6 +41,8 @@ function getAlerts() {
   const muayeneSigorta = maintenanceService.getUpcomingMuayeneSigorta(5);
   const fuel30 = fuelService.getFleetFuelLast30Days();
   const topFuel = fuelService.getTopFuelVehicle();
+  const hgsService = require("./hgsService");
+  const hgs = hgsService.getDashboardHgsSummary();
   return {
     hasUpcomingMaintenance: upcoming.length > 0,
     upcomingCount: upcoming.length,
@@ -48,6 +50,7 @@ function getAlerts() {
     muayeneSigorta,
     fuel30,
     topFuel,
+    hgs,
   };
 }
 
