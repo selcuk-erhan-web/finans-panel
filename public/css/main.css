@@ -3537,9 +3537,102 @@ input:focus, select:focus {
 /* KPI row — equal compact cards */
 .cmd-kpi-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
+}
+
+.cmd-kpi-card--avg {
+  border-top: 2px solid rgba(99, 102, 241, 0.35);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.04) 0%, #ffffff 72%);
+}
+
+.cmd-kpi-card--neutral .cmd-kpi-card__value.text-neutral {
+  color: #64748b;
+}
+
+.text-neutral { color: #64748b; }
+
+.cmd-insight--exec .cmd-exec-metrics {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cmd-exec-metric {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.cmd-exec-metric span {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.cmd-exec-metric strong {
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.cmd-exec-metric em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+.cmd-insight__link {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+.cmd-panel--compact .cmd-panel__head {
+  padding-bottom: 8px;
+}
+
+.cmd-panel--compact .cmd-panel__body {
+  padding-top: 0;
+}
+
+.cmd-rank-wrap {
+  overflow-x: auto;
+}
+
+.cmd-rank-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.cmd-rank-table th,
+.cmd-rank-table td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eceef4;
+  white-space: nowrap;
+}
+
+.cmd-rank-table th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.cmd-rank-plate {
+  font-size: 11px;
+  font-weight: 700;
+  background: #f8fafc;
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
 .cmd-kpi-card {
@@ -3619,6 +3712,10 @@ input:focus, select:focus {
 }
 
 .cmd-ops-stack > .cmd-insight {
+  flex-shrink: 0;
+}
+
+.cmd-ops-stack > .cmd-panel--rank {
   flex-shrink: 0;
 }
 
@@ -3787,7 +3884,8 @@ input:focus, select:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .cmd-kpi-card--hero {
+  .cmd-kpi-card--hero,
+  .cmd-kpi-card--avg {
     grid-column: 1 / -1;
   }
 }

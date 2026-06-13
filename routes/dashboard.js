@@ -1,5 +1,4 @@
-const { getExpenseByCategory, getTypeTotals } = require("../lib/finance");
-const { generateFinanceInsight } = require("../lib/insights");
+const { getTypeTotals } = require("../lib/finance");
 const { chartOpts } = require("../lib/charts");
 const dashboardService = require("../services/dashboardService");
 const {
@@ -7,11 +6,11 @@ const {
   chartBoot,
   commandHeader,
   executiveFinancialPanel,
-  commandInsightCompact,
+  executiveProfitSummary,
+  vehicleProfitRankPanel,
   operationsCenter,
   financeTrendsPanel,
   financialMovementsPanel,
-  splitInsightText,
 } = require("../lib/components");
 
 const CHART = {
@@ -22,25 +21,17 @@ const CHART = {
 function registerDashboard(app) {
   app.get("/", (req, res) => {
     const bundle = dashboardService.getDashboardBundle();
-    const { totals, fleetStatus, vehicleCount, monthly, summaries, alerts } = bundle;
-    const servis = getTypeTotals(summaries, "Servis");
-    const turizm = getTypeTotals(summaries, "Turizm");
-    const expenseByCat = getExpenseByCategory();
-    const insightRaw = generateFinanceInsight({
-      totals,
-      summaries,
-      servis,
-      turizm,
-      expenseByCat,
-    });
-    const insightParts = splitInsightText(insightRaw);
-    const netTone = totals.balance >= 0 ? "profit" : "loss";
+    const { fleetStatus, vehicleCount, monthly, alerts, profit } = bundle;
+    const servis = getTypeTotals(bundle.summaries, "Servis");
+    const turizm = getTypeTotals(bundle.summaries, "Turizm");
+    const incomeTotals = alerts.incomeByCategory || {};
+    const servisIncome = incomeTotals.service ?? servis.income;
+    const turizmIncome = incomeTotals.tourism ?? turizm.income;
 
-    const fuelExpenseTotal = expenseByCat["Yakıt"] || alerts.fuel30?.totalCost || 0;
-    const fuelPct =
-      totals.expense > 0
-        ? Math.round((fuelExpenseTotal / totals.expense) * 100)
-        : 0;
+    const netProfit = profit?.summary?.totalNet ?? 0;
+    const totalExpense = profit?.summary?.totalExpense ?? 0;
+    const avgProfitPerVehicle = profit?.summary?.avgProfitPerVehicle ?? 0;
+    const netTone = netProfit > 0 ? "profit" : netProfit < 0 ? "loss" : "neutral";
 
     const content = `
       <div class="dash page-enter command-center cockpit">
@@ -51,16 +42,19 @@ function registerDashboard(app) {
           maintenanceCount: alerts.upcomingCount || 0,
         })}
         ${executiveFinancialPanel({
-          totals,
+          netProfit,
           netTone,
-          servisIncome: servis.income,
-          turizmIncome: turizm.income,
+          servisIncome,
+          turizmIncome,
+          totalExpense,
+          avgProfitPerVehicle,
         })}
         <div class="cmd-mid">
           ${financeTrendsPanel()}
           <div class="cmd-ops-stack">
-            ${commandInsightCompact(insightParts)}
-            ${operationsCenter({ alerts })}
+            ${executiveProfitSummary({ profit })}
+            ${vehicleProfitRankPanel({ profit })}
+            ${operationsCenter({ alerts, profitExpense: profit?.expenseBreakdown })}
           </div>
         </div>
         ${financialMovementsPanel(bundle.recentTransactions)}

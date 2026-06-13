@@ -228,6 +228,77 @@ function getMostProfitableVehicle(rows = null) {
   };
 }
 
+function getLeastProfitableVehicle(rows = null) {
+  const data = rows || buildVehicleProfitability();
+  const assigned = getAssignedRows(data)
+    .filter((r) => r.income > 0 || r.totalExpense > 0)
+    .sort((a, b) => a.netProfit - b.netProfit);
+  if (!assigned.length) {
+    return { plate: "—", netProfit: null, vehicleId: null, income: 0, totalExpense: 0 };
+  }
+  const worst = assigned[0];
+  return {
+    plate: worst.plate,
+    netProfit: worst.netProfit,
+    vehicleId: worst.vehicleId,
+    income: worst.income,
+    totalExpense: worst.totalExpense,
+  };
+}
+
+function getHighestFuelVehicle(rows = null) {
+  const data = rows || buildVehicleProfitability();
+  const assigned = getAssignedRows(data)
+    .filter((r) => r.fuel > 0)
+    .sort((a, b) => b.fuel - a.fuel);
+  if (!assigned.length) return { plate: "—", amount: null, vehicleId: null };
+  return { plate: assigned[0].plate, amount: assigned[0].fuel, vehicleId: assigned[0].vehicleId };
+}
+
+function getHighestHgsVehicle(rows = null) {
+  const data = rows || buildVehicleProfitability();
+  const assigned = getAssignedRows(data)
+    .filter((r) => r.hgs > 0)
+    .sort((a, b) => b.hgs - a.hgs);
+  if (!assigned.length) return { plate: "—", amount: null, vehicleId: null };
+  return { plate: assigned[0].plate, amount: assigned[0].hgs, vehicleId: assigned[0].vehicleId };
+}
+
+function getFleetExpenseBreakdown(rows = null) {
+  const data = rows || buildVehicleProfitability();
+  return {
+    fuel: data.reduce((s, r) => s + r.fuel, 0),
+    hgs: data.reduce((s, r) => s + r.hgs, 0),
+    maintenance: data.reduce((s, r) => s + r.maintenance, 0),
+    other: data.reduce((s, r) => s + r.other, 0),
+  };
+}
+
+function getDashboardProfitMetrics() {
+  const rows = buildVehicleProfitability();
+  const summary = getFleetProfitSummary(rows);
+  const top5 = getTopProfitableVehicles(5, rows);
+  const mostProfitable = getMostProfitableVehicle(rows);
+  const leastProfitable = getLeastProfitableVehicle(rows);
+  const highestFuel = getHighestFuelVehicle(rows);
+  const highestHgs = getHighestHgsVehicle(rows);
+  const expenseBreakdown = getFleetExpenseBreakdown(rows);
+  const hasData = hasSufficientData(rows);
+
+  return {
+    rows,
+    summary,
+    top5,
+    ranking: top5,
+    mostProfitable,
+    leastProfitable,
+    highestFuel,
+    highestHgs,
+    expenseBreakdown,
+    hasData,
+  };
+}
+
 function hasSufficientData(rows = null) {
   const data = rows || buildVehicleProfitability();
   return data.some((r) => r.income > 0 || r.totalExpense > 0);
@@ -238,6 +309,11 @@ module.exports = {
   getFleetProfitSummary,
   getTopProfitableVehicles,
   getMostProfitableVehicle,
+  getLeastProfitableVehicle,
+  getHighestFuelVehicle,
+  getHighestHgsVehicle,
+  getFleetExpenseBreakdown,
+  getDashboardProfitMetrics,
   hasSufficientData,
   UNASSIGNED_KEY,
 };

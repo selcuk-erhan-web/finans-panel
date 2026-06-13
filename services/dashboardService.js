@@ -30,15 +30,31 @@ function getUpcomingPayments() {
   return maintenanceService.getUpcoming(10);
 }
 
+const profitabilityService = require("./profitabilityService");
+
 function getVehicleRanking() {
-  const profitabilityService = require("./profitabilityService");
-  return profitabilityService.getTopProfitableVehicles(6).map((r) => ({
+  return profitabilityService.getTopProfitableVehicles(5).map((r) => ({
     id: r.vehicleId,
     plate: r.plate,
     income: r.income,
     expense: r.totalExpense,
     net: r.netProfit,
   }));
+}
+
+function getProfitDashboardMetrics() {
+  const profit = profitabilityService.getDashboardProfitMetrics();
+  const { generateExecutiveProfitComment } = require("../lib/insights");
+  const vehicleCount = db.prepare("SELECT COUNT(*) as c FROM vehicles").get().c;
+  profit.executiveComment = generateExecutiveProfitComment({
+    summary: profit.summary,
+    mostProfitable: profit.mostProfitable,
+    leastProfitable: profit.leastProfitable,
+    expenseBreakdown: profit.expenseBreakdown,
+    hasData: profit.hasData,
+    vehicleCount,
+  });
+  return profit;
 }
 
 function getAlerts() {
@@ -69,7 +85,11 @@ function getDashboardBundle() {
   const summaries = getAllVehicleSummaries();
   const totals = getTotals();
   const monthly = getFleetMonthlyData(6);
+  monthly.netProfitData = monthly.incomeData.map(
+    (inc, i) => Math.round(inc - (monthly.expenseData[i] || 0))
+  );
   const alerts = getAlerts();
+  const profit = getProfitDashboardMetrics();
 
   return {
     totals,
@@ -83,6 +103,7 @@ function getDashboardBundle() {
     vehicleRanking: getVehicleRanking(),
     summaries,
     alerts,
+    profit,
   };
 }
 
@@ -93,4 +114,5 @@ module.exports = {
   getUpcomingPayments,
   getVehicleRanking,
   getAlerts,
+  getProfitDashboardMetrics,
 };
