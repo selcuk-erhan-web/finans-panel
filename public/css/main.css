@@ -2365,6 +2365,191 @@ input:focus, select:focus {
   color: var(--text);
 }
 
+/* Gelir kategori ekranları — INCOME-02 UI polish */
+.income-module {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.income-cat-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+  padding: 22px 24px;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.96) 58%, rgba(99, 102, 241, 0.04) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.16);
+  box-shadow: 0 10px 36px rgba(15, 23, 42, 0.06);
+}
+
+.income-cat-header__copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.income-cat-header__eyebrow {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(16, 185, 129, 0.85);
+}
+
+.income-cat-header__title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.income-cat-header__desc {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 56ch;
+}
+
+.btn--income-cta {
+  align-self: center;
+  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.22);
+}
+
+.income-stat-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+
+.income-stat-bar__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.income-stat-bar__value {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.income-form.form-grid {
+  gap: 16px;
+}
+
+.income-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.income-form__field--full {
+  grid-column: 1 / -1;
+}
+
+.income-form__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.income-form input,
+.income-form select {
+  min-height: 44px;
+  padding: 11px 14px;
+  font-size: 14px;
+  border-radius: 12px;
+}
+
+.btn--income-submit {
+  min-height: 48px;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.24);
+}
+
+.income-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px 52px;
+}
+
+.income-empty__ring {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  background: radial-gradient(circle at 30% 30%, rgba(16, 185, 129, 0.14), rgba(255, 255, 255, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.income-empty__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.income-empty__hint {
+  margin: 8px 0 0;
+  max-width: 36ch;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.income-empty__cta {
+  margin-top: 18px;
+}
+
+/* Gelir sidebar alt menü — INCOME-02 (gider ile uyumlu, biraz daha okunaklı) */
+.nav-link--sub.nav-link--text.nav-link--income {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  min-height: 30px;
+  padding: 5px 10px 5px 12px;
+  color: #a8b4c9;
+}
+
+.nav-link--sub.nav-link--text.nav-link--income:hover {
+  color: #dbeafe;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.nav-link--sub.nav-link--text.nav-link--income.is-active {
+  color: #ede9fe;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.18);
+  box-shadow: inset 2px 0 0 rgba(167, 139, 250, 0.75);
+  border-radius: 7px;
+}
+
 @media (max-width: 1100px) {
   .expense-cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
