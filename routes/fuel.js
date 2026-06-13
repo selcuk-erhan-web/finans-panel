@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const fuelService = require("../services/fuelService");
 const fuelImportService = require("../services/fuelImportService");
-const { fuelImportResultHtml, unmatchedPlatesPanelHtml, fuelUnmatchedScript } = require("../lib/components/fuelImport");
+const { fuelImportResultHtml, fuelImportDualFormHtml, unmatchedPlatesPanelHtml, fuelUnmatchedScript } = require("../lib/components/fuelImport");
 const { redirectWithFlash } = require("../lib/flash");
 const { getVehicles } = require("./vehicles");
 const { money } = require("../lib/finance");
@@ -121,17 +121,10 @@ function registerFuel(app) {
                 <div>
                   <p class="eyebrow">UTTS / Arkpet / Shell</p>
                   <h2>Yakıt Excel İçe Aktar</h2>
-                  <p>10 günlük yakıt raporlarını Excel olarak yükleyin, sistem plakaya göre yakıt kayıtlarına dönüştürsün.</p>
+                  <p>Dokum detay dosyasından yakıt kayıtları oluşturulur. İsteğe bağlı Yakıt Alım Raporu ile mutabakat yapılır.</p>
                 </div>
               </div>
-              <form method="POST" action="/fuel/import" enctype="multipart/form-data" class="fuel-import-form">
-                <label class="fuel-dropzone">
-                  <input type="file" name="excelFile" accept=".xlsx,.xls" required />
-                  <strong>Excel dosyasını seç</strong>
-                  <span>Dokum-20.05.2026.xlsx veya Yakıt Alım Raporu formatı desteklenir.</span>
-                </label>
-                <button type="submit" class="btn btn-primary">İçe Aktar</button>
-              </form>
+              ${fuelImportDualFormHtml()}
             </section>
 
           ${glassPanel({
@@ -189,8 +182,11 @@ function registerFuel(app) {
   });
 
   app.post("/fuel/import", (req, res) => {
-    const field = "excelFile";
-    upload.single(field)(req, res, (uploadErr) => {
+    upload.fields([
+      { name: "detailFile", maxCount: 1 },
+      { name: "controlFile", maxCount: 1 },
+      { name: "excelFile", maxCount: 1 },
+    ])(req, res, (uploadErr) => {
       const sendError = (message, status = 400) => {
         if (wantsJson(req)) {
           return res.status(status).json({ ok: false, message });
@@ -202,17 +198,21 @@ function registerFuel(app) {
       if (uploadErr) return sendError(uploadErr.message || "Dosya yüklenemedi.");
 
       try {
-        if (!req.file || !req.file.buffer?.length) {
-          return sendError("Dosya seçilmedi veya okunamadı.");
+        const detailFile = req.files?.detailFile?.[0] || req.files?.excelFile?.[0];
+        const controlFile = req.files?.controlFile?.[0];
+
+        if (!detailFile || !detailFile.buffer?.length) {
+          return sendError("Detay Excel (Dokum) dosyası seçilmedi veya okunamadı.");
         }
-        const result = fuelImportService.importFromBuffer(
-          req.file.buffer,
-          req.file.originalname,
-          {
-            autoCreateVehicle: !!req.body.auto_create_vehicle,
-            syncExpense: req.body.sync_expense !== "0" && req.body.sync_expense !== "off",
-          }
-        );
+
+        const result = fuelImportService.importFromBuffers({
+          detailBuffer: detailFile.buffer,
+          detailName: detailFile.originalname,
+          controlBuffer: controlFile?.buffer,
+          controlName: controlFile?.originalname || "",
+          autoCreateVehicle: !!req.body.auto_create_vehicle,
+          syncExpense: req.body.sync_expense !== "0" && req.body.sync_expense !== "off",
+        });
 
         if (wantsJson(req)) {
           return jsonImportResponse(res, result);

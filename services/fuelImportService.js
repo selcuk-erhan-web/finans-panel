@@ -32,6 +32,22 @@ function sheetToMatrix(sheet) {
 
 function detectFormat(workbook, filename = "") {
   const fn = trNorm(filename);
+  if (fn.includes("dokum")) {
+    for (const name of workbook.SheetNames) {
+      const matrix = sheetToMatrix(workbook.Sheets[name]);
+      if (findHeaderRow(matrix, ["plaka", "miktar"]) >= 0) {
+        return { format: "dokum", sheetName: name };
+      }
+    }
+  }
+  if (fn.includes("yakit") && fn.includes("alim")) {
+    for (const name of workbook.SheetNames) {
+      const matrix = sheetToMatrix(workbook.Sheets[name]);
+      if (findHeaderRow(matrix, ["plaka", "litre"]) >= 0) {
+        return { format: "ozet", sheetName: name };
+      }
+    }
+  }
   if (workbook.SheetNames.some((n) => trNorm(n) === "satislistesi")) {
     return { format: "dokum", sheetName: workbook.SheetNames.find((n) => trNorm(n) === "satislistesi") };
   }
@@ -133,7 +149,7 @@ function parseDokumSheet(sheet) {
   set(["kilometre", "km"], "km");
   set(["distributor", "distribut"], "distributor");
   set(["tarih"], "fuel_date");
-  set(["islem numarasi", "işlem numarası", "islem no"], "transaction_no");
+  set(["islem numarasi", "işlem numarası", "islem no", "belge no", "belge numarasi"], "transaction_no");
   set(["istasyon"], "station");
   set(["sehir", "şehir"], "city");
   set(["utts"], "utts");
@@ -185,6 +201,7 @@ function parseOzetSheet(sheet) {
   set(["litre", "miktar"], "liter");
   set(["birim fiyat"], "price_per_liter");
   set(["net tutar"], "total_amount");
+  set(["brut tutar", "brüt tutar"], "gross_amount");
   set(["bayi", "istasyon"], "station");
   set(["sehir", "şehir"], "city");
   set(["utts"], "utts");
@@ -198,7 +215,8 @@ function parseOzetSheet(sheet) {
     if (!plate || trNorm(plate).includes("toplam")) continue;
     const liter = parseNumber(cell(row, idx.liter));
     if (liter <= 0) continue;
-    let total = parseMoney(cell(row, idx.total_amount));
+    let total = parseMoney(cell(row, idx.net_amount));
+    if (!total && idx.gross_amount !== undefined) total = parseMoney(cell(row, idx.gross_amount));
     const price = parseNumber(cell(row, idx.price_per_liter));
     if (!total && liter && price) total = Math.round(liter * price);
     if (!total) continue;
@@ -224,16 +242,165 @@ function parseOzetSheet(sheet) {
   return rows;
 }
 
-function parseWorkbook(buffer, originalName) {
+function round2(n) {
+  return Math.round(Number(n) * 100) / 100;
+}
+
+function plateKey(plateText) {
+  return normalizePlateFlexible(plateText) || normalizePlate(plateText) || trNorm(plateText);
+}
+
+function summarizeFuelRows(rows) {
+  const byPlate = {};
+  let totalLiters = 0;
+  let totalAmount = 0;
+
+  rows.forEach((row) => {
+    totalLiters += Number(row.liter) || 0;
+    totalAmount += Number(row.total_amount) || 0;
+    const key = plateKey(row.plate_text);
+    if (!key) return;
+    if (!byPlate[key]) {
+      byPlate[key] = {
+        plate: String(row.plate_text || "").trim(),
+        liters: 0,
+        amount: 0,
+      };
+    }
+    byPlate[key].liters += Number(row.liter) || 0;
+    byPlate[key].amount += Number(row.total_amount) || 0;
+  });
+
+  Object.values(byPlate).forEach((p) => {
+    p.liters = round2(p.liters);
+    p.amount = Math.round(p.amount);
+  });
+
+  return {
+    byPlate,
+    totalLiters: round2(totalLiters),
+    totalAmount: Math.round(totalAmount),
+    rowCount: rows.length,
+  };
+}
+
+function extractOzetFooterTotals(matrix) {
+  let totalLiters = null;
+  let totalAmount = null;
+  for (let r = 0; r < matrix.length; r++) {
+    const row = matrix[r] || [];
+    const text = row.map((c) => trNorm(c)).join(" ");
+    if (!text.includes("toplam")) continue;
+    const nums = row.map((c) => parseMoney(c)).filter((n) => n > 0);
+    if (nums.length >= 2) {
+      totalLiters = round2(nums[0]);
+      totalAmount = Math.round(nums[1]);
+    } else if (nums.length === 1) {
+      totalAmount = Math.round(nums[0]);
+    }
+  }
+  return { totalLiters, totalAmount };
+}
+
+/** Kontrol / mutabakat dosyası — kayıt üretmez, yalnızca özet */
+function parseControlWorkbook(buffer, originalName = "") {
+  const workbook = XLSX.read(buffer, { type: "buffer", cellDates: true });
+  const { format, sheetName } = detectFormat(workbook, originalName);
+  if (format !== "ozet") {
+    throw new Error(
+      "Kontrol dosyası Yakıt Alım Raporu formatında olmalı. Detay kayıtlar için Dokum Excel kullanın."
+    );
+  }
+  const sheet = workbook.Sheets[sheetName];
+  const matrix = sheetToMatrix(sheet);
+  const rows = parseOzetSheet(sheet);
+  const summary = summarizeFuelRows(rows);
+  const footer = extractOzetFooterTotals(matrix);
+
+  if (footer.totalLiters != null) summary.totalLiters = footer.totalLiters;
+  if (footer.totalAmount != null) summary.totalAmount = footer.totalAmount;
+
+  return {
+    format: "ozet",
+    sheetName,
+    filename: originalName,
+    rows,
+    ...summary,
+  };
+}
+
+function computeReconciliation(detailSummary, controlSummary) {
+  if (!controlSummary) return null;
+
+  const literDiff = round2(detailSummary.totalLiters - controlSummary.totalLiters);
+  const amountDiff = Math.round(detailSummary.totalAmount - controlSummary.totalAmount);
+  const literTolerance = 0.05;
+  const amountTolerance = 1;
+
+  const plateDiffs = [];
+  const keys = new Set([
+    ...Object.keys(detailSummary.byPlate || {}),
+    ...Object.keys(controlSummary.byPlate || {}),
+  ]);
+
+  keys.forEach((key) => {
+    const d = detailSummary.byPlate[key];
+    const c = controlSummary.byPlate[key];
+    const dLiters = d?.liters || 0;
+    const cLiters = c?.liters || 0;
+    const dAmount = d?.amount || 0;
+    const cAmount = c?.amount || 0;
+    const pLiterDiff = round2(dLiters - cLiters);
+    const pAmountDiff = Math.round(dAmount - cAmount);
+    if (Math.abs(pLiterDiff) <= literTolerance && Math.abs(pAmountDiff) <= amountTolerance) return;
+    plateDiffs.push({
+      plate: d?.plate || c?.plate || key,
+      detailLiters: dLiters,
+      controlLiters: cLiters,
+      literDiff: pLiterDiff,
+      detailAmount: dAmount,
+      controlAmount: cAmount,
+      amountDiff: pAmountDiff,
+    });
+  });
+
+  plateDiffs.sort((a, b) => Math.abs(b.amountDiff) - Math.abs(a.amountDiff));
+
+  const totalsOk =
+    Math.abs(literDiff) <= literTolerance && Math.abs(amountDiff) <= amountTolerance;
+  const platesOk = plateDiffs.length === 0;
+
+  return {
+    detailLiters: detailSummary.totalLiters,
+    detailAmount: detailSummary.totalAmount,
+    controlLiters: controlSummary.totalLiters,
+    controlAmount: controlSummary.totalAmount,
+    literDiff,
+    amountDiff,
+    totalsMatch: totalsOk,
+    platesMatch: platesOk,
+    ok: totalsOk && platesOk,
+    plateDiffs,
+  };
+}
+
+function parseWorkbook(buffer, originalName, options = {}) {
+  const { requireDokum = false } = options;
   const workbook = XLSX.read(buffer, { type: "buffer", cellDates: true });
   const { format, sheetName } = detectFormat(workbook, originalName);
   const sheet = workbook.Sheets[sheetName];
   if (!sheet) throw new Error("Excel sayfası okunamadı.");
 
+  if (requireDokum && format !== "dokum") {
+    throw new Error(
+      "Detay dosyası Dokum (SatisListesi) formatında olmalı. Yakıt Alım Raporu yalnızca kontrol dosyası olarak yüklenmelidir."
+    );
+  }
+
   let rows = [];
   if (format === "dokum") rows = parseDokumSheet(sheet);
   else if (format === "ozet") rows = parseOzetSheet(sheet);
-  else throw new Error("Tanınmayan Excel formatı. SatisListesi veya Akaryakıt Alım Raporu bekleniyor.");
+  else throw new Error("Tanınmayan Excel formatı. Dokum (SatisListesi) veya Yakıt Alım Raporu bekleniyor.");
 
   return { format, sheetName, rows, originalName };
 }
@@ -268,6 +435,8 @@ function createExpenseForFuel(fuelId, vehicleId, row) {
     row.station || row.distributor || "Yakıt",
     row.fuel_type,
     `${row.liter} litre`,
+    row.transaction_no ? `İşlem:${row.transaction_no}` : "",
+    row.invoice_no ? `Belge:${row.invoice_no}` : "",
     row.utts ? `UTTS:${row.utts}` : "",
   ]
     .filter(Boolean)
@@ -327,7 +496,22 @@ function insertFuelRecord(row, batchId, sourceFile, vehicleId) {
 }
 
 function importFromBuffer(buffer, originalName, options = {}) {
-  const { autoCreateVehicle = false, syncExpense = true } = options;
+  return importFromBuffers({
+    detailBuffer: buffer,
+    detailName: originalName,
+    ...options,
+  });
+}
+
+function importFromBuffers({
+  detailBuffer,
+  detailName,
+  controlBuffer = null,
+  controlName = "",
+  autoCreateVehicle = false,
+  syncExpense = true,
+} = {}) {
+  if (!detailBuffer?.length) throw new Error("Detay Excel dosyası gerekli.");
 
   let backupPath;
   try {
@@ -338,39 +522,76 @@ function importFromBuffer(buffer, originalName, options = {}) {
 
   ensureUploadDir();
 
-  const savedName = `${Date.now()}_${originalName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const savedName = `${Date.now()}_${detailName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
   const savedPath = path.join(UPLOAD_DIR, savedName);
-  fs.writeFileSync(savedPath, buffer);
+  fs.writeFileSync(savedPath, detailBuffer);
 
-  const parsed = parseWorkbook(buffer, originalName);
+  let controlSavedPath = null;
+  if (controlBuffer?.length) {
+    const controlSavedName = `${Date.now()}_ctrl_${controlName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    controlSavedPath = path.join(UPLOAD_DIR, controlSavedName);
+    fs.writeFileSync(controlSavedPath, controlBuffer);
+  }
+
+  const parsed = parseWorkbook(detailBuffer, detailName, { requireDokum: true });
+  const detailSummary = summarizeFuelRows(parsed.rows);
+
+  let controlSummary = null;
+  let reconciliation = null;
+  if (controlBuffer?.length) {
+    controlSummary = parseControlWorkbook(controlBuffer, controlName);
+    reconciliation = computeReconciliation(detailSummary, controlSummary);
+  }
+
   const vehicles = db.prepare("SELECT * FROM vehicles").all();
   let vehicleMap = buildVehiclePlateMap(vehicles);
 
   const batchInfo = db
     .prepare(
-      `INSERT INTO fuel_import_batches (filename, format, total_rows, saved_path)
-       VALUES (?, ?, ?, ?)`
+      `INSERT INTO fuel_import_batches (
+        filename, format, total_rows, saved_path, control_filename, control_saved_path, reconciliation_json
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`
     )
-    .run(originalName, parsed.format, parsed.rows.length, savedPath);
+    .run(
+      detailName,
+      parsed.format,
+      parsed.rows.length,
+      savedPath,
+      controlName || null,
+      controlSavedPath,
+      reconciliation ? JSON.stringify(reconciliation) : null
+    );
   const batchId = batchInfo.lastInsertRowid;
 
   const result = {
     batchId,
     format: parsed.format,
-    filename: originalName,
+    filename: detailName,
+    controlFilename: controlName || null,
     totalRows: parsed.rows.length,
     imported: 0,
     skippedDuplicate: 0,
     unmatchedPlates: 0,
+    matchedPlates: 0,
     unmatchedList: [],
     autoCreated: 0,
     expensesCreated: 0,
     totalLiters: 0,
     totalAmount: 0,
+    detailSummary,
+    controlSummary: controlSummary
+      ? {
+          totalLiters: controlSummary.totalLiters,
+          totalAmount: controlSummary.totalAmount,
+          rowCount: controlSummary.rowCount,
+        }
+      : null,
+    reconciliation,
     errors: [],
   };
 
   const unmatchedSet = new Set();
+  const matchedSet = new Set();
 
   for (const row of parsed.rows) {
     const dedup_key = buildDedupKey(row);
@@ -383,22 +604,23 @@ function importFromBuffer(buffer, originalName, options = {}) {
     let vehicleId = vehicle?.id || null;
 
     if (!vehicleId && autoCreateVehicle) {
-      const plateNorm = normalizePlate(row.plate_text);
       const info = db
         .prepare(`INSERT INTO vehicles (plate, type) VALUES (?, 'Servis')`)
         .run(row.plate_text.trim());
       vehicleId = info.lastInsertRowid;
-      vehicle = { id: vehicleId, plate: row.plate_text };
       vehicleMap = buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all());
       result.autoCreated++;
+      vehicle = { id: vehicleId, plate: row.plate_text };
     }
 
     if (!vehicleId) {
       unmatchedSet.add(row.plate_text);
+    } else {
+      matchedSet.add(plateKey(row.plate_text));
     }
 
     try {
-      const inserted = insertFuelRecord(row, batchId, originalName, vehicleId);
+      const inserted = insertFuelRecord(row, batchId, detailName, vehicleId);
       result.imported++;
       result.totalLiters += row.liter;
       result.totalAmount += row.total_amount;
@@ -414,16 +636,18 @@ function importFromBuffer(buffer, originalName, options = {}) {
 
   result.unmatchedList = [...unmatchedSet].sort();
   result.unmatchedPlates = result.unmatchedList.length;
-  result.totalLiters = Math.round(result.totalLiters * 100) / 100;
+  result.matchedPlates = matchedSet.size;
+  result.totalLiters = round2(result.totalLiters);
 
   db.prepare(
     `UPDATE fuel_import_batches SET
-      imported=?, skipped_dup=?, unmatched=?, total_liters=?, total_amount=?
+      imported=?, skipped_dup=?, unmatched=?, matched_plates=?, total_liters=?, total_amount=?
      WHERE id=?`
   ).run(
     result.imported,
     result.skippedDuplicate,
     result.unmatchedPlates,
+    result.matchedPlates,
     result.totalLiters,
     result.totalAmount,
     batchId
@@ -435,13 +659,18 @@ function importFromBuffer(buffer, originalName, options = {}) {
     batchId,
     null,
     {
-      filename: originalName,
+      filename: detailName,
+      controlFilename: controlName || null,
       imported: result.imported,
       skipped: result.skippedDuplicate,
       unmatched: result.unmatchedPlates,
+      matchedPlates: result.matchedPlates,
+      totalLiters: result.totalLiters,
+      totalAmount: result.totalAmount,
+      reconciliationOk: reconciliation ? reconciliation.ok : null,
       backup: backupPath,
     },
-    `Excel import: ${originalName}`
+    `Yakıt import: ${detailName}${controlName ? ` + kontrol: ${controlName}` : ""}`
   );
 
   return result;
@@ -475,16 +704,25 @@ function getUnmatchedPlatesForBatch(batchId) {
 
 function batchToResult(batch) {
   if (!batch) return null;
+  let reconciliation = null;
+  if (batch.reconciliation_json) {
+    try {
+      reconciliation = JSON.parse(batch.reconciliation_json);
+    } catch (e) {}
+  }
   return {
     batchId: batch.id,
     format: batch.format,
     filename: batch.filename,
+    controlFilename: batch.control_filename || null,
     totalRows: batch.total_rows,
     imported: batch.imported,
     skippedDuplicate: batch.skipped_dup,
     unmatchedPlates: batch.unmatched,
+    matchedPlates: batch.matched_plates || 0,
     totalLiters: batch.total_liters,
     totalAmount: batch.total_amount,
+    reconciliation,
     unmatchedList: getUnmatchedPlatesForBatch(batch.id),
     errors: [],
   };
@@ -562,7 +800,11 @@ function linkPlateToVehicle(plateText, vehicleId, batchId = null) {
 
 module.exports = {
   parseWorkbook,
+  parseControlWorkbook,
+  computeReconciliation,
+  summarizeFuelRows,
   importFromBuffer,
+  importFromBuffers,
   getBatchSummary,
   batchToResult,
   getUnmatchedPlatesForBatch,
