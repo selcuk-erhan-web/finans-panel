@@ -3,7 +3,7 @@ const path = require("path");
 const XLSX = require("xlsx");
 const db = require("../lib/db");
 const { buildVehiclePlateMap, findVehicleByPlate, normalizePlate, platesEqual, formatPlateDisplay } = require("../utils/plate");
-const { preparePlateInput, assertUniquePlate } = require("./vehiclePlateService");
+const { preparePlateInput, assertUniquePlate, createVehicleRecord } = require("./vehiclePlateService");
 const { parseTrNumber, parseTrMoney } = require("../utils/numbers");
 const { backupDatabase } = require("../utils/backup");
 const auditService = require("./auditService");
@@ -603,14 +603,18 @@ function importFromBuffers({
       const prepared = preparePlateInput(row.plate_text);
       if (prepared.normalized) {
         try {
-          assertUniquePlate(prepared.normalized);
-          const info = db
-            .prepare(`INSERT INTO vehicles (plate, plate_normalized, type) VALUES (?, ?, 'Servis')`)
-            .run(prepared.display, prepared.normalized);
-          vehicleId = info.lastInsertRowid;
-          vehicleMap = buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all());
-          result.autoCreated++;
-          vehicle = { id: vehicleId, plate: prepared.display, plate_normalized: prepared.normalized };
+          const existing = findVehicleByPlate(row.plate_text, vehicleMap);
+          if (existing) {
+            vehicleId = existing.id;
+            vehicle = existing;
+          } else {
+            assertUniquePlate(prepared.normalized);
+            const created = createVehicleRecord({ plate: row.plate_text, type: "Servis" });
+            vehicleId = created.id;
+            vehicleMap = buildVehiclePlateMap(db.prepare("SELECT * FROM vehicles").all());
+            result.autoCreated++;
+            vehicle = { id: vehicleId, plate: created.display, plate_normalized: created.normalized };
+          }
         } catch (e) {
           if (e.code === "DUPLICATE_PLATE") {
             vehicle = findVehicleByPlate(row.plate_text, vehicleMap);
@@ -749,16 +753,14 @@ function createVehicleAndLinkPlate(plateText, batchId = null) {
   if (!prepared.normalized) throw new Error("Geçerli plaka gerekli.");
   assertUniquePlate(prepared.normalized);
 
-  const info = db
-    .prepare(`INSERT INTO vehicles (plate, plate_normalized, type) VALUES (?, ?, 'Servis')`)
-    .run(prepared.display, prepared.normalized);
-  const out = linkFuelRecordsToVehicle(info.lastInsertRowid, plate, batchId);
+  const created = createVehicleRecord({ plate, type: "Servis" });
+  const out = linkFuelRecordsToVehicle(created.id, plate, batchId);
   auditService.log(
     "fuel_create_vehicle",
     "vehicle",
     out.vehicleId,
     null,
-    { plate: prepared.display, plate_normalized: prepared.normalized, linked: out.linked },
+    { plate: created.display, plate_normalized: created.normalized, linked: out.linked },
     "Import sonrası araç oluşturuldu"
   );
   return out;

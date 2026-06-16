@@ -3368,6 +3368,39 @@ input:focus, select:focus {
   .dash:not(.page-enter) .prep-form {
     overflow: visible;
   }
+
+  /* Araçlar — form paneli cockpit flex içinde collapse olmasın */
+  .dash.dash--vehicles {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+  }
+
+  .dash.dash--vehicles > .panel--vehicle-form {
+    flex: 0 0 auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .dash.dash--vehicles .panel--vehicle-form .panel__head {
+    flex-shrink: 0;
+  }
+
+  .dash.dash--vehicles .panel--vehicle-form .panel__body {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+    padding: 14px 20px 20px;
+  }
+
+  .dash.dash--vehicles .panel--vehicle-form .form-grid {
+    min-height: auto;
+  }
+
+  .dash.dash--vehicles > section.fade-in {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
 }
 
 /* ——— PHASE FLEETOS-UI-05 Final Executive Polish ——— */

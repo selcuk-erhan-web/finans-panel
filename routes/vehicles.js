@@ -1,15 +1,17 @@
 const db = require("../lib/db");
 const { VEHICLE_TARGET } = require("../lib/constants");
-const { redirectWithFlash } = require("../lib/flash");
+const { redirectWithFlash, redirectWithError } = require("../lib/flash");
 const { getAllVehicleSummaries } = require("../lib/finance");
 const { formatPlateDisplay } = require("../utils/plate");
-const { validatePlateForSave } = require("../services/vehiclePlateService");
+const {
+  createVehicleRecord,
+  updateVehicleRecord,
+} = require("../services/vehiclePlateService");
 const {
   escapeHtml,
   fleetCardGrid,
   glassPanel,
   renderLayout,
-  vehicleOptions,
   errorPage,
 } = require("../lib/ui");
 const { renderVehicleDetail } = require("./vehicle-detail");
@@ -23,26 +25,45 @@ function getVehicleKm(v) {
   return km != null && km !== "" ? Math.max(0, Number(km) || 0) : 0;
 }
 
+function vehicleAddFormHtml() {
+  return `<form method="POST" action="/vehicles" class="form-grid" id="vehicleAddForm">
+    <input name="plate" placeholder="Plaka (ör. 16 SVY 16)" required autocomplete="off" />
+    <input name="brand" placeholder="Marka" />
+    <input name="model" placeholder="Model" />
+    <input name="year" placeholder="Yıl" />
+    <input name="km" type="number" placeholder="Güncel KM" min="0" />
+    <select name="type" required><option value="Servis">Servis</option><option value="Turizm">Turizm</option></select>
+    <button class="btn btn--primary full" type="submit">Araç Ekle</button>
+  </form>`;
+}
+
+function handleVehicleAdd(req, res) {
+  const { plate, brand, model, year, km, type } = req.body || {};
+  if (!plate?.trim()) {
+    return redirectWithError(res, "/vehicles", "Plaka gerekli.");
+  }
+  try {
+    createVehicleRecord({ plate, brand, model, year, km, type });
+    return redirectWithFlash(res, "/vehicles", "vehicle_added");
+  } catch (e) {
+    console.error("Araç ekleme:", e.message);
+    return redirectWithError(res, "/vehicles", e.message || "Araç eklenemedi.");
+  }
+}
+
 function registerVehicles(app) {
   app.get("/vehicles", (req, res) => {
     const summaries = getAllVehicleSummaries();
     const vehicles = getVehicles();
 
     const content = `
-      <div class="dash page-enter">
+      <div class="dash page-enter dash--vehicles">
         <p class="page-lead fade-in">Premium filo · <strong>${vehicles.length}</strong> / ${VEHICLE_TARGET} araç</p>
         ${glassPanel({
           title: "Yeni araç ekle",
-          desc: "Plaka ve tip ile hızlı kayıt",
-          body: `<form method="POST" action="/vehicle/add" class="form-grid">
-            <input name="plate" placeholder="Plaka" required />
-            <input name="brand" placeholder="Marka" />
-            <input name="model" placeholder="Model" />
-            <input name="year" placeholder="Yıl" />
-            <input name="km" type="number" placeholder="Güncel KM" min="0" />
-            <select name="type" required><option value="Servis">Servis</option><option value="Turizm">Turizm</option></select>
-            <button class="btn btn--primary full" type="submit">Araç Ekle</button>
-          </form>`,
+          desc: "Plaka normalize edilir; aynı plaka farklı formatta tekrar eklenemez",
+          className: "panel--vehicle-form",
+          body: vehicleAddFormHtml(),
         })}
         <section class="fade-in" style="--delay:60ms">
           <header class="section-head">
@@ -59,36 +80,11 @@ function registerVehicles(app) {
     });
   });
 
-  app.post("/vehicle/add", (req, res) => {
-    const { plate, brand, model, year, km, type } = req.body;
-    const currentKm = Math.max(0, Number(km || 0));
-    const vehicleType = type === "Turizm" ? "Turizm" : "Servis";
-    if (!plate?.trim()) {
-      return redirectWithFlash(res, "/vehicles?err=1&msg=" + encodeURIComponent("Plaka gerekli."), "vehicle_add_failed");
-    }
-    try {
-      const prepared = validatePlateForSave(plate);
-      db.prepare(
-        `INSERT INTO vehicles (plate, plate_normalized, brand, model, year, km, current_km, type)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-      ).run(
-        prepared.display,
-        prepared.normalized,
-        brand || "",
-        model || "",
-        year || "",
-        currentKm,
-        currentKm,
-        vehicleType
-      );
-      redirectWithFlash(res, "/vehicles", "vehicle_added");
-    } catch (e) {
-      return redirectWithFlash(
-        res,
-        "/vehicles?err=1&msg=" + encodeURIComponent(e.message || "Araç eklenemedi."),
-        "vehicle_add_failed"
-      );
-    }
+  app.post("/vehicles", handleVehicleAdd);
+  app.post("/vehicle/add", handleVehicleAdd);
+
+  app.get("/vehicle/add", (_req, res) => {
+    res.redirect("/vehicles");
   });
 
   app.get("/vehicle/edit/:id", (req, res) => {
@@ -97,7 +93,7 @@ function registerVehicles(app) {
 
     const content = `
       <div class="dash page-enter">
-        <p class="page-lead">${escapeHtml(v.plate)} düzenleniyor</p>
+        <p class="page-lead">${escapeHtml(formatPlateDisplay(v.plate) || v.plate)} düzenleniyor</p>
         ${glassPanel({
           title: "Araç bilgileri",
           body: `<form method="POST" action="/vehicle/edit/${v.id}" class="form-grid" style="max-width:520px">
@@ -123,34 +119,16 @@ function registerVehicles(app) {
   });
 
   app.post("/vehicle/edit/:id", (req, res) => {
-    const { plate, brand, model, year, km, type } = req.body;
-    const currentKm = Math.max(0, Number(km || 0));
-    const vehicleType = type === "Turizm" ? "Turizm" : "Servis";
+    const { plate, brand, model, year, km, type } = req.body || {};
     if (!plate?.trim()) {
-      return redirectWithFlash(res, `/vehicle/edit/${req.params.id}?err=1&msg=` + encodeURIComponent("Plaka gerekli."), "vehicle_update_failed");
+      return redirectWithError(res, `/vehicle/edit/${req.params.id}`, "Plaka gerekli.");
     }
     try {
-      const prepared = validatePlateForSave(plate, req.params.id);
-      db.prepare(
-        `UPDATE vehicles SET plate=?, plate_normalized=?, brand=?, model=?, year=?, km=?, current_km=?, type=? WHERE id=?`
-      ).run(
-        prepared.display,
-        prepared.normalized,
-        brand || "",
-        model || "",
-        year || "",
-        currentKm,
-        currentKm,
-        vehicleType,
-        req.params.id
-      );
-      redirectWithFlash(res, "/vehicles", "vehicle_updated");
+      updateVehicleRecord(req.params.id, { plate, brand, model, year, km, type });
+      return redirectWithFlash(res, "/vehicles", "vehicle_updated");
     } catch (e) {
-      return redirectWithFlash(
-        res,
-        `/vehicle/edit/${req.params.id}?err=1&msg=` + encodeURIComponent(e.message || "Güncellenemedi."),
-        "vehicle_update_failed"
-      );
+      console.error("Araç güncelleme:", e.message);
+      return redirectWithError(res, `/vehicle/edit/${req.params.id}`, e.message || "Güncellenemedi.");
     }
   });
 
@@ -164,7 +142,12 @@ function registerVehicles(app) {
     redirectWithFlash(res, "/vehicles", "vehicle_deleted");
   });
 
-  app.get("/vehicle/:id", renderVehicleDetail);
+  app.get("/vehicle/:id", (req, res) => {
+    if (!/^\d+$/.test(String(req.params.id))) {
+      return res.redirect("/vehicles");
+    }
+    return renderVehicleDetail(req, res);
+  });
 }
 
 module.exports = { registerVehicles, getVehicles };
