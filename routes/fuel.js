@@ -6,6 +6,7 @@ const { fuelImportResultHtml, fuelImportDualFormHtml, unmatchedPlatesPanelHtml, 
 const { redirectWithFlash } = require("../lib/flash");
 const { getVehicles } = require("./vehicles");
 const { money } = require("../lib/finance");
+const { moneyInputHtml, formatMoneyInputValue } = require("../utils/money");
 const {
   renderLayout,
   glassPanel,
@@ -133,7 +134,7 @@ function registerFuel(app) {
               <select name="vehicle_id" required>${vehicleOptions(vehicles, query.vehicle_id)}</select>
               <input name="liter" type="number" step="0.01" min="0.1" placeholder="Litre" required />
               <input name="price_per_liter" type="number" step="0.01" min="0" placeholder="₺/Litre" id="fuelPrice"/>
-              <input name="total_amount" type="number" min="1" placeholder="Toplam TL" id="fuelTotal"/>
+              ${moneyInputHtml("total_amount", { id: "fuelTotal", placeholder: "Toplam (örn. 42.357,00)" })}
               <input name="km" type="number" min="0" placeholder="KM"/>
               <input name="station" placeholder="İstasyon"/>
               <input type="date" name="fuel_date" value="${today}" required/>
@@ -168,7 +169,11 @@ function registerFuel(app) {
           var L=document.querySelector('#fuelForm [name=liter]');
           var P=document.getElementById('fuelPrice');
           var T=document.getElementById('fuelTotal');
-          function calc(){ if(L&&P&&T&&L.value&&P.value) T.value=Math.round(Number(L.value)*Number(P.value)); }
+          function calc(){
+            if(L&&P&&T&&L.value&&P.value){
+              T.value=Math.round(Number(L.value)*Number(P.value)).toLocaleString("tr-TR");
+            }
+          }
           L&&L.addEventListener('input',calc); P&&P.addEventListener('input',calc);
         })();
       </script>
@@ -288,9 +293,14 @@ function registerFuel(app) {
   });
 
   app.post("/fuel/add", (req, res) => {
-    fuelService.create(req.body);
-    const back = req.body.vehicle_id ? `/vehicle/${req.body.vehicle_id}` : "/fuel";
-    redirectWithFlash(res, back, "fuel_added");
+    try {
+      fuelService.create(req.body);
+      const back = req.body.vehicle_id ? `/vehicle/${req.body.vehicle_id}` : "/fuel";
+      redirectWithFlash(res, back, "fuel_added");
+    } catch (e) {
+      const msg = encodeURIComponent(e.message || "Kayıt eklenemedi.");
+      redirectWithFlash(res, `/fuel?err=1&msg=${msg}`, "fuel_add_failed");
+    }
   });
 
   app.get("/fuel/delete/:id", (req, res) => {
@@ -311,7 +321,7 @@ function registerFuel(app) {
             <select name="vehicle_id">${vehicleOptions(vehicles, f.vehicle_id)}<option value="">— Eşleşmedi —</option></select>
             <input name="liter" type="number" step="0.01" value="${f.liter}" required/>
             <input name="price_per_liter" type="number" step="0.01" value="${f.price_per_liter || ""}"/>
-            <input name="total_amount" type="number" value="${f.total_amount}" required/>
+            ${moneyInputHtml("total_amount", { value: formatMoneyInputValue(f.total_amount), placeholder: "Toplam (örn. 42.357,00)" })}
             <input name="km" type="number" value="${f.km ?? ""}"/>
             <input name="station" value="${escapeHtml(f.station || "")}"/>
             <input type="date" name="fuel_date" value="${escapeHtml(f.fuel_date || "")}"/>
@@ -325,10 +335,14 @@ function registerFuel(app) {
   });
 
   app.post("/fuel/edit/:id", (req, res) => {
-    const data = { ...req.body };
-    if (!data.vehicle_id) data.vehicle_id = null;
-    fuelService.update(req.params.id, data);
-    redirectWithFlash(res, "/fuel", "fuel_updated");
+    try {
+      const data = { ...req.body };
+      if (!data.vehicle_id) data.vehicle_id = null;
+      fuelService.update(req.params.id, data);
+      redirectWithFlash(res, "/fuel", "fuel_updated");
+    } catch (e) {
+      redirectWithFlash(res, `/fuel?err=1&msg=${encodeURIComponent(e.message)}`, "fuel_update_failed");
+    }
   });
 }
 

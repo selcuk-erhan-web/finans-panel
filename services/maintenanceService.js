@@ -1,4 +1,5 @@
 const db = require("../lib/db");
+const { parseMoneyInput } = require("../utils/money");
 const auditService = require("./auditService");
 const { UPCOMING_DAYS } = require("../lib/constants");
 
@@ -114,9 +115,16 @@ function getById(id) {
   return normalizeRow(row);
 }
 
+function parseOptionalAmount(value, fallback = 0) {
+  if (value == null || String(value).trim() === "") return fallback;
+  const n = parseMoneyInput(value);
+  if (n == null || n < 0) throw new Error("Tutar geçerli değil");
+  return Math.round(n);
+}
+
 function create(data) {
   const description = data.description || data.title || typeLabel(data.type);
-  const amount = Number(data.amount ?? data.cost ?? 0);
+  const amount = parseOptionalAmount(data.amount ?? data.cost, 0);
   const service_date = data.service_date || data.done_date || null;
   const next_service_date = data.next_service_date || data.due_date || null;
   const status = computeStatus(next_service_date, service_date);
@@ -153,7 +161,10 @@ function update(id, data) {
     vehicle_id: data.vehicle_id ?? cur.vehicle_id,
     type: data.type ?? cur.type,
     description: data.description ?? data.title ?? cur.description,
-    amount: Number(data.amount ?? data.cost ?? cur.amount),
+    amount:
+      data.amount !== undefined || data.cost !== undefined
+        ? parseOptionalAmount(data.amount ?? data.cost, cur.amount)
+        : cur.amount,
     km: Number(data.km ?? cur.km ?? 0),
     service_date: data.service_date ?? data.done_date ?? cur.service_date,
     next_service_date: data.next_service_date ?? data.due_date ?? cur.next_service_date,

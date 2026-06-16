@@ -23,6 +23,7 @@ const {
   categoryOptions,
 } = require("../lib/ui");
 const { getVehicles } = require("./vehicles");
+const { moneyInputHtml, formatMoneyInputValue } = require("../utils/money");
 
 function getExpenseRows() {
   return db
@@ -78,7 +79,7 @@ function renderExpensePage(req, res) {
         body: `<form method="POST" action="/expense/add" class="form-grid">
           <select name="vehicle_id">${vehicleOptions(vehicles, req.query.vehicle_id, { allowShared: true })}</select>
           <select name="category" required>${categoryOptions(categoryNames, activeCat?.name || categoryNames[0])}</select>
-          <input name="amount" type="number" placeholder="Tutar (TL)" min="1" required />
+          ${moneyInputHtml("amount")}
           <input name="date" type="date" value="${todayInputValue()}" required />
           <input class="full" name="note" placeholder="Açıklama" />
           <button class="btn btn--primary full" type="submit">Gider Ekle</button>
@@ -139,7 +140,7 @@ function registerTransactions(app) {
         <form method="POST" action="/expense/edit/${t.id}">
           <select name="vehicle_id">${vehicleOptions(vehicles, t.vehicle_id, { allowShared: true })}</select>
           <select name="category" required>${categoryOptions(categoryNames, t.category)}</select>
-          <input name="amount" type="number" value="${t.amount}" required />
+          <input name="amount" type="text" inputmode="decimal" autocomplete="off" value="${escapeHtml(formatMoneyInputValue(t.amount))}" placeholder="Tutar (örn. 42.357,00)" required />
           <input name="date" type="date" value="${dateInputFromDb(t.date)}" required />
           <input name="note" value="${escapeHtml(t.note || "")}" />
           <button type="submit">Kaydet</button>

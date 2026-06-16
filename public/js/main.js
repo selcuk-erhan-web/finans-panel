@@ -19,8 +19,20 @@
   });
 
   document.querySelectorAll("a.btn, a.vehicle-card__cta, a.fleet-card__cta, a.nav-link, a.rank-card, a.expense-cat-card").forEach((a) => {
-    a.addEventListener("click", () => {
-      if (!a.getAttribute("onclick")) showLoader();
+    a.addEventListener("click", (e) => {
+      if (a.getAttribute("onclick")) return;
+      const href = a.getAttribute("href") || "";
+      if (href.startsWith("#")) {
+        if (href.length > 1) {
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+        return;
+      }
+      showLoader();
     });
   });
 

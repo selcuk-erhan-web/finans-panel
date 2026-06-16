@@ -1,4 +1,5 @@
 const db = require("../lib/db");
+const { parseMoneyInputRequired } = require("../utils/money");
 
 function normalizeFuel(row) {
   if (!row) return null;
@@ -119,15 +120,20 @@ function getById(id) {
   return row ? normalizeFuel(row) : null;
 }
 
+function resolveFuelTotal(data, liter, price) {
+  const raw = data.total_amount ?? data.total_cost;
+  if (raw != null && String(raw).trim() !== "") {
+    return parseMoneyInputRequired(raw);
+  }
+  if (liter > 0 && price > 0) return Math.round(liter * price);
+  throw new Error("Tutar geçerli değil");
+}
+
 function create(data) {
   const liter = Number(data.liter ?? data.liters);
+  if (!Number.isFinite(liter) || liter <= 0) throw new Error("Geçerli bir litre değeri girin.");
   const price = Number(data.price_per_liter || 0);
-  const total_amount =
-    data.total_amount != null && data.total_amount !== ""
-      ? Number(data.total_amount)
-      : data.total_cost != null && data.total_cost !== ""
-        ? Number(data.total_cost)
-        : Math.round(liter * price);
+  const total_amount = resolveFuelTotal(data, liter, price);
   const fuel_date =
     data.fuel_date || data.date || new Date().toISOString().slice(0, 10);
 
@@ -159,8 +165,10 @@ function update(id, data) {
   if (!cur) return null;
   const liter = Number(data.liter ?? data.liters ?? cur.liter);
   const price = Number(data.price_per_liter ?? cur.price_per_liter ?? 0);
-  const total_amount = Number(
-    data.total_amount ?? data.total_cost ?? Math.round(liter * price)
+  const total_amount = resolveFuelTotal(
+    { total_amount: data.total_amount ?? data.total_cost ?? cur.total_amount },
+    liter,
+    price
   );
   const fuel_date = data.fuel_date || data.date || cur.fuel_date;
 

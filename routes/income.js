@@ -1,8 +1,10 @@
+const multer = require("multer");
 const db = require("../lib/db");
 const incomeCategoryService = require("../services/incomeCategoryService");
+const hakedisImportService = require("../services/hakedisImportService");
 const { normalizeIncomeSlug } = require("../lib/incomeCategoryMap");
 const { incomePathFromSlug } = require("../lib/incomeNav");
-const { redirectWithFlash } = require("../lib/flash");
+const { redirectWithFlash, redirectWithError } = require("../lib/flash");
 const {
   filterTransactions,
   todayInputValue,
@@ -19,9 +21,23 @@ const {
   vehicleOptions,
   categoryOptions,
 } = require("../lib/ui");
+const {
+  hakedisImportPanelHtml,
+  hakedisImportResultHtml,
+} = require("../lib/components/hakedisImport");
 const { getVehicles } = require("./vehicles");
+const { moneyInputHtml, formatMoneyInputValue } = require("../utils/money");
 
 const INCOME_SLUGS = ["service", "tourism", "other"];
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (/\.pdf$/i.test(file.originalname)) cb(null, true);
+    else cb(new Error("Sadece .pdf dosyaları yüklenebilir."));
+  },
+});
 
 function getIncomeRows() {
   return db
@@ -59,6 +75,24 @@ function renderIncomeListBody(rows, cat) {
   );
 }
 
+function renderServiceImportBlock(req) {
+  let block = "";
+  if (req.query.import_batch) {
+    const batch = hakedisImportService.getBatchSummary(Number(req.query.import_batch));
+    const result = hakedisImportService.batchToResult(batch);
+    if (result) {
+      block = `<section class="hgs-import-result-wrap">${hakedisImportResultHtml(result)}</section>`;
+    }
+  } else if (req.query.duplicate === "1") {
+    block = `<section class="hgs-import-result-wrap">${hakedisImportResultHtml({
+      ok: false,
+      duplicate: true,
+      message: "Bu PDF daha önce içe aktarılmış.",
+    })}</section>`;
+  }
+  return `${block}${hakedisImportPanelHtml()}`;
+}
+
 function renderIncomeCategoryPage(req, res, slug) {
   const cat = incomeCategoryService.getCategoryBySlug(slug);
   const vehicles = getVehicles();
@@ -69,8 +103,42 @@ function renderIncomeCategoryPage(req, res, slug) {
   const pageDesc = cat.pageDesc || cat.description || "";
   const panelTitle = cat.panelTitle || `${cat.name} Yönetimi`;
 
+  const importSection =
+    cat.slug === "service"
+      ? `<div class="income-import-section fade-in">${renderServiceImportBlock(req)}</div>`
+      : "";
+
+  const dashClass =
+    cat.slug === "service" ? "dash page-enter income-module dash--income-service" : "dash page-enter income-module";
+
+  const incomeFormPanel = glassPanel({
+    title: panelTitle,
+    desc: "Tarih, araç, tutar ve açıklama ile hızlı gelir kaydı",
+    className: "panel--income-form",
+    body: `<form id="incomeForm" method="POST" action="/income/add" class="form-grid form-grid--income income-form">
+      <input type="hidden" name="income_slug" value="${escapeHtml(cat.slug)}" />
+      <label class="income-form__field">
+        <span class="income-form__label">Tarih</span>
+        <input name="date" type="date" value="${todayInputValue()}" required />
+      </label>
+      <label class="income-form__field">
+        <span class="income-form__label">Araç</span>
+        <select name="vehicle_id" required>${vehicleOptions(vehicles, req.query.vehicle_id)}</select>
+      </label>
+      <label class="income-form__field">
+        <span class="income-form__label">Tutar (TL)</span>
+        ${moneyInputHtml("amount")}
+      </label>
+      <label class="income-form__field income-form__field--full">
+        <span class="income-form__label">Açıklama</span>
+        <input name="note" placeholder="Operasyon veya fatura notu" />
+      </label>
+      <button class="btn btn--primary btn--income-submit full" type="submit">${escapeHtml(cat.addLabel)}</button>
+    </form>`,
+  });
+
   const content = `
-    <div class="dash page-enter income-module">
+    <div class="${dashClass}">
       <header class="income-cat-header fade-in">
         <div class="income-cat-header__copy">
           <p class="income-cat-header__eyebrow">Gelir Operasyonu</p>
@@ -80,40 +148,20 @@ function renderIncomeCategoryPage(req, res, slug) {
         <a href="#incomeForm" class="btn btn--primary btn--sm btn--income-cta">+ ${escapeHtml(cat.addLabel)}</a>
       </header>
 
+      ${incomeFormPanel}
+
+      ${importSection}
+
       <div class="income-stat-bar fade-in">
         <span class="income-stat-bar__label">Toplam Kayıt:</span>
         <strong class="income-stat-bar__value">${Number(filtered.length).toLocaleString("tr-TR")}</strong>
       </div>
 
       ${glassPanel({
-        title: panelTitle,
-        desc: "Tarih, araç, tutar ve açıklama ile hızlı gelir kaydı",
-        body: `<form id="incomeForm" method="POST" action="/income/add" class="form-grid form-grid--income income-form">
-          <input type="hidden" name="income_slug" value="${escapeHtml(cat.slug)}" />
-          <label class="income-form__field">
-            <span class="income-form__label">Tarih</span>
-            <input name="date" type="date" value="${todayInputValue()}" required />
-          </label>
-          <label class="income-form__field">
-            <span class="income-form__label">Araç</span>
-            <select name="vehicle_id" required>${vehicleOptions(vehicles, req.query.vehicle_id)}</select>
-          </label>
-          <label class="income-form__field">
-            <span class="income-form__label">Tutar (TL)</span>
-            <input name="amount" type="number" placeholder="0" min="1" required />
-          </label>
-          <label class="income-form__field income-form__field--full">
-            <span class="income-form__label">Açıklama</span>
-            <input name="note" placeholder="Operasyon veya fatura notu" />
-          </label>
-          <button class="btn btn--primary btn--income-submit full" type="submit">${escapeHtml(cat.addLabel)}</button>
-        </form>`,
-      })}
-
-      ${glassPanel({
         title: "Kayıt Listesi",
         desc: `${cat.name} · kategori bazlı gelir hareketleri`,
         body: renderIncomeListBody(filtered, cat),
+        className: "panel--income-list",
       })}
     </div>`;
 
@@ -129,6 +177,34 @@ function registerIncome(app) {
   });
 
   app.get("/income", (_req, res) => res.redirect(301, "/income/service"));
+
+  app.post("/income/service/import", (req, res) => {
+    upload.single("pdfFile")(req, res, async (uploadErr) => {
+      const back = "/income/service";
+      if (uploadErr) {
+        return redirectWithError(res, back, uploadErr.message || "PDF yüklenemedi.");
+      }
+      try {
+        if (!req.file?.buffer?.length) {
+          return redirectWithError(res, back, "PDF dosyası seçilmedi.");
+        }
+        const result = await hakedisImportService.importFromBuffer(
+          req.file.buffer,
+          req.file.originalname
+        );
+        if (result.duplicate) {
+          return res.redirect(`${back}?duplicate=1`);
+        }
+        if (!result.ok) {
+          return redirectWithError(res, back, result.message || "Import başarısız.");
+        }
+        res.redirect(`${back}?import_batch=${result.batchId}&ok=hakedis_imported`);
+      } catch (e) {
+        console.error("Hakediş import:", e);
+        redirectWithError(res, back, e.message || "PDF işlenemedi.");
+      }
+    });
+  });
 
   app.post("/income/add", (req, res) => {
     try {
@@ -177,7 +253,7 @@ function registerIncome(app) {
         <form method="POST" action="/income/edit/${t.id}">
           <select name="vehicle_id" required>${vehicleOptions(vehicles, t.vehicle_id)}</select>
           <select name="category" required>${categoryOptions(categoryNames, t.category)}</select>
-          <input name="amount" type="number" value="${t.amount}" required />
+          <input name="amount" type="text" inputmode="decimal" autocomplete="off" value="${escapeHtml(formatMoneyInputValue(t.amount))}" placeholder="Tutar (örn. 42.357,00)" required />
           <input name="date" type="date" value="${dateInputFromDb(t.date)}" required />
           <input name="note" value="${escapeHtml(t.note || "")}" />
           <button type="submit">Kaydet</button>

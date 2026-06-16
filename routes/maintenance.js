@@ -1,6 +1,7 @@
 const maintenanceService = require("../services/maintenanceService");
 const { MAINTENANCE_TYPES } = require("../lib/constants");
 const { redirectWithFlash } = require("../lib/flash");
+const { moneyInputHtml, formatMoneyInputValue } = require("../utils/money");
 const { getVehicles } = require("./vehicles");
 const {
   renderLayout,
@@ -72,7 +73,7 @@ function registerMaintenance(app) {
               <select name="vehicle_id" required>${vehicleOptions(vehicles)}</select>
               <select name="type" required>${typeOptions()}</select>
               <input name="description" placeholder="Açıklama" class="full"/>
-              <input type="number" name="amount" placeholder="Tutar (TL)" min="0"/>
+              ${moneyInputHtml("amount", { required: false, placeholder: "Tutar (örn. 42.357,00)" })}
               <input type="number" name="km" placeholder="KM"/>
               <input type="date" name="service_date" placeholder="Servis tarihi"/>
               <input type="date" name="next_service_date" placeholder="Sonraki bakım"/>
@@ -118,9 +119,13 @@ function registerMaintenance(app) {
   });
 
   app.post("/maintenance/add", (req, res) => {
-    maintenanceService.create(req.body);
-    const back = req.body.vehicle_id ? `/vehicle/${req.body.vehicle_id}` : "/maintenance";
-    redirectWithFlash(res, back, "maintenance_added");
+    try {
+      maintenanceService.create(req.body);
+      const back = req.body.vehicle_id ? `/vehicle/${req.body.vehicle_id}` : "/maintenance";
+      redirectWithFlash(res, back, "maintenance_added");
+    } catch (e) {
+      redirectWithFlash(res, `/maintenance?err=1&msg=${encodeURIComponent(e.message)}`, "maintenance_add_failed");
+    }
   });
 
   app.get("/maintenance/delete/:id", (req, res) => {
@@ -141,7 +146,7 @@ function registerMaintenance(app) {
             <select name="vehicle_id" required>${vehicleOptions(vehicles, m.vehicle_id)}</select>
             <select name="type" required>${typeOptions(m.type)}</select>
             <input name="description" value="${escapeHtml(m.description || "")}"/>
-            <input type="number" name="amount" value="${m.amount || ""}"/>
+            ${moneyInputHtml("amount", { value: m.amount ? formatMoneyInputValue(m.amount) : "", required: false, placeholder: "Tutar (örn. 42.357,00)" })}
             <input type="number" name="km" value="${m.km || ""}"/>
             <input type="date" name="service_date" value="${escapeHtml(m.service_date || "")}"/>
             <input type="date" name="next_service_date" value="${escapeHtml(m.next_service_date || "")}"/>
@@ -155,8 +160,12 @@ function registerMaintenance(app) {
   });
 
   app.post("/maintenance/edit/:id", (req, res) => {
-    maintenanceService.update(req.params.id, req.body);
-    redirectWithFlash(res, "/maintenance", "maintenance_updated");
+    try {
+      maintenanceService.update(req.params.id, req.body);
+      redirectWithFlash(res, "/maintenance", "maintenance_updated");
+    } catch (e) {
+      redirectWithFlash(res, `/maintenance?err=1&msg=${encodeURIComponent(e.message)}`, "maintenance_update_failed");
+    }
   });
 }
 
