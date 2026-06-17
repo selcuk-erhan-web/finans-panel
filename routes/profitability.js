@@ -1,16 +1,31 @@
 const profitabilityService = require("../services/profitabilityService");
+const profitService = require("../services/profitService");
 const { profitabilityPage } = require("../lib/components/profitability");
 const { renderLayout } = require("../lib/ui");
 
 function registerProfitability(app) {
   app.get("/profitability", (req, res) => {
     try {
-      const rows = profitabilityService.getVehicleProfitability();
+      const vehicleFilter = String(req.query.type || "").trim();
+      const filterOpt =
+        vehicleFilter === "Servis" || vehicleFilter === "Turizm"
+          ? { vehicleType: vehicleFilter }
+          : {};
+
+      const rows = profitabilityService.getVehicleProfitability(filterOpt);
       const summary = profitabilityService.getFleetProfitSummary(rows);
-      const topVehicles = profitabilityService.getTopProfitableVehicles(5, rows);
+      const rankedRows = profitService
+        .getRankedVehicles(null, filterOpt)
+        .map(profitService.toLegacyRow);
       const hasData = profitabilityService.hasSufficientData(rows);
 
-      const content = profitabilityPage({ summary, rows, topVehicles, hasData });
+      const content = profitabilityPage({
+        summary,
+        rows,
+        rankedRows,
+        hasData,
+        vehicleFilter,
+      });
 
       renderLayout(res, "Araç Karlılık Merkezi", content, "/reports", req, {
         pageTitle: "Araç Karlılık Merkezi",

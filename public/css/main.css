@@ -2757,6 +2757,46 @@ input:focus, select:focus {
   line-height: 1.2;
 }
 
+.profit-kpi-card__sub {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.profit-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.profit-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-2);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.profit-filter-chip:hover {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: rgba(99, 102, 241, 0.18);
+}
+
+.profit-filter-chip.is-active {
+  color: #4338ca;
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.28);
+}
+
 .profit-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
@@ -2841,6 +2881,14 @@ input:focus, select:focus {
 .profit-rank-item__plate {
   flex: 1;
   font-weight: 700;
+}
+
+.profit-rank-item__margin {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 48px;
+  text-align: right;
 }
 
 .profit-rank-item__net {
