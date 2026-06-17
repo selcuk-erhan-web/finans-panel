@@ -15,6 +15,7 @@ const registerSettings = require("./routes/settings");
 const registerExport = require("./routes/export");
 const registerHgs = require("./routes/hgs");
 const registerAlerts = require("./routes/alerts");
+const registerDocuments = require("./routes/documents");
 const { requireAuth } = require("./middleware/auth");
 
 const app = express();
@@ -38,6 +39,7 @@ registerMaintenance(app);
 registerFuel(app);
 registerHgs(app);
 registerAlerts(app);
+registerDocuments(app);
 registerReports(app);
 registerProfitability(app);
 registerSettings(app, port);

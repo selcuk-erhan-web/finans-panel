@@ -1,5 +1,6 @@
 const db = require("../lib/db");
 const profitService = require("./profitService");
+const documentService = require("./documentService");
 const { money } = require("../lib/finance");
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
@@ -212,6 +213,25 @@ function detectMaintenanceRiskAlerts() {
   return alerts;
 }
 
+function detectDocumentExpiryAlerts(ref = new Date()) {
+  const alerts = [];
+  documentService.getDocumentsForAlerts(ref).forEach((doc) => {
+    const severity = documentService.alertSeverityForStatus(doc.status);
+    if (!severity) return;
+    alerts.push({
+      severity,
+      type: "DOCUMENT_EXPIRY",
+      title: doc.status === "expired" ? "Evrak Süresi Doldu" : "Evrak Süresi Yaklaşıyor",
+      plate: doc.plate,
+      vehicleId: doc.vehicle_id,
+      message: documentService.buildExpiryMessage(doc.type_label, doc.daysLeft, doc.status),
+      daysLeft: doc.daysLeft,
+      documentType: doc.document_type,
+    });
+  });
+  return alerts;
+}
+
 function getCorporateAlerts(options = {}) {
   const ref = options.refDate ? new Date(options.refDate) : new Date();
   const alerts = sortAlerts([
@@ -219,6 +239,7 @@ function getCorporateAlerts(options = {}) {
     ...detectFuelAnomalyAlerts(ref),
     ...detectHgsAnomalyAlerts(ref),
     ...detectMaintenanceRiskAlerts(),
+    ...detectDocumentExpiryAlerts(ref),
   ]);
   return alerts;
 }
@@ -236,6 +257,7 @@ function getAlertSummary(alerts = null) {
       FUEL_ANOMALY: list.filter((a) => a.type === "FUEL_ANOMALY"),
       HGS_ANOMALY: list.filter((a) => a.type === "HGS_ANOMALY"),
       MAINTENANCE_RISK: list.filter((a) => a.type === "MAINTENANCE_RISK"),
+      DOCUMENT_EXPIRY: list.filter((a) => a.type === "DOCUMENT_EXPIRY"),
     },
   };
 }
@@ -248,5 +270,6 @@ module.exports = {
   detectFuelAnomalyAlerts,
   detectHgsAnomalyAlerts,
   detectMaintenanceRiskAlerts,
+  detectDocumentExpiryAlerts,
   SEVERITY_ORDER,
 };
