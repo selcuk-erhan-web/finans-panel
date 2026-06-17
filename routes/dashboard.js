@@ -22,7 +22,7 @@ const CHART = {
 function registerDashboard(app) {
   app.get("/", (req, res) => {
     const bundle = dashboardService.getDashboardBundle();
-    const { fleetStatus, vehicleCount, monthly, alerts, profit, corporateAlerts } = bundle;
+    const { fleetStatus, vehicleCount, monthly, alerts, profit, corporateAlerts, cashflow } = bundle;
     const servis = getTypeTotals(bundle.summaries, "Servis");
     const turizm = getTypeTotals(bundle.summaries, "Turizm");
     const incomeTotals = alerts.incomeByCategory || {};
@@ -49,6 +49,7 @@ function registerDashboard(app) {
           turizmIncome,
           totalExpense,
           avgProfitPerVehicle,
+          cashflow,
         })}
         <div class="cmd-mid">
           ${financeTrendsPanel()}

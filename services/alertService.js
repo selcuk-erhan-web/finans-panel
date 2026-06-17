@@ -6,6 +6,7 @@ const subcontractorService = require("./subcontractorService");
 const employeeService = require("./employeeService");
 const payrollObligationService = require("./payrollObligationService");
 const payrollAllocationService = require("./payrollAllocationService");
+const cashflowService = require("./cashflowService");
 const { money } = require("../lib/finance");
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
@@ -329,6 +330,10 @@ function detectPayrollUnallocatedObligationAlerts() {
   return alerts;
 }
 
+function detectCashflowRiskAlerts(ref = new Date()) {
+  return cashflowService.detectCashflowRiskAlerts(ref);
+}
+
 function getCorporateAlerts(options = {}) {
   const ref = options.refDate ? new Date(options.refDate) : new Date();
   const alerts = sortAlerts([
@@ -342,6 +347,7 @@ function getCorporateAlerts(options = {}) {
     ...detectPersonnelUnassignedCostAlerts(),
     ...detectPayrollObligationDueAlerts(ref),
     ...detectPayrollUnallocatedObligationAlerts(),
+    ...detectCashflowRiskAlerts(ref),
   ]);
   return alerts;
 }
@@ -365,6 +371,7 @@ function getAlertSummary(alerts = null) {
       PERSONNEL_UNASSIGNED_COST: list.filter((a) => a.type === "PERSONNEL_UNASSIGNED_COST"),
       PAYROLL_OBLIGATION_DUE: list.filter((a) => a.type === "PAYROLL_OBLIGATION_DUE"),
       PAYROLL_UNALLOCATED_OBLIGATION: list.filter((a) => a.type === "PAYROLL_UNALLOCATED_OBLIGATION"),
+      CASHFLOW_RISK: list.filter((a) => a.type === "CASHFLOW_RISK"),
     },
   };
 }
@@ -383,5 +390,6 @@ module.exports = {
   detectPersonnelUnassignedCostAlerts,
   detectPayrollObligationDueAlerts,
   detectPayrollUnallocatedObligationAlerts,
+  detectCashflowRiskAlerts,
   SEVERITY_ORDER,
 };

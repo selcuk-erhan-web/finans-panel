@@ -20,6 +20,7 @@ const registerReconciliation = require("./routes/reconciliation");
 const registerSubcontractors = require("./routes/subcontractors");
 const registerEmployees = require("./routes/employees");
 const registerPayroll = require("./routes/payroll");
+const registerCashflow = require("./routes/cashflow");
 const { requireAuth } = require("./middleware/auth");
 
 const app = express();
@@ -48,6 +49,7 @@ registerReconciliation(app);
 registerSubcontractors(app);
 registerEmployees(app);
 registerPayroll(app);
+registerCashflow(app);
 registerReports(app);
 registerProfitability(app);
 registerSettings(app, port);

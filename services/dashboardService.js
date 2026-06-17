@@ -32,6 +32,7 @@ function getUpcomingPayments() {
 
 const profitabilityService = require("./profitabilityService");
 const alertService = require("./alertService");
+const cashflowService = require("./cashflowService");
 
 function getVehicleRanking() {
   return profitabilityService.getTopProfitableVehicles(5).map((r) => ({
@@ -92,6 +93,7 @@ function getDashboardBundle() {
   const alerts = getAlerts();
   const profit = getProfitDashboardMetrics();
   const corporateAlerts = alertService.getAlertSummary();
+  const cashflow = cashflowService.getCashflowDashboardCard();
 
   return {
     totals,
@@ -107,6 +109,7 @@ function getDashboardBundle() {
     alerts,
     profit,
     corporateAlerts,
+    cashflow,
   };
 }
 

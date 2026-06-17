@@ -4611,6 +4611,72 @@ input:focus, select:focus {
 .payroll-alloc-grid { margin-bottom: 16px; }
 .payroll-alloc-detail { margin-top: 8px; }
 
+.cashflow-hub__header { margin-bottom: 8px; }
+.cashflow-hub__eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.cashflow-hub__title { margin: 0 0 8px; font-size: 28px; font-weight: 800; color: #0f172a; }
+.cashflow-hub__desc { margin: 0; color: #64748b; max-width: 760px; }
+.cashflow-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cashflow-kpi {
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+.cashflow-kpi span { display: block; font-size: 12px; color: #64748b; font-weight: 600; }
+.cashflow-kpi strong { display: block; margin-top: 6px; font-size: 24px; font-weight: 800; }
+.cashflow-kpi--in { border-color: #bbf7d0; background: #f0fdf4; }
+.cashflow-kpi--out { border-color: #fecaca; background: #fef2f2; }
+.cashflow-kpi--net { border-color: #bfdbfe; background: #eff6ff; }
+.cashflow-obligation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.cashflow-group__title { margin: 0 0 10px; font-size: 14px; font-weight: 700; color: #334155; }
+.cashflow-group__empty { margin: 0; color: #94a3b8; font-size: 13px; }
+.cashflow-row--info td { color: #64748b; }
+.cashflow-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.cashflow-timeline__item {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+.cashflow-timeline__item--in { border-color: #bbf7d0; background: #f0fdf4; }
+.cashflow-timeline__item--out { border-color: #fecaca; background: #fef2f2; }
+.cashflow-timeline__item--info { border-style: dashed; background: #f8fafc; }
+.cashflow-timeline__date { font-size: 13px; font-weight: 700; color: #334155; }
+.cashflow-timeline__amount { font-size: 14px; font-weight: 800; color: #0f172a; }
+.cashflow-timeline__detail { grid-column: 2; font-size: 12px; color: #64748b; }
+.cashflow-timeline-empty { margin: 0; color: #94a3b8; }
+.cmd-kpi-card--cashflow { border-color: #bfdbfe; background: linear-gradient(180deg, #eff6ff 0%, #fff 100%); }
+.cmd-kpi-card--cashflow.cmd-kpi-card--negative { border-color: #fecaca; background: linear-gradient(180deg, #fef2f2 0%, #fff 100%); }
+.cmd-kpi-card--cashflow.cmd-kpi-card--positive { border-color: #bbf7d0; background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%); }
+.cashflow-card-link { color: #2563eb; text-decoration: none; font-weight: 600; }
+.cashflow-card-link:hover { text-decoration: underline; }
+
 .profit-fleet-overhead {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4630,6 +4696,8 @@ input:focus, select:focus {
   .payroll-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .payroll-alloc-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .profit-fleet-overhead { grid-template-columns: 1fr; }
+  .cashflow-kpi-row { grid-template-columns: 1fr; }
+  .cashflow-obligation-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
