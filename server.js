@@ -18,6 +18,7 @@ const registerAlerts = require("./routes/alerts");
 const registerDocuments = require("./routes/documents");
 const registerReconciliation = require("./routes/reconciliation");
 const registerSubcontractors = require("./routes/subcontractors");
+const registerEmployees = require("./routes/employees");
 const { requireAuth } = require("./middleware/auth");
 
 const app = express();
@@ -44,6 +45,7 @@ registerAlerts(app);
 registerDocuments(app);
 registerReconciliation(app);
 registerSubcontractors(app);
+registerEmployees(app);
 registerReports(app);
 registerProfitability(app);
 registerSettings(app, port);

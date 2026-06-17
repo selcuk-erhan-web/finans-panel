@@ -4492,6 +4492,56 @@ input:focus, select:focus {
   .sub-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* FLEETOS-HR-01 — Personel maliyet merkezi */
+.hr-hub__header { margin-bottom: 8px; }
+.hr-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.hr-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.hr-hub__desc {
+  margin: 0;
+  color: #64748b;
+  max-width: 760px;
+}
+
+.hr-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.hr-kpi {
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hr-kpi span { font-size: 12px; color: #64748b; font-weight: 600; }
+.hr-kpi strong { font-size: 22px; font-weight: 800; color: #0f172a; }
+.hr-kpi--ok { border-color: #bbf7d0; background: #f0fdf4; }
+.hr-kpi--ok strong { color: #15803d; }
+.hr-kpi--warn { border-color: #fed7aa; background: #fff7ed; }
+.hr-kpi--warn strong { color: #ea580c; }
+
+@media (max-width: 900px) {
+  .hr-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-in, .page-enter .dash > *, .metric, .fleet-card { animation: none !important; transition: none !important; }
 }

@@ -3,6 +3,7 @@ const profitService = require("./profitService");
 const documentService = require("./documentService");
 const reconciliationService = require("./reconciliationService");
 const subcontractorService = require("./subcontractorService");
+const employeeService = require("./employeeService");
 const { money } = require("../lib/finance");
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
@@ -270,6 +271,23 @@ function detectSubcontractorUnassignedCostAlerts() {
   return alerts;
 }
 
+function detectPersonnelUnassignedCostAlerts() {
+  const alerts = [];
+  employeeService.getUnassignedCostRows().forEach((row) => {
+    if (!row.personnelCost) return;
+    alerts.push({
+      severity: "warning",
+      type: "PERSONNEL_UNASSIGNED_COST",
+      title: "Atanmamış Personel Gideri",
+      plate: "—",
+      vehicleId: null,
+      message: employeeService.buildUnassignedAlertMessage(row),
+      amount: row.personnelCost,
+    });
+  });
+  return alerts;
+}
+
 function getCorporateAlerts(options = {}) {
   const ref = options.refDate ? new Date(options.refDate) : new Date();
   const alerts = sortAlerts([
@@ -280,6 +298,7 @@ function getCorporateAlerts(options = {}) {
     ...detectDocumentExpiryAlerts(ref),
     ...detectReconUnderpaymentAlerts(),
     ...detectSubcontractorUnassignedCostAlerts(),
+    ...detectPersonnelUnassignedCostAlerts(),
   ]);
   return alerts;
 }
@@ -300,6 +319,7 @@ function getAlertSummary(alerts = null) {
       DOCUMENT_EXPIRY: list.filter((a) => a.type === "DOCUMENT_EXPIRY"),
       RECON_UNDERPAYMENT: list.filter((a) => a.type === "RECON_UNDERPAYMENT"),
       SUBCONTRACTOR_UNASSIGNED_COST: list.filter((a) => a.type === "SUBCONTRACTOR_UNASSIGNED_COST"),
+      PERSONNEL_UNASSIGNED_COST: list.filter((a) => a.type === "PERSONNEL_UNASSIGNED_COST"),
     },
   };
 }
@@ -315,5 +335,6 @@ module.exports = {
   detectDocumentExpiryAlerts,
   detectReconUnderpaymentAlerts,
   detectSubcontractorUnassignedCostAlerts,
+  detectPersonnelUnassignedCostAlerts,
   SEVERITY_ORDER,
 };
