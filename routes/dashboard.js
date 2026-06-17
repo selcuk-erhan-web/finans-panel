@@ -12,6 +12,7 @@ const {
   financeTrendsPanel,
   financialMovementsPanel,
 } = require("../lib/components");
+const { dashboardAlertsPanel } = require("../lib/components/alerts");
 
 const CHART = {
   incomeFill: "rgba(16, 185, 129, 0.2)",
@@ -21,7 +22,7 @@ const CHART = {
 function registerDashboard(app) {
   app.get("/", (req, res) => {
     const bundle = dashboardService.getDashboardBundle();
-    const { fleetStatus, vehicleCount, monthly, alerts, profit } = bundle;
+    const { fleetStatus, vehicleCount, monthly, alerts, profit, corporateAlerts } = bundle;
     const servis = getTypeTotals(bundle.summaries, "Servis");
     const turizm = getTypeTotals(bundle.summaries, "Turizm");
     const incomeTotals = alerts.incomeByCategory || {};
@@ -52,6 +53,7 @@ function registerDashboard(app) {
         <div class="cmd-mid">
           ${financeTrendsPanel()}
           <div class="cmd-ops-stack">
+            ${dashboardAlertsPanel(corporateAlerts)}
             ${executiveProfitSummary({ profit })}
             ${vehicleProfitRankPanel({ profit })}
             ${operationsCenter({ alerts, profitExpense: profit?.expenseBreakdown })}
