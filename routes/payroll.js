@@ -1,5 +1,6 @@
 const multer = require("multer");
 const payrollObligationService = require("../services/payrollObligationService");
+const payrollAllocationService = require("../services/payrollAllocationService");
 const { payrollPageHtml } = require("../lib/components/payroll");
 const { redirectWithFlash } = require("../lib/flash");
 const { renderLayout } = require("../lib/ui");
@@ -13,28 +14,81 @@ const upload = multer({
   },
 });
 
+function buildPayrollPageData(importResult = null) {
+  const rows = payrollObligationService.listAll();
+  const kpi = payrollObligationService.getKpiSummary();
+  const allocSummary = payrollAllocationService.getGlobalAllocationSummary();
+  const allocationDetails = payrollAllocationService.listAll(500);
+  return {
+    kpi,
+    rows,
+    importResult,
+    allocSummary,
+    unallocated: allocSummary.unallocated,
+    allocated: allocSummary.allocated,
+    allocationDetails,
+  };
+}
+
+function renderPayrollPage(req, res, options = {}) {
+  const content = payrollPageHtml(buildPayrollPageData(options.importResult));
+  renderLayout(res, "SGK / Muhtasar", content, "/payroll", req, {
+    pageTitle: options.pageTitle || "SGK & Muhtasar Takip Merkezi",
+    breadcrumb: options.breadcrumb || "Personel / SGK & Muhtasar",
+  });
+}
+
 function registerPayroll(app) {
   app.get("/payroll", (req, res) => {
     try {
-      const rows = payrollObligationService.listAll();
-      const kpi = payrollObligationService.getKpiSummary();
       let importResult = null;
       if (req.query.import_ok) {
         importResult = { ok: true, message: "PDF başarıyla içe aktarıldı." };
       } else if (req.query.import_dup) {
         importResult = { ok: false, message: "Bu PDF veya kayıt daha önce içe aktarılmış." };
       }
-
-      const content = payrollPageHtml({ kpi, rows, importResult });
-
-      renderLayout(res, "SGK / Muhtasar", content, "/payroll", req, {
-        pageTitle: "SGK & Muhtasar Takip Merkezi",
-        breadcrumb: "Personel / SGK & Muhtasar",
-      });
+      renderPayrollPage(req, res, { importResult });
     } catch (err) {
       console.error("payroll:", err);
       const { errorPage } = require("../lib/ui");
       res.status(500).send(errorPage("Hata", "SGK/Muhtasar ekranı yüklenirken bir sorun oluştu."));
+    }
+  });
+
+  app.get("/payroll/allocations", (req, res) => {
+    try {
+      renderPayrollPage(req, res, {
+        pageTitle: "Personel Yük Dağıtım Merkezi",
+        breadcrumb: "Personel / Dağıtım Merkezi",
+      });
+    } catch (err) {
+      console.error("payroll allocations:", err);
+      const { errorPage } = require("../lib/ui");
+      res.status(500).send(errorPage("Hata", "Dağıtım ekranı yüklenirken bir sorun oluştu."));
+    }
+  });
+
+  app.get("/payroll/allocate/:id", (req, res) => {
+    try {
+      const result = payrollAllocationService.allocateObligation(req.params.id);
+      const warn = result.warnings?.length ? ` ${result.warnings.join(" ")}` : "";
+      redirectWithFlash(
+        res,
+        "/payroll/allocations",
+        "success",
+        `Dağıtım tamamlandı.${warn}`
+      );
+    } catch (err) {
+      redirectWithFlash(res, "/payroll/allocations", "error", err.message || "Dağıtım başarısız.");
+    }
+  });
+
+  app.get("/payroll/revoke/:id", (req, res) => {
+    try {
+      payrollAllocationService.revokeAllocation(req.params.id);
+      redirectWithFlash(res, "/payroll/allocations", "success", "Dağıtım geri alındı.");
+    } catch (err) {
+      redirectWithFlash(res, "/payroll/allocations", "error", err.message || "Geri alma başarısız.");
     }
   });
 

@@ -386,6 +386,7 @@ function markPending(id) {
 }
 
 function remove(id) {
+  db.prepare("DELETE FROM payroll_allocations WHERE obligation_id = ?").run(id);
   db.prepare("DELETE FROM payroll_obligations WHERE id = ?").run(id);
   return true;
 }

@@ -12,9 +12,13 @@ function summaryFromLegacyRows(legacyRows) {
   const assigned = getAssignedRows(legacyRows);
   const unassignedSub = profitService.getUnassignedSubcontractorExpense();
   const unassignedPersonnel = profitService.getUnassignedPersonnelExpense();
+  const generalPayroll = profitService.getGeneralPayrollAllocationExpense();
   const totalIncome = legacyRows.reduce((s, r) => s + r.income, 0);
   const totalExpense =
-    legacyRows.reduce((s, r) => s + r.totalExpense, 0) + unassignedSub + unassignedPersonnel;
+    legacyRows.reduce((s, r) => s + r.totalExpense, 0) +
+    unassignedSub +
+    unassignedPersonnel +
+    generalPayroll;
   const totalNet = totalIncome - totalExpense;
   const avgProfitPerVehicle = assigned.length
     ? Math.round(assigned.reduce((s, r) => s + r.netProfit, 0) / assigned.length)
@@ -30,6 +34,7 @@ function summaryFromLegacyRows(legacyRows) {
     totalNet,
     unassignedSubcontractorExpense: unassignedSub,
     unassignedPersonnelExpense: unassignedPersonnel,
+    generalPayrollAllocationExpense: generalPayroll,
     avgProfitPerVehicle,
     avgProfitMargin,
     vehicleCount: assigned.length,
@@ -47,6 +52,7 @@ function getFleetProfitSummary(rows = null) {
     totalNet: summary.totalNet,
     unassignedSubcontractorExpense: summary.unassignedSubcontractorExpense,
     unassignedPersonnelExpense: summary.unassignedPersonnelExpense,
+    generalPayrollAllocationExpense: summary.generalPayrollAllocationExpense,
     avgProfitPerVehicle: summary.avgProfitPerVehicle,
     avgProfitMargin: summary.avgProfitMargin,
     vehicleCount: summary.vehicleCount,
@@ -123,6 +129,7 @@ function getFleetExpenseBreakdown(rows = null) {
     maintenance: data.reduce((s, r) => s + r.maintenance, 0),
     subcontractor: data.reduce((s, r) => s + (r.subcontractor || 0), 0),
     personnel: data.reduce((s, r) => s + (r.personnel || 0), 0),
+    payrollAllocated: data.reduce((s, r) => s + (r.payrollAllocated || 0), 0),
     other: data.reduce((s, r) => s + r.other, 0),
   };
 }

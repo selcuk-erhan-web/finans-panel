@@ -5,6 +5,7 @@ const reconciliationService = require("./reconciliationService");
 const subcontractorService = require("./subcontractorService");
 const employeeService = require("./employeeService");
 const payrollObligationService = require("./payrollObligationService");
+const payrollAllocationService = require("./payrollAllocationService");
 const { money } = require("../lib/finance");
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
@@ -310,6 +311,24 @@ function detectPayrollObligationDueAlerts(ref = new Date()) {
   return alerts;
 }
 
+function detectPayrollUnallocatedObligationAlerts() {
+  const alerts = [];
+  payrollAllocationService.getUnallocatedObligations().forEach((obligation) => {
+    alerts.push({
+      severity: payrollAllocationService.alertSeverityForUnallocated(obligation),
+      type: "PAYROLL_UNALLOCATED_OBLIGATION",
+      title: "Dağıtılmamış Personel Yükü",
+      plate: "—",
+      vehicleId: null,
+      message: payrollAllocationService.buildUnallocatedAlertMessage(obligation),
+      amount: obligation.amount,
+      period: obligation.period,
+      obligationType: obligation.obligation_type,
+    });
+  });
+  return alerts;
+}
+
 function getCorporateAlerts(options = {}) {
   const ref = options.refDate ? new Date(options.refDate) : new Date();
   const alerts = sortAlerts([
@@ -322,6 +341,7 @@ function getCorporateAlerts(options = {}) {
     ...detectSubcontractorUnassignedCostAlerts(),
     ...detectPersonnelUnassignedCostAlerts(),
     ...detectPayrollObligationDueAlerts(ref),
+    ...detectPayrollUnallocatedObligationAlerts(),
   ]);
   return alerts;
 }
@@ -344,6 +364,7 @@ function getAlertSummary(alerts = null) {
       SUBCONTRACTOR_UNASSIGNED_COST: list.filter((a) => a.type === "SUBCONTRACTOR_UNASSIGNED_COST"),
       PERSONNEL_UNASSIGNED_COST: list.filter((a) => a.type === "PERSONNEL_UNASSIGNED_COST"),
       PAYROLL_OBLIGATION_DUE: list.filter((a) => a.type === "PAYROLL_OBLIGATION_DUE"),
+      PAYROLL_UNALLOCATED_OBLIGATION: list.filter((a) => a.type === "PAYROLL_UNALLOCATED_OBLIGATION"),
     },
   };
 }
@@ -361,5 +382,6 @@ module.exports = {
   detectSubcontractorUnassignedCostAlerts,
   detectPersonnelUnassignedCostAlerts,
   detectPayrollObligationDueAlerts,
+  detectPayrollUnallocatedObligationAlerts,
   SEVERITY_ORDER,
 };
