@@ -2,6 +2,7 @@ const db = require("../lib/db");
 const profitService = require("./profitService");
 const documentService = require("./documentService");
 const reconciliationService = require("./reconciliationService");
+const subcontractorService = require("./subcontractorService");
 const { money } = require("../lib/finance");
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
@@ -253,6 +254,22 @@ function detectReconUnderpaymentAlerts() {
   return alerts;
 }
 
+function detectSubcontractorUnassignedCostAlerts() {
+  const alerts = [];
+  subcontractorService.getUnassignedPayments().forEach((payment) => {
+    alerts.push({
+      severity: "warning",
+      type: "SUBCONTRACTOR_UNASSIGNED_COST",
+      title: "Atanmamış Taşeron Gideri",
+      plate: payment.related_plate || payment.external_plate || "—",
+      vehicleId: payment.related_vehicle_id || null,
+      message: subcontractorService.buildUnassignedAlertMessage(payment),
+      amount: payment.amount,
+    });
+  });
+  return alerts;
+}
+
 function getCorporateAlerts(options = {}) {
   const ref = options.refDate ? new Date(options.refDate) : new Date();
   const alerts = sortAlerts([
@@ -262,6 +279,7 @@ function getCorporateAlerts(options = {}) {
     ...detectMaintenanceRiskAlerts(),
     ...detectDocumentExpiryAlerts(ref),
     ...detectReconUnderpaymentAlerts(),
+    ...detectSubcontractorUnassignedCostAlerts(),
   ]);
   return alerts;
 }
@@ -281,6 +299,7 @@ function getAlertSummary(alerts = null) {
       MAINTENANCE_RISK: list.filter((a) => a.type === "MAINTENANCE_RISK"),
       DOCUMENT_EXPIRY: list.filter((a) => a.type === "DOCUMENT_EXPIRY"),
       RECON_UNDERPAYMENT: list.filter((a) => a.type === "RECON_UNDERPAYMENT"),
+      SUBCONTRACTOR_UNASSIGNED_COST: list.filter((a) => a.type === "SUBCONTRACTOR_UNASSIGNED_COST"),
     },
   };
 }
@@ -295,5 +314,6 @@ module.exports = {
   detectMaintenanceRiskAlerts,
   detectDocumentExpiryAlerts,
   detectReconUnderpaymentAlerts,
+  detectSubcontractorUnassignedCostAlerts,
   SEVERITY_ORDER,
 };

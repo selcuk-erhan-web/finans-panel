@@ -4442,6 +4442,56 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS-SUBCONTRACTOR-01 — Taşeron yönetimi */
+.sub-hub__header { margin-bottom: 8px; }
+.sub-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.sub-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.sub-hub__desc {
+  margin: 0;
+  color: #64748b;
+  max-width: 760px;
+}
+
+.sub-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sub-kpi {
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sub-kpi span { font-size: 12px; color: #64748b; font-weight: 600; }
+.sub-kpi strong { font-size: 22px; font-weight: 800; color: #0f172a; }
+.sub-kpi--ok { border-color: #bbf7d0; background: #f0fdf4; }
+.sub-kpi--ok strong { color: #15803d; }
+.sub-kpi--warn { border-color: #fed7aa; background: #fff7ed; }
+.sub-kpi--warn strong { color: #ea580c; }
+
+@media (max-width: 900px) {
+  .sub-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-in, .page-enter .dash > *, .metric, .fleet-card { animation: none !important; transition: none !important; }
 }

@@ -1,5 +1,6 @@
 const db = require("../lib/db");
 const { normalizeExpenseSlug } = require("../lib/expenseCategoryMap");
+const subcontractorService = require("./subcontractorService");
 
 const SLUG = {
   fuel: "yakit",
@@ -26,6 +27,7 @@ function createVehicleRow(vehicle) {
     fuelExpense: 0,
     hgsExpense: 0,
     maintenanceExpense: 0,
+    subcontractorExpense: 0,
     otherExpense: 0,
     totalExpense: 0,
     netProfit: 0,
@@ -35,7 +37,11 @@ function createVehicleRow(vehicle) {
 
 function finalizeRow(row) {
   row.totalExpense =
-    row.fuelExpense + row.hgsExpense + row.maintenanceExpense + row.otherExpense;
+    row.fuelExpense +
+    row.hgsExpense +
+    row.maintenanceExpense +
+    row.subcontractorExpense +
+    row.otherExpense;
   row.netProfit = row.revenue - row.totalExpense;
   row.profitMargin = computeProfitMargin(row.revenue, row.netProfit);
   return row;
@@ -144,6 +150,18 @@ function ingestMaintenance(map) {
     });
 }
 
+function ingestSubcontractor(map) {
+  subcontractorService.getPaymentsForProfit().forEach((r) => {
+    const bucket = map.get(Number(r.related_vehicle_id));
+    if (!bucket) return;
+    bucket.subcontractorExpense += safeAmount(r.amount);
+  });
+}
+
+function getUnassignedSubcontractorExpense() {
+  return subcontractorService.getUnassignedPaymentTotal();
+}
+
 function ingestOtherExpenses(map) {
   db.prepare(
     `SELECT vehicle_id, category, category_slug, amount FROM transactions
@@ -167,6 +185,7 @@ function getVehicleProfitRows(options = {}) {
   ingestFuel(map);
   ingestHgs(map);
   ingestMaintenance(map);
+  ingestSubcontractor(map);
   ingestOtherExpenses(map);
 
   return vehicles.map((v) => finalizeRow({ ...map.get(v.id) }));
@@ -174,8 +193,10 @@ function getVehicleProfitRows(options = {}) {
 
 function getFleetSummary(rows) {
   const data = rows || getVehicleProfitRows();
+  const unassignedSubcontractor = getUnassignedSubcontractorExpense();
   const totalRevenue = data.reduce((s, r) => s + r.revenue, 0);
-  const totalExpense = data.reduce((s, r) => s + r.totalExpense, 0);
+  const vehicleExpense = data.reduce((s, r) => s + r.totalExpense, 0);
+  const totalExpense = vehicleExpense + unassignedSubcontractor;
   const totalNet = totalRevenue - totalExpense;
   const avgProfitPerVehicle = data.length
     ? Math.round(data.reduce((s, r) => s + r.netProfit, 0) / data.length)
@@ -193,6 +214,7 @@ function getFleetSummary(rows) {
     totalRevenue,
     totalExpense,
     totalNet,
+    unassignedSubcontractorExpense: unassignedSubcontractor,
     avgProfitPerVehicle,
     avgProfitMargin,
     vehicleCount: data.length,
@@ -226,6 +248,7 @@ function toLegacyRow(row) {
     fuel: row.fuelExpense,
     hgs: row.hgsExpense,
     maintenance: row.maintenanceExpense,
+    subcontractor: row.subcontractorExpense,
     other: row.otherExpense,
     totalExpense: row.totalExpense,
     netProfit: row.netProfit,
@@ -240,6 +263,7 @@ module.exports = {
   computeProfitMargin,
   getVehicleProfitRows,
   getFleetSummary,
+  getUnassignedSubcontractorExpense,
   getRankedVehicles,
   sortByNetProfit,
   hasProfitData,

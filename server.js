@@ -17,6 +17,7 @@ const registerHgs = require("./routes/hgs");
 const registerAlerts = require("./routes/alerts");
 const registerDocuments = require("./routes/documents");
 const registerReconciliation = require("./routes/reconciliation");
+const registerSubcontractors = require("./routes/subcontractors");
 const { requireAuth } = require("./middleware/auth");
 
 const app = express();
@@ -42,6 +43,7 @@ registerHgs(app);
 registerAlerts(app);
 registerDocuments(app);
 registerReconciliation(app);
+registerSubcontractors(app);
 registerReports(app);
 registerProfitability(app);
 registerSettings(app, port);
