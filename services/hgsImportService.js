@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const { extractPdfText } = require("../utils/pdfText");
 const db = require("../lib/db");
-const { normalizePlate, buildVehiclePlateMap, findVehicleByPlate } = require("../utils/plate");
+const { normalizePlate } = require("../utils/plate");
 const { parseMoneyInput } = require("../utils/money");
 const { resolveNameFromSlug } = require("../lib/expenseCategoryMap");
 const { backupDatabase } = require("../utils/backup");
@@ -9,13 +9,103 @@ const auditService = require("./auditService");
 
 const HGS_EXPENSE_SLUG = "hgs-ogs";
 
+// backupDatabase disabled for HGS import due SQLite readonly issue — re-enable in backup fix phase
+const HGS_IMPORT_SKIP_BACKUP = true;
+
 function normalizePdfText(text) {
   return String(text || "")
     .replace(/\r/g, "\n")
+    .replace(/\f/g, "\n")
     .replace(/\u00a0/g, " ")
     .replace(/[ \t]+/g, " ")
     .replace(/\n+/g, "\n")
     .trim();
+}
+
+function mergeSplitGoiLines(lines) {
+  const out = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const cur = String(lines[i] || "").trim();
+    const next = String(lines[i + 1] || "").trim();
+    if (/^GOI\s*$/i.test(cur) && /^Ge[cç]i[sş]/i.test(next)) {
+      out.push(`${cur} ${next}`);
+      i += 1;
+      continue;
+    }
+    out.push(cur);
+  }
+  return out;
+}
+
+function mergeDateTimeLines(lines) {
+  const out = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const cur = String(lines[i] || "").trim();
+    const next = String(lines[i + 1] || "").trim();
+    if (isDateOnlyLine(cur) && /^\d{1,2}:\d{2}(?::\d{2})?$/.test(next)) {
+      out.push(`${cur} ${next}`);
+      i += 1;
+      continue;
+    }
+    out.push(cur);
+  }
+  return out;
+}
+
+function preprocessHgsText(text) {
+  const normalized = normalizePdfText(text);
+  const mergedText = normalized
+    .replace(/(\d{1,2}[./]\d{1,2}[./]\d{2,4})\n(\d{1,2}:\d{2}(?::\d{2})?)/g, "$1 $2")
+    .replace(/^GOI\s*\n\s*Ge[cç]i[sş]/gim, "GOI Geçiş");
+
+  let lines = mergedText
+    .split("\n")
+    .map((l) => String(l || "").trim())
+    .filter(Boolean);
+
+  lines = mergeSplitGoiLines(lines);
+  lines = mergeDateTimeLines(lines);
+
+  return { text: mergedText, lines };
+}
+
+function findVehicleForHgsPlate(vehicles, reportPlate) {
+  const target = normalizePlate(reportPlate);
+  if (!target) return null;
+  for (const vehicle of vehicles || []) {
+    if (normalizePlate(vehicle.plate) === target) return vehicle;
+  }
+  return null;
+}
+
+function dedupeParsedTransactions(transactions) {
+  const seen = new Set();
+  const out = [];
+  for (const tx of transactions || []) {
+    const key = `${tx.transaction_type}|${tx.raw_line || ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(tx);
+  }
+  return out;
+}
+
+function appendTotalWarnings(header, transactions, warnings) {
+  const passages = transactions.filter((t) => t.transaction_type === "passage");
+  const loadings = transactions.filter((t) => t.transaction_type === "loading");
+  const passageSum = passages.reduce((s, t) => s + t.amount, 0);
+  const loadingSum = loadings.reduce((s, t) => s + t.amount, 0);
+
+  if (header.passage_total > 0 && passages.length && passageSum !== header.passage_total) {
+    warnings.push(
+      `Geçiş satır toplamı (${passageSum}) PDF özet toplamı (${header.passage_total}) ile eşleşmiyor.`
+    );
+  }
+  if (header.loading_total > 0 && loadings.length && loadingSum !== header.loading_total) {
+    warnings.push(
+      `Yükleme satır toplamı (${loadingSum}) PDF özet toplamı (${header.loading_total}) ile eşleşmiyor.`
+    );
+  }
 }
 
 function parseHgsAmount(val) {
@@ -117,14 +207,337 @@ function parseReportHeader(text) {
   return { header, warnings };
 }
 
+function isSummaryLine(line) {
+  return /toplam|adedi|d[oö]nem\s*[iı]çi|hgs\s*no|plaka|bakiye|ara[cç]\s*sinif/i.test(line);
+}
+
+function isDateTimeLine(line) {
+  return /^\d{1,2}[./]\d{1,2}[./]\d{2,4}\s+\d{1,2}:\d{2}(?::\d{2})?$/.test(String(line || "").trim());
+}
+
+function isDateOnlyLine(line) {
+  return /^\d{1,2}[./]\d{1,2}[./]\d{2,4}$/.test(String(line || "").trim());
+}
+
+function isAmountLine(line) {
+  const trimmed = String(line || "").trim();
+  if (!/^[\d.,]+$/.test(trimmed)) return false;
+  return parseHgsAmount(trimmed) > 0;
+}
+
+function isPassageHeaderLine(line) {
+  const trimmed = String(line || "").trim();
+  if (!trimmed || isSummaryLine(trimmed)) return false;
+  return /^(?:GOI\s*)?Ge[cç]i[sş](?:\s|$)/i.test(trimmed);
+}
+
+function isLoadingHeaderMultiline(line) {
+  const trimmed = String(line || "").trim();
+  if (!trimmed || isSummaryLine(trimmed)) return false;
+  return /^y[uü]kleme\s*$/i.test(trimmed);
+}
+
 function isPassageLine(line) {
+  if (isSummaryLine(line)) return false;
   const norm = line.toLowerCase();
   return /goi/.test(norm) || /ge[cç]i[sş]/.test(norm);
 }
 
 function isLoadingLine(line) {
+  if (isSummaryLine(line)) return false;
   const norm = line.toLowerCase();
-  return /y[uü]kleme/.test(norm) && !/toplam|adedi/.test(norm);
+  return /y[uü]kleme/.test(norm);
+}
+
+function parsePassageHeaderParts(headerLine) {
+  const m = String(headerLine || "").trim().match(/^(?:GOI\s*)?Ge[cç]i[sş]\s+(.+)$/i);
+  if (!m) return { highway: null, entry_point: null };
+
+  const rest = m[1].trim();
+  const hwMatch = rest.match(/^([A-ZÇĞİÖŞÜ0-9]+(?:-[A-ZÇĞİÖŞÜ0-9]+)+)\s+(.+)$/i);
+  if (hwMatch) {
+    return { highway: hwMatch[1].trim(), entry_point: hwMatch[2].trim() };
+  }
+  return { highway: rest, entry_point: null };
+}
+
+function parseDateTimeLine(line) {
+  const trimmed = String(line || "").trim();
+  const dm = trimmed.match(/(\d{1,2}[./]\d{1,2}[./]\d{2,4})\s+(\d{1,2}:\d{2}(?::\d{2})?)/);
+  if (!dm) return { date: null, datetime: null };
+  const date = parseTrDate(dm[1]);
+  const time = dm[2].length === 5 ? `${dm[2]}:00` : dm[2];
+  return { date, datetime: date ? `${date} ${time}` : null };
+}
+
+function isHighwayLine(line) {
+  return /^[A-ZÇĞİÖŞÜ0-9]+(?:-[A-ZÇĞİÖŞÜ0-9]+)+$/i.test(String(line || "").trim());
+}
+
+function classifyPassageTollLines(nameLines, headerHighway, headerEntry) {
+  const names = (nameLines || []).map((l) => String(l || "").trim()).filter(Boolean);
+  let highway = headerHighway || null;
+  let entry = headerEntry || null;
+  let exit = null;
+
+  for (const name of names) {
+    if (!highway && isHighwayLine(name)) {
+      highway = name;
+      continue;
+    }
+    if (!entry) {
+      entry = name;
+      continue;
+    }
+    exit = name;
+  }
+
+  if (entry && !exit && names.length >= 2) {
+    exit = names[names.length - 1];
+    if (exit === entry && names.length >= 3) {
+      entry = names[names.length - 2];
+      exit = names[names.length - 1];
+    }
+  }
+
+  return { highway, entry_point: entry, exit_point: exit };
+}
+
+function buildPassageTx({ headerLine, bodyLines, startIdx, endIdx }) {
+  const amountLine = [...bodyLines].reverse().find((l) => isAmountLine(l));
+  if (!amountLine) return null;
+
+  const amount = parseHgsAmount(amountLine);
+  if (amount <= 0) return null;
+
+  const dateLines = bodyLines
+    .map((l) => parseDateTimeLine(l))
+    .filter((d) => d.datetime);
+  if (dateLines.length < 2) return null;
+
+  const nameLines = bodyLines.filter(
+    (l) => !isAmountLine(l) && !parseDateTimeLine(l).datetime && !isSummaryLine(l)
+  );
+  const { highway, entry_point: headerEntry } = parsePassageHeaderParts(headerLine);
+  const tolls = classifyPassageTollLines(nameLines, highway, headerEntry);
+  if (!tolls.highway) return null;
+
+  const entry = dateLines[0];
+  const exit = dateLines[1];
+  const raw_line = [headerLine, ...bodyLines].join("\n");
+
+  return {
+    tx: {
+      transaction_type: "passage",
+      highway: tolls.highway,
+      entry_point: tolls.entry_point,
+      entry_datetime: entry.datetime,
+      exit_point: tolls.exit_point,
+      exit_datetime: exit.datetime,
+      transaction_date: entry.date || exit.date,
+      amount,
+      raw_line,
+    },
+    nextIdx: endIdx,
+  };
+}
+
+function scanPassageFromIndex(lines, startIdx) {
+  let i = startIdx;
+  let headerLine = String(lines[i] || "").trim();
+
+  if (/^GOI\s*$/i.test(headerLine) && /^Ge[cç]i[sş]/i.test(String(lines[i + 1] || "").trim())) {
+    headerLine = `${headerLine} ${String(lines[i + 1]).trim()}`;
+    i += 2;
+  } else if (isPassageHeaderLine(headerLine)) {
+    i += 1;
+  } else {
+    return null;
+  }
+
+  const body = [];
+  while (i < lines.length && body.length < 12) {
+    const line = String(lines[i] || "").trim();
+    if (!line) {
+      i += 1;
+      continue;
+    }
+    if (body.length > 0 && (isPassageHeaderLine(line) || /^GOI\s*$/i.test(line) || isLoadingHeaderMultiline(line))) {
+      break;
+    }
+    body.push(line);
+    if (isAmountLine(line) && body.filter((l) => parseDateTimeLine(l).datetime).length >= 2) {
+      i += 1;
+      break;
+    }
+    i += 1;
+  }
+
+  return buildPassageTx({ headerLine, bodyLines: body, startIdx, endIdx: i });
+}
+
+function parsePassageBlock(lines, startIdx) {
+  const headerLine = String(lines[startIdx] || "").trim();
+  if (!headerLine) return null;
+
+  if (headerLine.includes("|")) {
+    const tx = parsePassageLine(headerLine);
+    return tx ? { tx, nextIdx: startIdx + 1 } : null;
+  }
+
+  const scanned = scanPassageFromIndex(lines, startIdx);
+  if (scanned?.tx) return scanned;
+
+  if (startIdx + 4 >= lines.length) return null;
+
+  const entryDtLine = String(lines[startIdx + 1] || "").trim();
+  const exitPointLine = String(lines[startIdx + 2] || "").trim();
+  const exitDtLine = String(lines[startIdx + 3] || "").trim();
+  const amountLine = String(lines[startIdx + 4] || "").trim();
+
+  if (!isDateTimeLine(entryDtLine) || !isDateTimeLine(exitDtLine) || !isAmountLine(amountLine)) {
+    return null;
+  }
+
+  const { highway, entry_point: headerEntryPoint } = parsePassageHeaderParts(headerLine);
+  const entry = parseDateTimeLine(entryDtLine);
+  const exit = parseDateTimeLine(exitDtLine);
+  const amount = parseHgsAmount(amountLine);
+  if (!highway || amount <= 0) return null;
+
+  const raw_line = lines.slice(startIdx, startIdx + 5).join("\n");
+  return {
+    tx: {
+      transaction_type: "passage",
+      highway,
+      entry_point: headerEntryPoint,
+      entry_datetime: entry.datetime,
+      exit_point: exitPointLine,
+      exit_datetime: exit.datetime,
+      transaction_date: entry.date || exit.date,
+      amount,
+      raw_line,
+    },
+    nextIdx: startIdx + 5,
+  };
+}
+
+function parseLoadingBlock(lines, startIdx) {
+  const headerLine = String(lines[startIdx] || "").trim();
+  if (!headerLine) return null;
+
+  if (headerLine.includes("|")) {
+    const tx = parseLoadingLine(headerLine);
+    return tx ? { tx, nextIdx: startIdx + 1 } : null;
+  }
+
+  const inline = headerLine.match(/^y[uü]kleme\s+(\d{1,2}[./]\d{1,2}[./]\d{2,4})\s+([\d.,]+)$/i);
+  if (inline) {
+    const date = parseTrDate(inline[1]);
+    const amount = parseHgsAmount(inline[2]);
+    if (!date || amount <= 0) return null;
+    return {
+      tx: {
+        transaction_type: "loading",
+        highway: null,
+        entry_point: null,
+        entry_datetime: null,
+        exit_point: null,
+        exit_datetime: null,
+        transaction_date: date,
+        amount,
+        raw_line: headerLine,
+      },
+      nextIdx: startIdx + 1,
+    };
+  }
+
+  if (!isLoadingHeaderMultiline(headerLine)) return null;
+  if (startIdx + 2 >= lines.length) return null;
+
+  const dateLine = String(lines[startIdx + 1] || "").trim();
+  const amountLine = String(lines[startIdx + 2] || "").trim();
+  if (!isDateOnlyLine(dateLine) || !isAmountLine(amountLine)) return null;
+
+  const date = parseTrDate(dateLine);
+  const amount = parseHgsAmount(amountLine);
+  if (!date || amount <= 0) return null;
+
+  const raw_line = lines.slice(startIdx, startIdx + 3).join("\n");
+  return {
+    tx: {
+      transaction_type: "loading",
+      highway: null,
+      entry_point: null,
+      entry_datetime: null,
+      exit_point: null,
+      exit_datetime: null,
+      transaction_date: date,
+      amount,
+      raw_line,
+    },
+    nextIdx: startIdx + 3,
+  };
+}
+
+function parseTransactionsRegex(text) {
+  const t = preprocessHgsText(text).text;
+  const transactions = [];
+
+  const loadingRe =
+    /(?:^|\n)\s*Y[uü]kleme\s*(?:\n|\s+)(\d{1,2}[./]\d{1,2}[./]\d{2,4})\s*(?:\n|\s+)([\d.,]+)/gi;
+  let loadMatch;
+  while ((loadMatch = loadingRe.exec(t)) !== null) {
+    const date = parseTrDate(loadMatch[1]);
+    const amount = parseHgsAmount(loadMatch[2]);
+    if (!date || amount <= 0) continue;
+    transactions.push({
+      transaction_type: "loading",
+      highway: null,
+      entry_point: null,
+      entry_datetime: null,
+      exit_point: null,
+      exit_datetime: null,
+      transaction_date: date,
+      amount,
+      raw_line: loadMatch[0].trim(),
+    });
+  }
+
+  const inlinePassageRe =
+    /(?:GOI\s*)?Ge[cç]i[sş]\s+([A-ZÇĞİÖŞÜ0-9]+(?:-[A-ZÇĞİÖŞÜ0-9]+)+)\s+(\S+)\s+(\d{1,2}[./]\d{1,2}[./]\d{2,4}\s+\d{1,2}:\d{2}(?::\d{2})?)\s+(\S+)\s+(\d{1,2}[./]\d{1,2}[./]\d{2,4}\s+\d{1,2}:\d{2}(?::\d{2})?)\s+([\d.,]+)/gi;
+  let inlineMatch;
+  while ((inlineMatch = inlinePassageRe.exec(t)) !== null) {
+    const entry = parseDateTimeLine(inlineMatch[3]);
+    const exit = parseDateTimeLine(inlineMatch[5]);
+    const amount = parseHgsAmount(inlineMatch[6]);
+    if (amount <= 0 || !entry.datetime || !exit.datetime) continue;
+    transactions.push({
+      transaction_type: "passage",
+      highway: inlineMatch[1].trim(),
+      entry_point: inlineMatch[2].trim(),
+      entry_datetime: entry.datetime,
+      exit_point: inlineMatch[4].trim(),
+      exit_datetime: exit.datetime,
+      transaction_date: entry.date || exit.date,
+      amount,
+      raw_line: inlineMatch[0].trim(),
+    });
+  }
+
+  const multilinePassageRe =
+    /(?:GOI\s*)?Ge[cç]i[sş][^\n]*\n(?:[^\n]+\n){1,8}[\d.,]+/gi;
+  let blockMatch;
+  while ((blockMatch = multilinePassageRe.exec(t)) !== null) {
+    const blockLines = blockMatch[0]
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const parsed = scanPassageFromIndex(blockLines, 0);
+    if (parsed?.tx) transactions.push(parsed.tx);
+  }
+
+  return dedupeParsedTransactions(transactions);
 }
 
 function parsePassageLine(line) {
@@ -207,31 +620,57 @@ function parseLoadingLine(line) {
 }
 
 function parseTransactions(text) {
-  const lines = normalizePdfText(text).split("\n");
+  const { lines } = preprocessHgsText(text);
   const transactions = [];
   const warnings = [];
 
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) continue;
+  let i = 0;
+  while (i < lines.length) {
+    const line = String(lines[i] || "").trim();
+    if (!line) {
+      i += 1;
+      continue;
+    }
+
+    if (isLoadingHeaderMultiline(line) || /^y[uü]kleme\s+\d/i.test(line)) {
+      const block = parseLoadingBlock(lines, i);
+      if (block?.tx) {
+        transactions.push(block.tx);
+        i = block.nextIdx;
+        continue;
+      }
+    }
+
+    if (isPassageHeaderLine(line) || /^GOI\s*$/i.test(line)) {
+      const block = parsePassageBlock(lines, i);
+      if (block?.tx) {
+        transactions.push(block.tx);
+        i = block.nextIdx;
+        continue;
+      }
+    }
 
     if (isLoadingLine(line)) {
       const tx = parseLoadingLine(line);
       if (tx) transactions.push(tx);
-      continue;
-    }
-
-    if (isPassageLine(line)) {
+    } else if (isPassageLine(line)) {
       const tx = parsePassageLine(line);
       if (tx) transactions.push(tx);
     }
+
+    i += 1;
   }
 
-  if (!transactions.length) {
+  let unique = dedupeParsedTransactions(transactions);
+  if (!unique.length) {
+    unique = parseTransactionsRegex(text);
+  }
+
+  if (!unique.length) {
     warnings.push("PDF içinde işlem satırı bulunamadı.");
   }
 
-  return { transactions, warnings };
+  return { transactions: unique, warnings };
 }
 
 function buildTxDedupKey(tx) {
@@ -289,6 +728,7 @@ function parsePdfText(text, originalName = "") {
   const { header, warnings: headerWarnings } = parseReportHeader(normalized);
   const { transactions, warnings: txWarnings } = parseTransactions(normalized);
   const warnings = [...headerWarnings, ...txWarnings];
+  appendTotalWarnings(header, transactions, warnings);
 
   return {
     filename: originalName,
@@ -301,6 +741,7 @@ function parsePdfText(text, originalName = "") {
 
 async function parsePdfBuffer(buffer, originalName = "") {
   const text = await extractPdfTextFromBuffer(buffer);
+  console.log("[HGS_TEXT_SAMPLE]", text.slice(0, 5000));
   return parsePdfText(text, originalName);
 }
 
@@ -406,19 +847,24 @@ function importFromParsed(parsed, originalName, fileHash) {
     };
   }
 
-  let backupPath;
-  try {
-    backupPath = backupDatabase();
-  } catch (e) {
-    throw new Error(`Yedekleme başarısız — import iptal edildi: ${e.message}`);
+  let backupPath = null;
+  if (!HGS_IMPORT_SKIP_BACKUP) {
+    try {
+      backupPath = backupDatabase();
+    } catch (e) {
+      throw new Error(`Yedekleme başarısız — import iptal edildi: ${e.message}`);
+    }
+  }
+
+  if (typeof db.assertConnectionWritable === "function") {
+    db.assertConnectionWritable("hgs_import");
   }
 
   const { header, transactions, warnings } = parsed;
 
   const vehicles = db.prepare("SELECT * FROM vehicles").all();
-  const vehicleMap = buildVehiclePlateMap(vehicles);
   const vehicle = header.plate_normalized
-    ? findVehicleByPlate(header.plate_normalized, vehicleMap)
+    ? findVehicleForHgsPlate(vehicles, header.plate_normalized)
     : null;
   const vehicleId = vehicle?.id || null;
   const unmatchedPlates = [];
@@ -428,31 +874,36 @@ function importFromParsed(parsed, originalName, fileHash) {
     warnings.push(`Eşleşmeyen plaka: ${header.plate_normalized}`);
   }
 
-  const reportInfo = db
-    .prepare(
-      `INSERT INTO hgs_reports (
+  let reportInfo;
+  try {
+    reportInfo = db
+      .prepare(
+        `INSERT INTO hgs_reports (
         vehicle_id, plate_normalized, hgs_no, vehicle_class,
         period_start, period_end, balance, balance_date,
         loading_count, passage_count, loading_total, passage_total,
         source_file_name, file_hash
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-    .run(
-      vehicleId,
-      header.plate_normalized,
-      header.hgs_no,
-      header.vehicle_class,
-      header.period_start,
-      header.period_end,
-      header.balance,
-      header.balance_date,
-      header.loading_count,
-      header.passage_count,
-      header.loading_total,
-      header.passage_total,
-      originalName,
-      fileHash
-    );
+      )
+      .run(
+        vehicleId,
+        header.plate_normalized,
+        header.hgs_no,
+        header.vehicle_class,
+        header.period_start,
+        header.period_end,
+        header.balance,
+        header.balance_date,
+        header.loading_count,
+        header.passage_count,
+        header.loading_total,
+        header.passage_total,
+        originalName,
+        fileHash
+      );
+  } catch (e) {
+    throw new Error(`HGS raporu kaydedilemedi: ${e.message}`);
+  }
 
   const reportId = reportInfo.lastInsertRowid;
   let insertedCount = 0;

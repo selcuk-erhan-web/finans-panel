@@ -3,11 +3,14 @@ const hgsImportService = require("../services/hgsImportService");
 const hgsService = require("../services/hgsService");
 const {
   hgsImportResultHtml,
+  hgsImportFormHtml,
   hgsReportsTableHtml,
   hgsExpensesTableHtml,
 } = require("../lib/components/hgsImport");
-const { redirectWithFlash } = require("../lib/flash");
+const { redirectWithFlash, redirectWithError } = require("../lib/flash");
 const { renderLayout, glassPanel, escapeHtml } = require("../lib/components");
+
+const HGS_DB_PATH = require("../lib/db").DB_PATH || "no-db-path-export";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -31,15 +34,17 @@ function registerHgs(app) {
     const reports = hgsService.listReports(25);
     const expenses = hgsService.listHgsExpenses(50);
     let importResultBlock = "";
-    const err = req.query.err;
+    const errMsg =
+      req.query.msg ||
+      (req.query.err && req.query.err !== "1" ? String(req.query.err) : null);
 
-    if (err) {
+    if (errMsg) {
       importResultBlock = `<section class="hgs-import-result-wrap">${hgsImportResultHtml({
         ok: false,
         duplicate: false,
-        message: String(err),
+        message: errMsg,
         warnings: [],
-        errors: [String(err)],
+        errors: [errMsg],
         errorCount: 1,
       })}</section>`;
     } else if (req.query.report_id) {
@@ -94,14 +99,7 @@ function registerHgs(app) {
                 <p>HGS ekstre PDF dosyanızı yükleyin; geçiş ve yükleme kayıtları araç bazlı HGS/OGS gideri olarak sisteme yazılır.</p>
               </div>
             </div>
-            <form method="POST" action="/hgs/import" enctype="multipart/form-data" class="fuel-import-form">
-              <label class="fuel-dropzone">
-                <input type="file" name="pdfFile" accept=".pdf,application/pdf" required />
-                <strong>PDF dosyasını seç</strong>
-                <span>Sadece İş Bankası HGS ekstre PDF formatı desteklenir.</span>
-              </label>
-              <button type="submit" class="btn btn-primary">PDF İçe Aktar</button>
-            </form>
+            ${hgsImportFormHtml()}
           </section>
 
           ${glassPanel({
@@ -136,26 +134,38 @@ function registerHgs(app) {
   });
 
   app.post("/hgs/import", (req, res) => {
+    // Field name must match input name="pdfFile" in hgsImportFormHtml
     upload.single("pdfFile")(req, res, async (uploadErr) => {
       const sendError = (message, status = 400) => {
+        const text = message || "İçe aktarma sırasında hata oluştu.";
         if (wantsJson(req)) {
-          return res.status(status).json({ ok: false, error: message });
+          return res.status(status).json({ ok: false, error: text });
         }
-        return redirectWithFlash(res, `/hgs?err=${encodeURIComponent(message)}`);
+        return redirectWithError(res, "/hgs", text);
       };
 
       if (uploadErr) {
         return sendError(uploadErr.message || "Dosya yüklenemedi.");
       }
       if (!req.file?.buffer?.length) {
-        return sendError("PDF dosyası seçilmedi.");
+        return sendError("PDF dosyası alınamadı");
       }
+
+      console.log("[HGS_DB_PATH]", HGS_DB_PATH);
+      console.log("[HGS_IMPORT_START]", {
+        file: req.file?.originalname,
+        size: req.file?.size ?? req.file?.buffer?.length,
+        path: req.file?.path,
+        body: req.body,
+      });
 
       try {
         const result = await hgsImportService.importFromBuffer(
           req.file.buffer,
           req.file.originalname || "hgs.pdf"
         );
+
+        console.log("[HGS_IMPORT_RESULT]", result);
 
         if (wantsJson(req)) {
           return res.status(result.duplicate ? 409 : 200).json({
@@ -169,9 +179,10 @@ function registerHgs(app) {
           return res.redirect("/hgs?duplicate=1");
         }
 
-        return res.redirect(`/hgs?report_id=${result.reportId}&ok=hgs_imported`);
-      } catch (e) {
-        return sendError(e.message || "HGS PDF içe aktarılamadı.");
+        return redirectWithFlash(res, `/hgs?report_id=${result.reportId}`, "hgs_imported");
+      } catch (error) {
+        console.error("[HGS_IMPORT_ERROR]", error);
+        return sendError(error?.message || String(error) || "HGS PDF içe aktarılamadı.");
       }
     });
   });
