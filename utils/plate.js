@@ -129,6 +129,22 @@ function findVehicleByPlate(plateText, vehicleMap) {
   return null;
 }
 
+/** Plaka son 4 hane ile araç bul (hakediş PDF: KIRPART 4472) */
+function findVehicleByPlateSuffix(suffix, vehicles) {
+  const key = String(suffix || "").replace(/\D/g, "").slice(-4);
+  if (!key || key.length < 4) return null;
+  const matches = (vehicles || []).filter((v) => {
+    const norm = normalizePlate(v.plate_normalized || v.plate);
+    return norm.length >= 4 && norm.slice(-4) === key;
+  });
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1) {
+    const strict = matches.filter((v) => normalizePlate(v.plate).slice(-4) === key);
+    if (strict.length === 1) return strict[0];
+  }
+  return null;
+}
+
 module.exports = {
   normalizePlate,
   normalizePlateFlexible,
@@ -138,4 +154,5 @@ module.exports = {
   isValidTurkishPlate,
   buildVehiclePlateMap,
   findVehicleByPlate,
+  findVehicleByPlateSuffix,
 };

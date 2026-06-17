@@ -1891,6 +1891,18 @@ input:focus, select:focus {
 }
 .hgs-import-warnings { color: var(--amber); }
 .hgs-import-errors { color: var(--red-d); }
+.hgs-unmatched {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--amber);
+}
+.hgs-unmatched code {
+  font-size: 11px;
+  font-weight: 700;
+  background: #fffbeb;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
 .income-import-section { margin-bottom: 18px; }
 .hakedis-import-card { margin-bottom: 0; }
 

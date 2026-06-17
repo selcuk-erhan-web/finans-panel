@@ -1,9 +1,13 @@
 const multer = require("multer");
 const hgsImportService = require("../services/hgsImportService");
 const hgsService = require("../services/hgsService");
-const { hgsImportResultHtml, hgsReportsTableHtml } = require("../lib/components/hgsImport");
+const {
+  hgsImportResultHtml,
+  hgsReportsTableHtml,
+  hgsExpensesTableHtml,
+} = require("../lib/components/hgsImport");
 const { redirectWithFlash } = require("../lib/flash");
-const { renderLayout, glassPanel, escapeHtml, dataTable } = require("../lib/components");
+const { renderLayout, glassPanel, escapeHtml } = require("../lib/components");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -25,6 +29,7 @@ function wantsJson(req) {
 function registerHgs(app) {
   app.get("/hgs", (req, res) => {
     const reports = hgsService.listReports(25);
+    const expenses = hgsService.listHgsExpenses(50);
     let importResultBlock = "";
     const err = req.query.err;
 
@@ -35,13 +40,11 @@ function registerHgs(app) {
         message: String(err),
         warnings: [],
         errors: [String(err)],
+        errorCount: 1,
       })}</section>`;
     } else if (req.query.report_id) {
       const summary = hgsImportService.getReportSummary(Number(req.query.report_id));
       if (summary) {
-        const txCount = require("../lib/db")
-          .prepare("SELECT COUNT(*) AS c FROM hgs_transactions WHERE report_id = ?")
-          .get(summary.id).c;
         importResultBlock = `<section class="hgs-import-result-wrap">${hgsImportResultHtml({
           ok: true,
           duplicate: false,
@@ -54,10 +57,16 @@ function registerHgs(app) {
           loading_count: summary.loading_count,
           passage_total: summary.passage_total,
           loading_total: summary.loading_total,
-          insertedCount: txCount,
+          totalRows: summary.totalRows,
+          insertedCount: summary.totalRows,
+          expenseCount: summary.expenseCount,
           skippedCount: 0,
+          unmatchedPlates: summary.unmatchedPlates,
+          errorCount: 0,
           message: "Son içe aktarma özeti",
-          warnings: summary.matched ? [] : [`Eşleşmeyen plaka: ${summary.plate_normalized}`],
+          warnings: summary.unmatchedPlates?.length
+            ? [`Eşleşmeyen plaka: ${summary.unmatchedPlates.join(", ")}`]
+            : [],
           errors: [],
         })}</section>`;
       }
@@ -73,7 +82,7 @@ function registerHgs(app) {
 
     const content = `
       <div class="dash page-enter">
-        <p class="page-lead">HGS Yönetimi · İş Bankası PDF ekstre içe aktarma</p>
+        <p class="page-lead">HGS / OGS Yönetimi · İş Bankası PDF ekstre içe aktarma</p>
         ${importResultBlock}
 
         <div class="grid2">
@@ -82,7 +91,7 @@ function registerHgs(app) {
               <div>
                 <p class="eyebrow">İş Bankası HGS</p>
                 <h2>İş Bankası HGS PDF İçe Aktar</h2>
-                <p>HGS ekstre PDF dosyanızı yükleyin; sistem plaka, dönem, geçiş ve yükleme kayıtlarını otomatik analiz eder.</p>
+                <p>HGS ekstre PDF dosyanızı yükleyin; geçiş ve yükleme kayıtları araç bazlı HGS/OGS gideri olarak sisteme yazılır.</p>
               </div>
             </div>
             <form method="POST" action="/hgs/import" enctype="multipart/form-data" class="fuel-import-form">
@@ -99,12 +108,19 @@ function registerHgs(app) {
             title: "Import bilgisi",
             body: `<ul class="hgs-info-list">
               <li>Aynı PDF tekrar yüklenemez (dosya hash kontrolü).</li>
-              <li>Plaka sistemde yoksa import tamamlanır; eşleşmeyen plaka uyarısı gösterilir.</li>
+              <li>Plaka filoda yoksa HGS satırları kaydedilir; gider yazılmaz ve plaka uyarısı gösterilir.</li>
+              <li>Aynı plaka + tarih + tutar + geçiş bilgisi mükerrer engellenir.</li>
               <li>Import öncesi otomatik veritabanı yedeği alınır.</li>
-              <li>HGS kayıtları ayrı tablolarda tutulur; mevcut gider akışı zorlanmaz.</li>
+              <li>Giderler <strong>HGS / OGS</strong> kategorisinde transactions tablosuna yazılır.</li>
             </ul>`,
           })}
         </div>
+
+        ${glassPanel({
+          title: "HGS / OGS Gider Kayıtları",
+          desc: "PDF import ile oluşturulan gider hareketleri",
+          body: hgsExpensesTableHtml(expenses),
+        })}
 
         ${glassPanel({
           title: "Son HGS importları",
@@ -113,9 +129,9 @@ function registerHgs(app) {
       </div>`;
 
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-    renderLayout(res, "HGS Yönetimi", content, "/hgs", req, {
-      pageTitle: "HGS Yönetimi",
-      breadcrumb: "Operasyon / HGS",
+    renderLayout(res, "HGS / OGS", content, "/hgs", req, {
+      pageTitle: "HGS / OGS Yönetimi",
+      breadcrumb: "Operasyon / HGS / OGS",
     });
   });
 

@@ -18,6 +18,19 @@ function listReports(limit = 25) {
     }));
 }
 
+function listHgsExpenses(limit = 50) {
+  return db
+    .prepare(
+      `SELECT t.*, v.plate
+       FROM transactions t
+       LEFT JOIN vehicles v ON v.id = t.vehicle_id
+       WHERE t.type = 'expense' AND t.category_slug = 'hgs-ogs'
+       ORDER BY t.date DESC, t.id DESC
+       LIMIT ?`
+    )
+    .all(limit);
+}
+
 function getDashboardHgsSummary() {
   const totalReports = db.prepare("SELECT COUNT(*) AS c FROM hgs_reports").get().c;
   const latest = db
@@ -48,5 +61,6 @@ function getDashboardHgsSummary() {
 
 module.exports = {
   listReports,
+  listHgsExpenses,
   getDashboardHgsSummary,
 };

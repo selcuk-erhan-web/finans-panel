@@ -1,10 +1,13 @@
 const crypto = require("crypto");
-const pdfParse = require("pdf-parse");
+const { extractPdfText } = require("../utils/pdfText");
 const db = require("../lib/db");
 const { normalizePlate, buildVehiclePlateMap, findVehicleByPlate } = require("../utils/plate");
-const { parseTrMoney } = require("../utils/numbers");
+const { parseMoneyInput } = require("../utils/money");
+const { resolveNameFromSlug } = require("../lib/expenseCategoryMap");
 const { backupDatabase } = require("../utils/backup");
 const auditService = require("./auditService");
+
+const HGS_EXPENSE_SLUG = "hgs-ogs";
 
 function normalizePdfText(text) {
   return String(text || "")
@@ -13,6 +16,12 @@ function normalizePdfText(text) {
     .replace(/[ \t]+/g, " ")
     .replace(/\n+/g, "\n")
     .trim();
+}
+
+function parseHgsAmount(val) {
+  const n = parseMoneyInput(val);
+  if (n == null || n <= 0) return 0;
+  return Math.round(n);
 }
 
 function parseTrDate(val) {
@@ -77,7 +86,7 @@ function parseReportHeader(text) {
   }
 
   const balanceStr = extractField(t, [/HGS\s*Bakiyesi[:\s]*([\d.,]+)/i]);
-  if (balanceStr) header.balance = parseTrMoney(balanceStr);
+  if (balanceStr) header.balance = parseHgsAmount(balanceStr);
 
   const balanceDateStr = extractField(t, [/HGS\s*Bakiye\s*Tarihi[:\s]*([\d.\s:]+)/i]);
   if (balanceDateStr) {
@@ -92,10 +101,10 @@ function parseReportHeader(text) {
   if (passageCountStr) header.passage_count = Number(passageCountStr) || 0;
 
   const loadingTotalStr = extractField(t, [/D[oö]nem\s*[İi]çi\s*Y[uü]klemeler\s*Toplam[ıi][:\s]*([\d.,]+)/i]);
-  if (loadingTotalStr) header.loading_total = parseTrMoney(loadingTotalStr);
+  if (loadingTotalStr) header.loading_total = parseHgsAmount(loadingTotalStr);
 
   const passageTotalStr = extractField(t, [/D[oö]nem\s*[İi]çi\s*Ge[cç]i[sş]ler\s*Toplam[ıi][:\s]*([\d.,]+)/i]);
-  if (passageTotalStr) header.passage_total = parseTrMoney(passageTotalStr);
+  if (passageTotalStr) header.passage_total = parseHgsAmount(passageTotalStr);
 
   if (header.plate) {
     header.plate = header.plate.replace(/\s+/g, "").toUpperCase();
@@ -124,7 +133,7 @@ function parsePassageLine(line) {
     const highway = parts[1];
     const entry = parsePointDateTime(parts[2]);
     const exit = parsePointDateTime(parts[3]);
-    const amount = parseTrMoney(parts[parts.length - 1]);
+    const amount = parseHgsAmount(parts[parts.length - 1]);
     if (amount <= 0) return null;
     return {
       transaction_type: "passage",
@@ -145,7 +154,7 @@ function parsePassageLine(line) {
   if (!m) return null;
   const entry = parsePointDateTime(m[2]);
   const exit = parsePointDateTime(m[3]);
-  const amount = parseTrMoney(m[4]);
+  const amount = parseHgsAmount(m[4]);
   if (amount <= 0) return null;
   return {
     transaction_type: "passage",
@@ -164,7 +173,7 @@ function parseLoadingLine(line) {
   const parts = line.split("|").map((p) => p.trim()).filter(Boolean);
   if (parts.length >= 3 && /y[uü]kleme/i.test(parts[0])) {
     const date = parseTrDate(parts[1]);
-    const amount = parseTrMoney(parts[parts.length - 1]);
+    const amount = parseHgsAmount(parts[parts.length - 1]);
     if (!date || amount <= 0) return null;
     return {
       transaction_type: "loading",
@@ -182,7 +191,7 @@ function parseLoadingLine(line) {
   const m = line.match(/y[uü]kleme\s*\|?\s*(\d{2}\.\d{2}\.\d{4})\s*\|?\s*([\d.,]+)/i);
   if (!m) return null;
   const date = parseTrDate(m[1]);
-  const amount = parseTrMoney(m[2]);
+  const amount = parseHgsAmount(m[2]);
   if (!date || amount <= 0) return null;
   return {
     transaction_type: "loading",
@@ -235,6 +244,25 @@ function buildTxDedupKey(tx) {
   ].join("|");
 }
 
+function buildExpenseNote(tx, plateNormalized) {
+  const plate = plateNormalized || "—";
+  if (tx.transaction_type === "loading") {
+    return `HGS/OGS Yükleme · ${plate} · ${tx.transaction_date || ""}`;
+  }
+  const route = tx.highway ? ` · ${tx.highway}` : "";
+  const points = [tx.entry_point, tx.exit_point].filter(Boolean).join(" → ");
+  return `HGS/OGS Geçiş${route}${points ? ` · ${points}` : ""} · ${plate}`;
+}
+
+function buildExpenseDedupKey(plateNormalized, tx) {
+  return `hgs:${plateNormalized || "unknown"}:${tx.transaction_type}:${tx.transaction_date}:${tx.amount}:${tx.entry_point || ""}:${tx.exit_point || ""}`;
+}
+
+function expenseDedupExists(key) {
+  if (!key) return false;
+  return !!db.prepare("SELECT id FROM transactions WHERE expense_dedup_key = ?").get(key);
+}
+
 function looksLikeIsbankHgs(text) {
   const t = normalizePdfText(text).toLowerCase();
   return (
@@ -243,9 +271,8 @@ function looksLikeIsbankHgs(text) {
   );
 }
 
-async function extractPdfText(buffer) {
-  const data = await pdfParse(buffer);
-  return data.text || "";
+async function extractPdfTextFromBuffer(buffer) {
+  return extractPdfText(buffer);
 }
 
 function parsePdfText(text, originalName = "") {
@@ -273,7 +300,7 @@ function parsePdfText(text, originalName = "") {
 }
 
 async function parsePdfBuffer(buffer, originalName = "") {
-  const text = await extractPdfText(buffer);
+  const text = await extractPdfTextFromBuffer(buffer);
   return parsePdfText(text, originalName);
 }
 
@@ -304,8 +331,8 @@ function getReportByHash(fileHash) {
   return db.prepare("SELECT * FROM hgs_reports WHERE file_hash = ?").get(fileHash);
 }
 
-function insertTransaction(reportId, vehicleId, plateNormalized, tx) {
-  return db
+function insertHgsTransaction(reportId, vehicleId, plateNormalized, tx) {
+  const info = db
     .prepare(
       `INSERT INTO hgs_transactions (
         report_id, vehicle_id, plate_normalized, transaction_type, highway,
@@ -327,6 +354,29 @@ function insertTransaction(reportId, vehicleId, plateNormalized, tx) {
       tx.amount,
       tx.raw_line
     );
+  return info.lastInsertRowid;
+}
+
+function createHgsExpense({ vehicleId, amount, note, date, hgsTransactionId, dedupKey }) {
+  const categoryName = resolveNameFromSlug(HGS_EXPENSE_SLUG);
+  const expenseDate = date ? `${date} 12:00:00` : new Date().toISOString().slice(0, 10) + " 12:00:00";
+  return db
+    .prepare(
+      `INSERT INTO transactions (
+        vehicle_id, type, category, category_slug, amount, note, date,
+        hgs_transaction_id, expense_dedup_key
+      ) VALUES (?, 'expense', ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(
+      vehicleId,
+      categoryName,
+      HGS_EXPENSE_SLUG,
+      amount,
+      note,
+      expenseDate,
+      hgsTransactionId,
+      dedupKey
+    );
 }
 
 function importFromParsed(parsed, originalName, fileHash) {
@@ -344,8 +394,12 @@ function importFromParsed(parsed, originalName, fileHash) {
           ? `${existing.period_start} — ${existing.period_end}`
           : "—",
       vehicleMatched: !!existing.vehicle_id,
+      totalRows: 0,
       insertedCount: 0,
+      expenseCount: 0,
       skippedCount: 0,
+      unmatchedPlates: existing.plate_normalized ? [existing.plate_normalized] : [],
+      errorCount: 0,
       warnings: ["Bu PDF daha önce içe aktarılmış (dosya hash eşleşmesi)."],
       errors: [],
       message: "Aynı PDF tekrar içe aktarılamaz.",
@@ -367,8 +421,10 @@ function importFromParsed(parsed, originalName, fileHash) {
     ? findVehicleByPlate(header.plate_normalized, vehicleMap)
     : null;
   const vehicleId = vehicle?.id || null;
+  const unmatchedPlates = [];
 
   if (!vehicleId && header.plate_normalized) {
+    unmatchedPlates.push(header.plate_normalized);
     warnings.push(`Eşleşmeyen plaka: ${header.plate_normalized}`);
   }
 
@@ -400,6 +456,7 @@ function importFromParsed(parsed, originalName, fileHash) {
 
   const reportId = reportInfo.lastInsertRowid;
   let insertedCount = 0;
+  let expenseCount = 0;
   let skippedCount = 0;
   const errors = [];
   const seen = new Set();
@@ -412,9 +469,40 @@ function importFromParsed(parsed, originalName, fileHash) {
     }
     seen.add(dedupKey);
 
+    const expenseDedupKey = buildExpenseDedupKey(header.plate_normalized, tx);
+    if (expenseDedupExists(expenseDedupKey)) {
+      skippedCount++;
+      continue;
+    }
+
     try {
-      insertTransaction(reportId, vehicleId, header.plate_normalized, tx);
+      const hgsTxId = insertHgsTransaction(reportId, vehicleId, header.plate_normalized, tx);
       insertedCount++;
+
+      if (vehicleId && tx.amount > 0 && tx.transaction_date) {
+        const note = buildExpenseNote(tx, header.plate_normalized);
+        try {
+          const expenseInfo = createHgsExpense({
+            vehicleId,
+            amount: tx.amount,
+            note,
+            date: tx.transaction_date,
+            hgsTransactionId: hgsTxId,
+            dedupKey: expenseDedupKey,
+          });
+          db.prepare("UPDATE hgs_transactions SET expense_id = ? WHERE id = ?").run(
+            expenseInfo.lastInsertRowid,
+            hgsTxId
+          );
+          expenseCount++;
+        } catch (e) {
+          if (String(e.message).includes("UNIQUE")) {
+            skippedCount++;
+          } else {
+            errors.push(e.message);
+          }
+        }
+      }
     } catch (e) {
       if (String(e.message).includes("UNIQUE")) {
         skippedCount++;
@@ -441,8 +529,12 @@ function importFromParsed(parsed, originalName, fileHash) {
     loading_count: header.loading_count,
     passage_total: header.passage_total,
     loading_total: header.loading_total,
+    totalRows: transactions.length,
     insertedCount,
+    expenseCount,
     skippedCount,
+    unmatchedPlates,
+    errorCount: errors.length,
     warnings,
     errors,
     backupPath,
@@ -461,7 +553,9 @@ function importFromParsed(parsed, originalName, fileHash) {
       passage_total: result.passage_total,
       loading_total: result.loading_total,
       inserted_count: insertedCount,
+      expense_count: expenseCount,
       skipped_count: skippedCount,
+      unmatched_plates: unmatchedPlates,
       backup: backupPath,
     },
     `HGS PDF import: ${originalName}`
@@ -496,6 +590,17 @@ function getReportSummary(reportId) {
     )
     .get(reportId);
   if (!report) return null;
+
+  const stats = db
+    .prepare(
+      `SELECT
+        (SELECT COUNT(*) FROM hgs_transactions WHERE report_id = ?) AS total_rows,
+        (SELECT COUNT(*) FROM transactions t
+          INNER JOIN hgs_transactions h ON h.id = t.hgs_transaction_id
+          WHERE h.report_id = ?) AS expense_count`
+    )
+    .get(reportId, reportId);
+
   return {
     ...report,
     matched: !!report.vehicle_id,
@@ -503,12 +608,19 @@ function getReportSummary(reportId) {
       report.period_start && report.period_end
         ? `${report.period_start} — ${report.period_end}`
         : "—",
+    totalRows: stats?.total_rows || 0,
+    expenseCount: stats?.expense_count || 0,
+    unmatchedPlates: report.vehicle_id || !report.plate_normalized ? [] : [report.plate_normalized],
   };
 }
 
 module.exports = {
   parsePdfText,
   parsePdfBuffer,
+  parseReportHeader,
+  parseTransactions,
+  parseHgsAmount,
+  parseTrDate,
   importFromBuffer,
   importFromParsed,
   importFromParsedText,
@@ -516,5 +628,7 @@ module.exports = {
   getReportSummary,
   buildParseSummary,
   buildTxDedupKey,
+  buildExpenseDedupKey,
+  buildExpenseNote,
   hashBuffer,
 };
