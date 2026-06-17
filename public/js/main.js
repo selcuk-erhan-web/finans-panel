@@ -107,15 +107,14 @@
     Chart.defaults.plugins.tooltip.enabled = true;
   }
 
-  /* Gider Yönetimi sidebar accordion */
+  /* Gelirler & Gider Yönetimi — sidebar accordion (FLEETOS-INCOME-04) */
   document.querySelectorAll(".nav-group__toggle").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var group = btn.closest(".nav-group");
       if (!group) return;
-      var sub = group.querySelector(".nav-group__sub");
-      var open = group.classList.toggle("is-open");
+      var open = !group.classList.contains("is-open");
+      group.classList.toggle("is-open", open);
       btn.setAttribute("aria-expanded", open ? "true" : "false");
-      if (sub) sub.hidden = !open;
     });
   });
 })();
