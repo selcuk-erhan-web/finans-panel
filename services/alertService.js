@@ -1,6 +1,7 @@
 const db = require("../lib/db");
 const profitService = require("./profitService");
 const documentService = require("./documentService");
+const reconciliationService = require("./reconciliationService");
 const { money } = require("../lib/finance");
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
@@ -232,6 +233,26 @@ function detectDocumentExpiryAlerts(ref = new Date()) {
   return alerts;
 }
 
+function detectReconUnderpaymentAlerts() {
+  const alerts = [];
+  reconciliationService.getUnderpaidRows().forEach((row) => {
+    const severity = reconciliationService.alertSeverityForUnderpayment(row.difference);
+    if (!severity) return;
+    alerts.push({
+      severity,
+      type: "RECON_UNDERPAYMENT",
+      title: "Eksik Tahsilat Riski",
+      plate: row.plate || "—",
+      vehicleId: row.vehicleId,
+      message: reconciliationService.buildUnderpaymentMessage(row),
+      amount: row.difference,
+      period: row.period,
+      company: row.company,
+    });
+  });
+  return alerts;
+}
+
 function getCorporateAlerts(options = {}) {
   const ref = options.refDate ? new Date(options.refDate) : new Date();
   const alerts = sortAlerts([
@@ -240,6 +261,7 @@ function getCorporateAlerts(options = {}) {
     ...detectHgsAnomalyAlerts(ref),
     ...detectMaintenanceRiskAlerts(),
     ...detectDocumentExpiryAlerts(ref),
+    ...detectReconUnderpaymentAlerts(),
   ]);
   return alerts;
 }
@@ -258,6 +280,7 @@ function getAlertSummary(alerts = null) {
       HGS_ANOMALY: list.filter((a) => a.type === "HGS_ANOMALY"),
       MAINTENANCE_RISK: list.filter((a) => a.type === "MAINTENANCE_RISK"),
       DOCUMENT_EXPIRY: list.filter((a) => a.type === "DOCUMENT_EXPIRY"),
+      RECON_UNDERPAYMENT: list.filter((a) => a.type === "RECON_UNDERPAYMENT"),
     },
   };
 }
@@ -271,5 +294,6 @@ module.exports = {
   detectHgsAnomalyAlerts,
   detectMaintenanceRiskAlerts,
   detectDocumentExpiryAlerts,
+  detectReconUnderpaymentAlerts,
   SEVERITY_ORDER,
 };

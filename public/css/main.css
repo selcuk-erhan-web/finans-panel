@@ -4364,6 +4364,84 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS-RECON-01 — Hakediş doğrulama */
+.recon-hub__header {
+  margin-bottom: 8px;
+}
+
+.recon-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.recon-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.recon-hub__desc {
+  margin: 0;
+  color: #64748b;
+  max-width: 760px;
+}
+
+.recon-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.recon-kpi {
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recon-kpi span {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.recon-kpi strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.recon-kpi--diff strong.recon-kpi__neg { color: #dc2626; }
+.recon-kpi--diff strong.recon-kpi__pos { color: #2563eb; }
+.recon-kpi--alert { border-color: #fecaca; background: #fef2f2; }
+.recon-kpi--alert strong { color: #dc2626; }
+
+.recon-diff { font-weight: 700; }
+.recon-diff--neg { color: #dc2626; }
+.recon-diff--pos { color: #2563eb; }
+
+.recon-row--underpaid td:nth-child(6) { font-weight: 700; }
+.recon-note {
+  max-width: 280px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .recon-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-in, .page-enter .dash > *, .metric, .fleet-card { animation: none !important; transition: none !important; }
 }
