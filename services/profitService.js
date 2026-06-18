@@ -81,28 +81,20 @@ function ingestIncome(map) {
 }
 
 function ingestFuel(map) {
-  const linkedFuelTx = new Set(
-    db
-      .prepare(
-        `SELECT fuel_record_id FROM transactions
-         WHERE fuel_record_id IS NOT NULL AND fuel_record_id != ''`
-      )
-      .all()
-      .map((r) => Number(r.fuel_record_id))
-  );
-
+  // fuel_records are the canonical fuel total (import + manual entries in fuel module).
+  // Linked yakit transactions (fuel_record_id set) mirror the same amount — do not add again.
   db.prepare(
-    `SELECT id, vehicle_id, COALESCE(total_amount, total_cost, 0) AS amt
+    `SELECT vehicle_id, COALESCE(total_amount, total_cost, 0) AS amt
      FROM fuel_records WHERE vehicle_id IS NOT NULL`
   )
     .all()
     .forEach((r) => {
-      if (linkedFuelTx.has(Number(r.id))) return;
       const bucket = map.get(Number(r.vehicle_id));
       if (!bucket) return;
       bucket.fuelExpense += safeAmount(r.amt);
     });
 
+  // Manual Yakıt giderleri written only as transactions (no fuel_records row).
   db.prepare(
     `SELECT vehicle_id, amount FROM transactions
      WHERE type = 'expense' AND vehicle_id IS NOT NULL

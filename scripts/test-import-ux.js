@@ -50,11 +50,23 @@ function main() {
   assert(hgsRoute.includes("hgs-hub"), "hgs-hub class missing");
   assert(hgsRoute.includes("hgsImportFormHtml"), "HGS import form hook missing");
 
+  const vehiclesRoute = fs.readFileSync(path.join(__dirname, "../routes/vehicles.js"), "utf8");
+  assert(vehiclesRoute.includes("dash--vehicles-fit"), "vehicles fit layout missing");
+  assert(vehiclesRoute.includes("fleetCardGrid(summaries, { fit: true })"), "fit fleet grid missing");
+  assert(vehiclesRoute.includes("vehicles-add-details"), "collapsible vehicle add form missing");
+
+  const fleetJs = fs.readFileSync(path.join(__dirname, "../lib/components/fleet.js"), "utf8");
+  assert(fleetJs.includes("fleet-card--fit"), "fit fleet card missing");
+  assert(fleetJs.includes('href="/vehicle/'), "vehicle center links missing");
+  assert(fleetJs.includes("Araç Merkezi"), "Araç Merkezi CTA missing");
+
   const css = fs.readFileSync(path.join(__dirname, "../public/css/main.css"), "utf8");
   assert(css.includes(".fuel-hub--compact"), "fuel compact CSS missing");
   assert(css.includes(".fuel-hub-cockpit"), "fuel cockpit CSS missing");
   assert(css.includes(".hgs-upload-dropzone"), "HGS dropzone CSS missing");
   assert(css.includes(".fuel-dropzone--compact"), "compact fuel dropzone CSS missing");
+  assert(css.includes(".dash--vehicles-fit"), "vehicles fit CSS missing");
+  assert(css.includes(".fleet-card-grid--fit"), "3x3 fleet grid CSS missing");
 
   console.log("✓ import UX HTML/CSS smoke tests passed");
   cleanupTestDatabase(tmpDir);

@@ -110,6 +110,44 @@ function main() {
   const emptyRows = require("../services/profitService").getVehicleProfitRows();
   assert(Array.isArray(emptyRows) && emptyRows.length === 0, "empty ok");
 
+  console.log("7) Linked fuel import — count once, not zero or double…");
+  process.env.FLEETOS_DB_PATH = testDbPath;
+  delete require.cache[require.resolve("../lib/db")];
+  delete require.cache[require.resolve("../services/profitService")];
+  const db2 = require("../lib/db");
+  const profitService2 = require("../services/profitService");
+
+  const importNorm = normalizePlate("34 FUEL 1");
+  const importVid = db2
+    .prepare("INSERT INTO vehicles (plate, plate_normalized, type) VALUES (?, ?, 'Servis')")
+    .run("34 FUEL 1", importNorm).lastInsertRowid;
+  db2.prepare(
+    `INSERT INTO transactions (vehicle_id, type, category, category_slug, amount, note, date)
+     VALUES (?, 'income', 'Servis Gelirleri', 'service', 100000, 'svc', '2026-05-15 12:00:00')`
+  ).run(importVid);
+  const fuelIns = db2
+    .prepare(
+      `INSERT INTO fuel_records (vehicle_id, liter, total_amount, fuel_date, liters, total_cost, date)
+       VALUES (?, 50, 10000, '2026-05-01', 50, 10000, '2026-05-01 12:00:00')`
+    )
+    .run(importVid);
+  const fuelId = fuelIns.lastInsertRowid;
+  db2.prepare(
+    `INSERT INTO transactions (vehicle_id, type, category, category_slug, amount, note, date, fuel_record_id)
+     VALUES (?, 'expense', 'Yakıt', 'yakit', 10000, 'import sync', '2026-05-01 12:00:00', ?)`
+  ).run(importVid, fuelId);
+  db2.prepare(
+    `INSERT INTO transactions (vehicle_id, type, category, category_slug, amount, note, date)
+     VALUES (?, 'expense', 'HGS / OGS', 'hgs-ogs', 2000, 'hgs', '2026-05-02 12:00:00')`
+  ).run(importVid);
+
+  const linked = profitService2.getVehicleProfitRows().find((r) => r.vehicleId === importVid);
+  assert(linked, "linked fuel vehicle missing");
+  assert(linked.fuelExpense === 10000, `linked fuel ${linked.fuelExpense}`);
+  assert(linked.hgsExpense === 2000, `linked hgs ${linked.hgsExpense}`);
+  assert(linked.totalExpense === 12000, `linked totalExpense ${linked.totalExpense}`);
+  assert(linked.netProfit === 88000, `linked netProfit ${linked.netProfit}`);
+
   console.log("\n✓ FLEETOS-PROFIT-03 tests passed");
   cleanup();
   try {

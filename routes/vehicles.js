@@ -26,14 +26,14 @@ function getVehicleKm(v) {
 }
 
 function vehicleAddFormHtml() {
-  return `<form method="POST" action="/vehicles" class="form-grid" id="vehicleAddForm">
-    <input name="plate" placeholder="Plaka (ör. 16 SVY 16)" required autocomplete="off" />
+  return `<form method="POST" action="/vehicles" class="vehicle-add-form--fit" id="vehicleAddForm">
+    <input name="plate" placeholder="Plaka" required autocomplete="off" />
     <input name="brand" placeholder="Marka" />
     <input name="model" placeholder="Model" />
     <input name="year" placeholder="Yıl" />
-    <input name="km" type="number" placeholder="Güncel KM" min="0" />
+    <input name="km" type="number" placeholder="KM" min="0" />
     <select name="type" required><option value="Servis">Servis</option><option value="Turizm">Turizm</option></select>
-    <button class="btn btn--primary full" type="submit">Araç Ekle</button>
+    <button class="btn btn--primary btn--sm" type="submit">Kaydet</button>
   </form>`;
 }
 
@@ -56,21 +56,23 @@ function registerVehicles(app) {
     const summaries = getAllVehicleSummaries();
     const vehicles = getVehicles();
 
+    const addOpen = req.query.add === "1" ? " open" : "";
+
     const content = `
-      <div class="dash page-enter dash--vehicles">
-        <p class="page-lead fade-in">Premium filo · <strong>${vehicles.length}</strong> / ${VEHICLE_TARGET} araç</p>
-        ${glassPanel({
-          title: "Yeni araç ekle",
-          desc: "Plaka normalize edilir (16 S 4605 → 16S4605). HGS ve yakıt eşleşmesi için doğru plaka girin.",
-          className: "panel--vehicle-form",
-          body: vehicleAddFormHtml(),
-        })}
-        <section class="fade-in" style="--delay:60ms">
-          <header class="section-head">
-            <h2 class="section-head__title">Filo kartları</h2>
-            <p class="section-head__desc">Kârlı araçlar yeşil, zarardakiler kırmızı glow ile vurgulanır</p>
-          </header>
-          ${fleetCardGrid(summaries)}
+      <div class="dash page-enter dash--dense dash--vehicles dash--vehicles-fit">
+        <div class="vehicles-fit-bar fade-in">
+          <p class="page-lead">Filo · <strong>${vehicles.length}</strong> / ${VEHICLE_TARGET} araç</p>
+          <details class="vehicles-add-details" id="vehicleAddPanel"${addOpen}>
+            <summary class="vehicles-add-details__summary">
+              <span class="vehicles-add-details__label">+ Yeni Araç Ekle</span>
+            </summary>
+            <div class="vehicles-add-details__body">
+              ${vehicleAddFormHtml()}
+            </div>
+          </details>
+        </div>
+        <section class="vehicles-fleet-section fade-in" style="--delay:40ms">
+          ${fleetCardGrid(summaries, { fit: true })}
         </section>
       </div>`;
 
