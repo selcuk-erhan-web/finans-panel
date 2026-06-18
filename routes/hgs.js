@@ -86,7 +86,12 @@ function registerHgs(app) {
     }
 
     const content = `
-      <div class="dash page-enter">
+      <div class="dash page-enter dash--dense hgs-hub">
+        <div class="hgs-workflow-steps hgs-workflow-steps--page" aria-label="HGS iş akışı">
+          <div class="hgs-workflow-step hgs-workflow-step--active"><span>1</span> PDF Seç</div>
+          <div class="hgs-workflow-step"><span>2</span> İçe Aktar</div>
+          <div class="hgs-workflow-step"><span>3</span> Sonuçları İncele</div>
+        </div>
         <p class="page-lead">HGS / OGS Yönetimi · İş Bankası PDF ekstre içe aktarma</p>
         ${importResultBlock}
 
@@ -105,11 +110,10 @@ function registerHgs(app) {
           ${glassPanel({
             title: "Import bilgisi",
             body: `<ul class="hgs-info-list">
+              <li><strong>Adımlar:</strong> PDF seç → İçe Aktar → sonuç ekranında durumu kontrol edin.</li>
               <li>Aynı PDF tekrar yüklenemez (dosya hash kontrolü).</li>
-              <li>Plaka filoda yoksa HGS satırları kaydedilir; gider yazılmaz ve plaka uyarısı gösterilir.</li>
-              <li>Aynı plaka + tarih + tutar + geçiş bilgisi mükerrer engellenir.</li>
-              <li>Import öncesi otomatik veritabanı yedeği alınır.</li>
-              <li>Giderler <strong>HGS / OGS</strong> kategorisinde transactions tablosuna yazılır.</li>
+              <li>Plaka filoda yoksa HGS satırları kaydedilir; <strong>gider yazılmaz</strong> — <a href="/vehicles">Araçlar</a> modülünden plakayı ekleyin.</li>
+              <li>Giderler yalnızca plaka eşleştiğinde <strong>HGS / OGS</strong> kategorisinde oluşur.</li>
             </ul>`,
           })}
         </div>

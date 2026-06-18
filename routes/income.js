@@ -27,6 +27,8 @@ const {
 } = require("../lib/components/hakedisImport");
 const { getVehicles } = require("./vehicles");
 const { moneyInputHtml, formatMoneyInputValue } = require("../utils/money");
+const { incomeHubPageHtml } = require("../lib/components/incomeHub");
+const incomeHubService = require("../services/incomeHubService");
 
 const INCOME_SLUGS = ["service", "tourism", "other"];
 
@@ -176,7 +178,13 @@ function registerIncome(app) {
     app.get(`/income/${slug}`, (req, res) => renderIncomeCategoryPage(req, res, slug));
   });
 
-  app.get("/income", (_req, res) => res.redirect(301, "/income/service"));
+  app.get("/income", (req, res) => {
+    const bundle = incomeHubService.getIncomeDashboardBundle();
+    renderLayout(res, "Gelir Yönetimi", incomeHubPageHtml(bundle), "/income", req, {
+      pageTitle: "Gelir Yönetimi",
+      breadcrumb: "Finans / Gelirler",
+    });
+  });
 
   app.post("/income/service/import", (req, res) => {
     upload.single("pdfFile")(req, res, async (uploadErr) => {

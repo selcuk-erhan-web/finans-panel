@@ -61,7 +61,7 @@ function registerVehicles(app) {
         <p class="page-lead fade-in">Premium filo · <strong>${vehicles.length}</strong> / ${VEHICLE_TARGET} araç</p>
         ${glassPanel({
           title: "Yeni araç ekle",
-          desc: "Plaka normalize edilir; aynı plaka farklı formatta tekrar eklenemez",
+          desc: "Plaka normalize edilir (16 S 4605 → 16S4605). HGS ve yakıt eşleşmesi için doğru plaka girin.",
           className: "panel--vehicle-form",
           body: vehicleAddFormHtml(),
         })}

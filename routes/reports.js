@@ -147,7 +147,7 @@ function registerReports(app) {
                 <h2 class="section-head__title">Araç kârlılık sıralaması</h2>
                 <p class="section-head__desc">Kârlılık motoru · net kâra göre sıralama</p>
               </div>
-              <a href="/profitability" class="btn btn--ghost btn--sm">Araç Karlılık Merkezi →</a>
+              <a href="/vehicles" class="btn btn--ghost btn--sm">Araç Merkezi →</a>
             </header>
             ${vehicleRankCards(profitRankSummaries.length ? profitRankSummaries : summaries, 12)}
           </section>

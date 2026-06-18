@@ -1,35 +1,40 @@
 /**
- * FLEETOS-INCOME-04 — sidebar accordion nav smoke test
+ * FleetOS stabilization nav smoke test
  * node scripts/test-sidebar-nav.js
  */
-const { renderNav } = require("../lib/components/layout");
-const { incomeNavOpen, isIncomeNavItemActive, INCOME_NAV_ITEMS } = require("../lib/incomeNav");
-const { expenseNavOpen, isNavItemActive, EXPENSE_NAV_ITEMS } = require("../lib/expenseNav");
+const { renderNav, isNavActive } = require("../lib/components/layout");
+const { getOpenGroupId, NAV_TREE } = require("../lib/navConfig");
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
-const incomeHtml = renderNav("/income/service");
-assert(incomeHtml.includes('data-nav-group="income"'), "income group");
-assert(incomeHtml.includes("nav-group--income is-open"), "income open on service");
-assert(incomeHtml.includes('href="/income/service"') && incomeHtml.includes("is-active"), "service active");
-assert(incomeHtml.includes("Servis Gelirleri"), "service label");
-assert(incomeHtml.includes("Turizm Gelirleri"), "tourism label");
-assert(incomeHtml.includes("Diğer Gelirler"), "other label");
+const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
+assert(!fleetGroup.items.some(([href]) => href === "/maintenance"), "bakim removed from filo");
 
-const fuelHtml = renderNav("/fuel");
-assert(fuelHtml.includes('nav-group--expense is-open'), "expense open on fuel");
-assert(fuelHtml.includes('href="/fuel"') && fuelHtml.includes("nav-link--expense is-active"), "fuel active");
-assert(fuelHtml.includes("HGS / OGS"), "hgs label");
-assert(fuelHtml.includes("Bakım"), "maint label");
-assert(!fuelHtml.includes("Personel"), "no legacy category nav");
+const financeGroup = NAV_TREE.find((n) => n.id === "finance");
+assert(financeGroup, "finance group exists");
+assert(financeGroup.items.some(([href]) => href === "/cashflow"), "cashflow under finance");
 
-assert(incomeNavOpen("/income/tourism"), "tourism section");
-assert(expenseNavOpen("/expenses"), "expenses section open parent");
-assert(expenseNavOpen("/hgs"), "hgs section");
-assert(isIncomeNavItemActive(INCOME_NAV_ITEMS[0], "/income/service"), "service path active");
-assert(!isIncomeNavItemActive(INCOME_NAV_ITEMS[1], "/income/service"), "tourism not active on service");
-assert(isNavItemActive(EXPENSE_NAV_ITEMS[0], "/fuel/edit/3"), "fuel edit active");
+const opsGroup = NAV_TREE.find((n) => n.id === "operations");
+assert(!opsGroup.items.some(([href]) => href === "/cashflow"), "cashflow removed from operasyon");
 
-console.log("✓ FLEETOS-INCOME-04 sidebar nav tests passed");
+const homeHtml = renderNav("/");
+assert(homeHtml.includes('href="/"') && homeHtml.includes("is-active"), "home active");
+assert(homeHtml.includes('data-nav-group="finance"'), "finance group in nav");
+const fleetSub = homeHtml.match(/id="nav-sub-fleet"[^>]*>([\s\S]*?)<\/div>/);
+assert(fleetSub && !fleetSub[1].includes("Bakım"), "no bakim under fleet subnav");
+
+const incomeHubHtml = renderNav("/income");
+assert(getOpenGroupId("/income") === "income", "income group open on hub");
+assert(isNavActive("/income", "/income"), "income hub active");
+
+const cashflowHtml = renderNav("/cashflow");
+assert(getOpenGroupId("/cashflow") === "finance", "cashflow opens finance group");
+assert(cashflowHtml.includes('data-nav-group="finance"') && cashflowHtml.includes("is-open"), "finance expanded");
+
+const maintHtml = renderNav("/maintenance");
+assert(getOpenGroupId("/maintenance") === "expense", "maintenance only under expense");
+assert(maintHtml.includes('data-nav-group="expense"') && maintHtml.includes("is-open"), "expense expanded on maintenance");
+
+console.log("✓ FleetOS stabilization sidebar nav tests passed");

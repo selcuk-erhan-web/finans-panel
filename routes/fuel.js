@@ -110,59 +110,96 @@ function registerFuel(app) {
       : "";
 
     const content = `
-      <div class="dash page-enter">
+      <div class="dash page-enter dash--dense fuel-hub fuel-hub--compact">
         <p class="page-lead">Yakıt yönetimi · ${rows.length} kayıt</p>
         ${importResultBlock}
         ${globalUnmatchedBlock}
 
-        <div class="grid2">
-          <div class="fuel-col-stack">
-            <section class="fuel-import-card" id="fuelExcelImportCard">
-              <div class="fuel-import-header">
-                <div>
-                  <p class="eyebrow">UTTS / Arkpet / Shell</p>
-                  <h2>Yakıt Excel İçe Aktar</h2>
-                  <p>Dokum detay dosyasından yakıt kayıtları oluşturulur. İsteğe bağlı Yakıt Alım Raporu ile mutabakat yapılır.</p>
-                </div>
+        <div class="fuel-hub-cockpit">
+          <section class="fuel-manual-card panel fuel-manual-card--primary">
+            <header class="panel__head panel__head--compact">
+              <div>
+                <p class="eyebrow">Birincil iş akışı</p>
+                <h2 class="panel__title">Yakıt Ekle</h2>
               </div>
-              ${fuelImportDualFormHtml()}
-            </section>
+            </header>
+            <div class="panel__body panel__body--compact">
+              <form method="POST" action="/fuel/add" class="fuel-manual-form fuel-manual-form--compact" id="fuelForm">
+                <div class="fuel-field fuel-field--full">
+                  <label class="field-label">Araç</label>
+                  <select name="vehicle_id" required>${vehicleOptions(vehicles, query.vehicle_id)}</select>
+                </div>
+                <div class="fuel-field">
+                  <label class="field-label">Tarih</label>
+                  <input type="date" name="fuel_date" value="${today}" required/>
+                </div>
+                <div class="fuel-field">
+                  <label class="field-label">Yakıt istasyonu</label>
+                  <input name="station" placeholder="Shell, Opet, BP"/>
+                </div>
+                <div class="fuel-field">
+                  <label class="field-label">Litre</label>
+                  <input name="liter" type="number" step="0.01" min="0.1" placeholder="Litre" required />
+                </div>
+                <div class="fuel-field">
+                  <label class="field-label">Birim fiyat (₺/L)</label>
+                  <input name="price_per_liter" type="number" step="0.01" min="0" placeholder="₺/L" id="fuelPrice"/>
+                </div>
+                <div class="fuel-field">
+                  <label class="field-label">Toplam tutar</label>
+                  ${moneyInputHtml("total_amount", { id: "fuelTotal", placeholder: "Toplam" })}
+                </div>
+                <div class="fuel-field">
+                  <label class="field-label">KM</label>
+                  <input name="km" type="number" min="0" placeholder="KM"/>
+                </div>
+                <div class="fuel-field fuel-field--full">
+                  <label class="field-label">Not</label>
+                  <input name="note" placeholder="Not"/>
+                </div>
+                <div class="fuel-field fuel-field--full fuel-field--actions">
+                  <button type="submit" class="btn btn--primary">Yakıt Kaydet</button>
+                </div>
+              </form>
+            </div>
+          </section>
 
+          <section class="panel fuel-hub-import-card" id="fuelExcelImportCard">
+            <header class="panel__head panel__head--compact">
+              <div>
+                <p class="eyebrow">Toplu içe aktar</p>
+                <h2 class="panel__title">Excel İçe Aktar</h2>
+              </div>
+            </header>
+            <div class="panel__body panel__body--compact">
+              ${fuelImportDualFormHtml({ compact: true })}
+            </div>
+          </section>
+        </div>
+
+        <div class="fuel-hub-lower">
           ${glassPanel({
-            title: "Yakıt ekle",
-            body: `<form method="POST" action="/fuel/add" class="form-grid" id="fuelForm">
-              <select name="vehicle_id" required>${vehicleOptions(vehicles, query.vehicle_id)}</select>
-              <input name="liter" type="number" step="0.01" min="0.1" placeholder="Litre" required />
-              <input name="price_per_liter" type="number" step="0.01" min="0" placeholder="₺/Litre" id="fuelPrice"/>
-              ${moneyInputHtml("total_amount", { id: "fuelTotal", placeholder: "Toplam (örn. 42.357,00)" })}
-              <input name="km" type="number" min="0" placeholder="KM"/>
-              <input name="station" placeholder="İstasyon"/>
-              <input type="date" name="fuel_date" value="${today}" required/>
-              <input class="full" name="note" placeholder="Not"/>
-              <button type="submit" class="btn btn--primary full">Kaydet</button>
-            </form>`,
-          })}
-          </div>
-          ${glassPanel({
-            title: "Filtre",
+            title: "Filtre ve dışa aktar",
             body: `${filtersForm}
-              <div class="fuel-export-actions">
+              <div class="fuel-export-actions fuel-export-actions--compact">
                 <a href="${exportCsvUrl}" class="btn btn--ghost btn--sm">CSV indir</a>
                 <a href="${exportXlsxUrl}" class="btn btn--ghost btn--sm">Excel indir</a>
               </div>`,
+            className: "fuel-hub-filter-panel",
+          })}
+          ${glassPanel({
+            title: "Yakıt listesi",
+            action: analytics.unmatchedCount
+              ? `<a href="/fuel?unmatched=1" class="btn btn--ghost btn--sm">${analytics.unmatchedCount} eşleşmeyen</a>`
+              : "",
+            body: dataTable(
+              ["Araç", "Litre", "₺/L", "Toplam", "KM", "İstasyon", "Tarih", ""],
+              tableRows,
+              { text: rows.length ? "Kayıt bulunamadı." : "Henüz yakıt kaydı yok. Yukarıdan manuel ekleyin veya Excel içe aktarın." }
+            ),
+            className: "fuel-hub-list-panel",
           })}
         </div>
-        ${glassPanel({
-          title: "Yakıt listesi",
-          action: analytics.unmatchedCount
-            ? `<a href="/fuel?unmatched=1" class="btn btn--ghost btn--sm">${analytics.unmatchedCount} eşleşmeyen</a>`
-            : "",
-          body: dataTable(
-            ["Araç", "Litre", "₺/L", "Toplam", "KM", "İstasyon", "Tarih", ""],
-            tableRows,
-            { text: "Henüz yakıt kaydı yok." }
-          ),
-        })}
       </div>
       <script>
         (function(){
@@ -182,7 +219,7 @@ function registerFuel(app) {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
     renderLayout(res, "Yakıt", content, "/fuel", req, {
       pageTitle: "Yakıt Yönetimi",
-      breadcrumb: "Operasyon / Yakıt",
+      breadcrumb: "Giderler / Yakıt",
     });
   });
 

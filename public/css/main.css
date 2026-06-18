@@ -1445,6 +1445,7 @@ input:focus, select:focus {
   height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 2;
 }
 .fuel-dropzone strong {
   font-size: 15px;
@@ -4700,6 +4701,1397 @@ input:focus, select:focus {
   .cashflow-obligation-grid { grid-template-columns: 1fr; }
 }
 
+/* ═══ FLEETOS RECOVERY R1–R7 UX Stabilization ═══ */
+
+/* Large screen — use horizontal space */
+@media (min-width: 1600px) {
+  :root { --sidebar-w: 272px; }
+  .workspace__body { padding: 28px 48px 56px; max-width: none; }
+  .masthead { padding: 24px 48px 20px; }
+  .cmd-mid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 16px;
+  }
+  .metric-grid--executive { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .fleet-card-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .fuel-recovery-layout { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 1920px) {
+  .cmd-kpi-row--exec { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .dash.command-center .cmd-kpi-row { gap: 16px; }
+}
+
+/* Text clipping fixes */
+.nav-link__label {
+  white-space: normal;
+  line-height: 1.35;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.nav-link--sub.nav-link--text .nav-link__label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.panel__title,
+.section-head__title,
+.masthead__title,
+.cmd-panel__title,
+.recon-hub__title,
+.hr-hub__title {
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.25;
+}
+
+.cmd-kpi-card__label,
+.cmd-metric__label {
+  white-space: normal;
+  line-height: 1.3;
+  overflow: visible;
+}
+
+.cmd-kpi-card__value,
+.cmd-metric__value {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
+}
+
+.cmd-exec-panel__hero {
+  max-width: none;
+  flex: 0 1 auto;
+  min-width: 140px;
+}
+
+.metric {
+  min-height: 0;
+  height: auto;
+}
+
+.panel {
+  overflow: visible;
+}
+
+.panel__head {
+  align-items: center;
+}
+
+/* Sidebar section groups (R2) */
+.nav-section { margin-bottom: 14px; }
+.nav-section__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #64748b;
+  padding: 8px 12px 6px;
+}
+.nav-section__links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sidebar__nav .nav-link {
+  min-height: 36px;
+  align-items: center;
+  padding: 8px 12px;
+}
+.sidebar__nav .nav-link__label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Onboarding callout (R5/R6) */
+.setup-callout {
+  display: flex;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  border: 1px solid #c7d2fe;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+  margin-bottom: 8px;
+}
+.setup-callout__icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+.setup-callout__title { font-size: 16px; font-weight: 800; margin: 0 0 6px; color: var(--ink); }
+.setup-callout__msg { font-size: 14px; color: var(--ink-2); margin: 0 0 10px; line-height: 1.5; }
+.setup-callout__steps {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.setup-callout__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* HGS workflow (R3) */
+.hgs-workflow-steps {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.hgs-workflow-step {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-align: center;
+}
+.hgs-workflow-step span {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  font-size: 11px;
+}
+.hgs-workflow-step--active {
+  border-color: #818cf8;
+  background: #eef2ff;
+  color: #3730a3;
+}
+.hgs-workflow-step--active span { background: #6366f1; color: #fff; }
+.hgs-upload-field { display: flex; flex-direction: column; gap: 8px; }
+.hgs-upload-label { font-weight: 700; font-size: 14px; color: #0f172a; }
+.hgs-upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px;
+  border: 2px dashed rgba(99, 102, 241, 0.35);
+  border-radius: var(--r-xl);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.04) 0%, rgba(139, 92, 246, 0.06) 100%);
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  transition: border-color 0.25s var(--ease), background 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.hgs-upload-dropzone:hover,
+.hgs-upload-dropzone.has-file {
+  border-color: var(--blue);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.06) 100%);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
+}
+.hgs-upload-dropzone input[type="file"].hgs-upload-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+  font-size: 0;
+}
+.hgs-upload-dropzone__visual {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.hgs-upload-dropzone__visual strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.hgs-upload-dropzone__visual span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.hgs-upload-dropzone__file {
+  font-size: 12px;
+  font-style: normal;
+  color: var(--violet);
+  font-weight: 600;
+}
+.hgs-import-form {
+  position: relative;
+  z-index: 2;
+}
+.hgs-hub .hgs-import-card.fuel-import-card {
+  overflow: visible;
+}
+.hgs-upload-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.hgs-upload-hint { margin: 0; font-size: 13px; color: #64748b; }
+.hgs-submit-btn { margin-top: 8px; width: 100%; }
+.btn--lg { padding: 12px 22px; font-size: 14px; }
+
+.hgs-status-pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.hgs-pipe {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 100px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+.hgs-pipe--ok { border-color: #86efac; background: #f0fdf4; color: #166534; }
+.hgs-pipe--warn { border-color: #fcd34d; background: #fffbeb; color: #92400e; }
+.hgs-pipe--err { border-color: #fca5a5; background: #fef2f2; color: #991b1b; }
+.hgs-pipe--muted { opacity: 0.75; }
+.hgs-expense-hint {
+  font-size: 13px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Fuel recovery layout (R4) */
+.fuel-recovery-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+.fuel-manual-card { background: #fff; border-radius: var(--r-lg); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.fuel-manual-form .field-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: -4px;
+}
+@media (max-width: 900px) {
+  .fuel-recovery-layout { grid-template-columns: 1fr; }
+}
+
+/* Reconciliation CTA (R7) */
+.recon-hub__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Rich empty states */
+.empty--rich .empty__ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 12px;
+}
+.empty--rich h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+.empty--rich p { font-size: 14px; color: var(--muted); max-width: 48ch; margin: 0 auto 12px; line-height: 1.5; }
+.empty__action { margin-top: 12px; }
+
+.kpi-zero-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+.kpi-zero-hint a { color: var(--blue-d); font-weight: 600; }
+
 @media (prefers-reduced-motion: reduce) {
   .fade-in, .page-enter .dash > *, .metric, .fleet-card { animation: none !important; transition: none !important; }
+}
+
+/* ============================================================
+   FLEETOS Executive UX Refinement Sprint
+   ============================================================ */
+
+/* Collapsible sidebar — executive hierarchy */
+.sidebar__nav[data-sidebar-nav="fleetos-executive-nav"] {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sidebar__nav .nav-group { margin: 1px 0; }
+
+/* Dense page layouts */
+.dash--dense {
+  gap: 14px;
+}
+.dash--dense .panel {
+  margin: 0;
+}
+.dash--dense .panel__head {
+  padding: 11px 16px;
+}
+.dash--dense .panel__body {
+  padding: 12px 16px;
+}
+.dash--dense .panel__title {
+  font-size: 15px;
+}
+.dash--dense .panel__desc {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.dash--dense [class$="__header"] {
+  margin-bottom: 2px;
+}
+.dash--dense [class$="__title"] {
+  font-size: 20px;
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+.dash--dense [class$="__desc"] {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.45;
+}
+.dash--dense [class$="__eyebrow"] {
+  margin-bottom: 2px;
+  font-size: 10px;
+}
+.dash--dense .grid2 {
+  gap: 12px;
+}
+.dash--dense .form-grid {
+  gap: 10px;
+}
+.dash--dense .table-wrap {
+  margin-top: 0;
+}
+
+/* Hub KPI rows — compact */
+.dash--dense .sub-kpi-row,
+.dash--dense .hr-kpi-row,
+.dash--dense .doc-kpi-row,
+.dash--dense .recon-kpi-row,
+.dash--dense .corp-alert-summary-row,
+.dash--dense .payroll-kpi-row {
+  gap: 10px;
+  margin-bottom: 0;
+}
+.dash--dense .sub-kpi,
+.dash--dense .hr-kpi,
+.dash--dense .doc-kpi,
+.dash--dense .recon-kpi,
+.dash--dense .corp-alert-kpi,
+.dash--dense .payroll-kpi {
+  padding: 10px 12px;
+}
+.dash--dense .sub-kpi strong,
+.dash--dense .hr-kpi strong,
+.dash--dense .doc-kpi strong,
+.dash--dense .recon-kpi strong,
+.dash--dense .corp-alert-kpi strong,
+.dash--dense .payroll-kpi strong {
+  font-size: 18px;
+  line-height: 1.15;
+}
+.dash--dense .sub-kpi span,
+.dash--dense .hr-kpi span,
+.dash--dense .doc-kpi span,
+.dash--dense .recon-kpi span {
+  font-size: 11px;
+}
+
+/* Global KPI card height reduction (~30%) */
+.metric {
+  min-height: 104px;
+  padding: 17px 18px 15px;
+}
+.metric__top {
+  margin-bottom: 8px;
+}
+.metric__icon {
+  width: 38px;
+  height: 38px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+.metric__value {
+  font-size: 24px;
+}
+.metric__desc {
+  margin-top: 6px;
+  font-size: 12px;
+}
+.metric-grid {
+  gap: 14px;
+}
+.metric-grid--executive {
+  gap: 14px;
+}
+
+/* Gelir Yönetimi hub */
+.income-hub__header {
+  margin-bottom: 4px;
+}
+.income-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.income-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.income-hub-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: #c7d2fe;
+}
+.income-hub-card__icon {
+  font-size: 26px;
+  line-height: 1;
+}
+.income-hub-card__title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.income-hub-card__desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+  flex: 1;
+}
+.income-hub-card__cta {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-d);
+  margin-top: 4px;
+}
+.income-hub-card--service { border-top: 3px solid #6366f1; }
+.income-hub-card--tourism { border-top: 3px solid #10b981; }
+.income-hub-card--other { border-top: 3px solid #f59e0b; }
+.income-hub-card--reconcile { border-top: 3px solid #ef4444; }
+
+@media (max-width: 900px) {
+  .income-hub-grid { grid-template-columns: 1fr; }
+}
+
+/* Settings tabs */
+.settings-hub__header {
+  margin-bottom: 4px;
+}
+.settings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.settings-tab {
+  padding: 8px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.settings-tab:hover {
+  border-color: #c7d2fe;
+  color: var(--ink);
+}
+.settings-tab.is-active {
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  border-color: transparent;
+  color: #fff;
+}
+.settings-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.settings-panel__title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+.settings-panel__subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 14px 0 8px;
+  color: var(--ink);
+}
+.settings-panel__text {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.settings-form {
+  max-width: 400px;
+}
+.info-grid--compact {
+  gap: 10px;
+}
+.prep-stats--compact {
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.export-actions--grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.data-table--compact th,
+.data-table--compact td {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* Uyarılar — professional empty state */
+.alerts-empty-state {
+  text-align: center;
+  padding: 36px 24px;
+  border-radius: var(--r-lg);
+  border: 1px solid #bbf7d0;
+  background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%);
+}
+.alerts-empty-state__icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 24px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alerts-empty-state__title {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.alerts-empty-state__desc {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0 auto 16px;
+  max-width: 42ch;
+  line-height: 1.5;
+}
+.alerts-empty-state__actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* HGS hub — tighter workflow */
+.hgs-hub {
+  gap: 14px;
+}
+.hgs-hub .page-lead {
+  margin: 0;
+  font-size: 13px;
+}
+.hgs-hub .grid2 {
+  gap: 12px;
+}
+.hgs-hub .hgs-workflow-steps {
+  margin-bottom: 10px;
+}
+.hgs-workflow-steps--page {
+  margin-bottom: 4px;
+}
+.hgs-workflow-steps--page .hgs-workflow-step {
+  flex: 1;
+  min-width: 140px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.hgs-hub .fuel-import-card {
+  padding: 14px 16px;
+}
+
+/* Taşeron — above-fold compaction */
+.dash--dense.sub-hub .sub-kpi-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 1100px) {
+  .dash--dense.sub-hub .sub-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Evrak — reduce vertical gaps */
+.dash--dense.documents-hub .doc-kpi-row {
+  margin-bottom: 0;
+}
+.dash--dense.documents-hub .grid2 + .panel {
+  margin-top: 0;
+}
+
+/* 1920px — more content above fold */
+@media (min-width: 1600px) {
+  .dash--dense {
+    gap: 12px;
+  }
+  .workspace__body {
+    padding-bottom: 20px;
+  }
+}
+
+/* ============================================================
+   FLEETOS Stabilization Sprint
+   ============================================================ */
+
+/* KPI empty states */
+.kpi-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.kpi-empty__title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink-2);
+  line-height: 1.25;
+}
+.kpi-empty__lines {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.metric--empty .metric__value {
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+}
+.metric--empty {
+  min-height: 108px;
+}
+.hr-kpi--empty strong,
+.cashflow-kpi--empty strong {
+  display: block;
+}
+.hr-kpi--empty .kpi-empty__title,
+.cashflow-kpi--empty .kpi-empty__title {
+  font-size: 13px;
+}
+
+/* Income dashboard */
+.income-hub--dashboard .income-hub__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.income-hub-link {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: #fff;
+  text-decoration: none;
+  color: var(--ink-2);
+}
+.income-hub-link:hover {
+  border-color: #c7d2fe;
+  color: var(--ink);
+}
+.income-hub-link--service { border-color: #c7d2fe; }
+.income-hub-link--tourism { border-color: #bbf7d0; }
+.income-hub-link--other { border-color: #fde68a; }
+.income-hub-link--reconcile { border-color: #fecaca; }
+.income-hub-mid {
+  gap: 12px;
+}
+.income-hub-dist-split {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+.chart-wrap--donut {
+  max-height: 160px;
+}
+.income-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.income-dist__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.income-dist__head strong {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.progress__bar--service { background: #6366f1; }
+.progress__bar--tourism { background: #10b981; }
+.progress__bar--other { background: #f59e0b; }
+.income-hub-empty {
+  text-align: center;
+  padding: 24px 16px;
+  border-radius: var(--r-md);
+  border: 1px dashed #e2e8f0;
+  background: #f8fafc;
+}
+.income-hub-empty--compact {
+  padding: 16px 12px;
+}
+.income-hub-empty__title {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.income-hub-empty__hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+/* Personel — equal-height form cards */
+.hr-forms-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+.hr-form-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 420px;
+}
+.hr-form-card .panel__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.hr-form {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-content: start;
+}
+.hr-form .full {
+  grid-column: 1 / -1;
+}
+.hr-form .form-actions {
+  margin-top: auto;
+  padding-top: 8px;
+}
+@media (max-width: 900px) {
+  .hr-forms-grid { grid-template-columns: 1fr; }
+  .hr-form-card { min-height: 0; }
+  .income-hub-dist-split { grid-template-columns: 1fr; }
+}
+
+/* Fuel — collapsible bulk import */
+.fuel-hub-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fuel-manual-card--primary {
+  border: 1px solid #c7d2fe;
+  box-shadow: var(--shadow);
+}
+.fuel-import-details {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: #fff;
+  overflow: hidden;
+}
+.fuel-import-details__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  user-select: none;
+}
+.fuel-import-details__summary::-webkit-details-marker {
+  display: none;
+}
+.fuel-import-details__summary::before {
+  content: "▸";
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform 0.2s var(--ease);
+}
+.fuel-import-details[open] .fuel-import-details__summary::before {
+  transform: rotate(90deg);
+}
+.fuel-import-details__eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  width: 100%;
+}
+.fuel-import-details__title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.fuel-import-details__hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.fuel-import-details__body {
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--line);
+}
+
+/* ============================================================
+   FLEETOS-AKM-01 — Araç Merkezi V2
+   ============================================================ */
+
+.fleet-card--clickable,
+.vehicle-card--clickable {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.fleet-card--clickable:hover,
+.vehicle-card--clickable:hover {
+  text-decoration: none;
+  color: inherit;
+}
+.fleet-card--clickable .fleet-card__cta,
+.vehicle-card--clickable .vehicle-card__cta {
+  pointer-events: none;
+}
+
+.vehicle-center {
+  gap: 14px;
+}
+.vc-header__eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 4px;
+}
+.vc-header__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin-top: 10px;
+}
+.vc-header__fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.vc-header__fact em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.vc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vc-section__head {
+  margin-bottom: 2px;
+}
+.vc-section__title {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 2px;
+  color: var(--ink);
+}
+.vc-section__desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.vc-analysis-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.vc-analysis-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vc-dist-grid {
+  gap: 12px;
+}
+
+.vc-profit-status {
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: #f8fafc;
+}
+.vc-profit-status--up {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+.vc-profit-status--down {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+.vc-profit-status__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.vc-profit-status__value {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.vc-profit-status__meta {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.vc-benchmark {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vc-benchmark__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.vc-benchmark__item:last-child {
+  border-bottom: none;
+}
+.vc-benchmark__item span {
+  color: var(--muted);
+  font-weight: 600;
+}
+.vc-benchmark__item strong {
+  text-align: right;
+  font-size: 14px;
+}
+
+.vc-empty {
+  text-align: center;
+  padding: 20px 14px;
+  border-radius: var(--r-md);
+  border: 1px dashed #e2e8f0;
+  background: #f8fafc;
+}
+.vc-empty__title {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.vc-empty__hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+.vc-alert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vc-alert-item {
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 13px;
+}
+.vc-alert-item strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.vc-alert-item span {
+  color: var(--muted);
+  line-height: 1.4;
+}
+.vc-alert-item--critical {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+.vc-alert-item--warning {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+@media (max-width: 1100px) {
+  .vc-analysis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   FLEETOS FIX — Fuel scroll + HGS PDF clickability
+   ============================================================ */
+
+.fuel-hub-jump {
+  margin-left: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fuel-hub-jump:hover {
+  text-decoration: underline;
+}
+#fuelExcelImportCard,
+#hgsPdfImportCard {
+  scroll-margin-bottom: max(80px, env(safe-area-inset-bottom, 0px) + 48px);
+}
+
+@media (min-width: 1024px) {
+  .dash.fuel-hub:not(.fuel-hub--compact),
+  .dash.hgs-hub {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(56px, env(safe-area-inset-bottom, 0px) + 40px);
+  }
+
+  .dash.fuel-hub:not(.fuel-hub--compact) > *,
+  .dash.hgs-hub > * {
+    flex-shrink: 0;
+  }
+
+  .fuel-hub .fuel-hub-layout,
+  .hgs-hub .grid2 {
+    flex: 0 0 auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .hgs-hub .grid2 {
+    align-items: stretch;
+  }
+
+  .hgs-hub .grid2 > * {
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .dash.fuel-hub:not(.fuel-hub--compact) .panel,
+  .dash.hgs-hub .panel {
+    flex: 0 0 auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .dash.fuel-hub:not(.fuel-hub--compact) .panel__body,
+  .dash.hgs-hub .panel__body {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .fuel-hub .fuel-import-details__body {
+    overflow: visible;
+  }
+}
+
+@media (min-width: 1600px) {
+  .workspace__body:has(.fuel-hub:not(.fuel-hub--compact)),
+  .workspace__body:has(.hgs-hub) {
+    padding-bottom: max(72px, env(safe-area-inset-bottom, 0px) + 56px);
+  }
+}
+
+/* ============================================================
+   FLEETOS FIX — Fuel single-screen compact cockpit
+   ============================================================ */
+
+.fuel-hub--compact {
+  gap: 8px;
+}
+.fuel-hub--compact .page-lead {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.fuel-hub-cockpit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.fuel-hub-lower {
+  display: grid;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+  gap: 10px;
+  min-width: 0;
+}
+
+.fuel-hub--compact .panel__head--compact {
+  padding: 10px 14px 6px;
+}
+.fuel-hub--compact .panel__head--compact .panel__title {
+  font-size: 15px;
+  line-height: 1.2;
+}
+.fuel-hub--compact .panel__body--compact {
+  padding: 8px 14px 12px;
+}
+
+.fuel-manual-form--compact {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 10px;
+  min-width: 0;
+}
+.fuel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.fuel-field--full {
+  grid-column: 1 / -1;
+}
+.fuel-field--actions {
+  margin-top: 2px;
+}
+.fuel-field .field-label {
+  margin-bottom: 0;
+}
+.fuel-field input,
+.fuel-field select {
+  width: 100%;
+  min-width: 0;
+}
+
+.fuel-hub-import-card {
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: var(--shadow);
+  min-width: 0;
+  overflow: visible;
+}
+
+.fuel-import-form--compact {
+  gap: 8px;
+  min-width: 0;
+}
+.fuel-import-dual--compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-width: 0;
+}
+.fuel-dropzone--compact {
+  padding: 12px 10px;
+  gap: 4px;
+  min-width: 0;
+}
+.fuel-dropzone--compact strong {
+  font-size: 12px;
+  line-height: 1.25;
+}
+.fuel-dropzone--compact span {
+  font-size: 11px;
+  line-height: 1.3;
+}
+.fuel-import-options--compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+.fuel-import-options--compact .fuel-import-opt {
+  font-size: 11px;
+  margin: 0;
+}
+.fuel-import-submit--compact {
+  align-self: flex-start;
+  min-height: 36px;
+}
+.fuel-export-actions--compact {
+  margin-top: 8px;
+}
+
+.fuel-hub-filter-panel .panel__head,
+.fuel-hub-list-panel .panel__head {
+  padding: 8px 14px 6px;
+}
+.fuel-hub-filter-panel .panel__title,
+.fuel-hub-list-panel .panel__title {
+  font-size: 14px;
+}
+.fuel-hub-filter-panel .panel__body,
+.fuel-hub-list-panel .panel__body {
+  padding: 8px 14px 10px;
+}
+.fuel-hub-filter-panel .filters--fuel {
+  gap: 6px;
+}
+.fuel-hub-filter-panel .filters--fuel select,
+.fuel-hub-filter-panel .filters--fuel input {
+  font-size: 13px;
+  padding: 6px 8px;
+}
+
+@media (min-width: 1024px) {
+  .dash.fuel-hub--compact {
+    overflow: hidden;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .dash.fuel-hub--compact > .page-lead,
+  .dash.fuel-hub--compact > .fuel-import-result,
+  .dash.fuel-hub--compact > .fuel-unmatched-panel {
+    flex-shrink: 0;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-cockpit {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-lower {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-cockpit > .panel,
+  .dash.fuel-hub--compact .fuel-hub-cockpit > .fuel-manual-card {
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-cockpit .panel__body--compact {
+    flex: 1 1 auto;
+    overflow: visible;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-lower > .panel {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-lower .panel__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dash.fuel-hub--compact .fuel-hub-list-panel .data-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 900px) {
+  .fuel-hub-cockpit,
+  .fuel-hub-lower {
+    grid-template-columns: 1fr;
+  }
+  .fuel-manual-form--compact {
+    grid-template-columns: 1fr;
+  }
+  .fuel-import-dual--compact {
+    grid-template-columns: 1fr;
+  }
+  .dash.fuel-hub--compact {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(48px, env(safe-area-inset-bottom, 0px) + 32px);
+  }
 }

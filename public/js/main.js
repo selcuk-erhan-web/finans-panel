@@ -18,7 +18,7 @@
     f.addEventListener("submit", showLoader);
   });
 
-  document.querySelectorAll("a.btn, a.vehicle-card__cta, a.fleet-card__cta, a.nav-link, a.rank-card, a.expense-cat-card").forEach((a) => {
+  document.querySelectorAll("a.btn, a.vehicle-card__cta, a.fleet-card__cta, a.fleet-card--clickable, a.vehicle-card--clickable, a.nav-link, a.rank-card, a.expense-cat-card, a.income-hub-card").forEach((a) => {
     a.addEventListener("click", (e) => {
       if (a.getAttribute("onclick")) return;
       const href = a.getAttribute("href") || "";
@@ -107,14 +107,20 @@
     Chart.defaults.plugins.tooltip.enabled = true;
   }
 
-  /* Gelirler & Gider Yönetimi — sidebar accordion (FLEETOS-INCOME-04) */
+  /* Executive sidebar — tek açık grup (FLEETOS-EXEC-01) */
   document.querySelectorAll(".nav-group__toggle").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var group = btn.closest(".nav-group");
       if (!group) return;
-      var open = !group.classList.contains("is-open");
-      group.classList.toggle("is-open", open);
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      var willOpen = !group.classList.contains("is-open");
+      document.querySelectorAll(".nav-group.is-open").forEach(function (g) {
+        if (g === group) return;
+        g.classList.remove("is-open");
+        var t = g.querySelector(".nav-group__toggle");
+        if (t) t.setAttribute("aria-expanded", "false");
+      });
+      group.classList.toggle("is-open", willOpen);
+      btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
     });
   });
 })();

@@ -64,7 +64,7 @@ function registerMaintenance(app) {
     </form>`;
 
     const content = `
-      <div class="dash page-enter">
+      <div class="dash page-enter dash--dense">
         <p class="page-lead">Bakım takibi · ${rows.length} kayıt</p>
         <div class="grid2">
           ${glassPanel({
@@ -114,7 +114,7 @@ function registerMaintenance(app) {
 
     renderLayout(res, "Bakım", content, "/maintenance", req, {
       pageTitle: "Bakım Takibi",
-      breadcrumb: "Operasyon / Bakım",
+      breadcrumb: "Giderler / Bakım",
     });
   });
 
@@ -139,7 +139,7 @@ function registerMaintenance(app) {
     if (!m) return res.status(404).send("Kayıt yok");
     const vehicles = getVehicles();
     const content = `
-      <div class="dash page-enter">
+      <div class="dash page-enter dash--dense">
         ${glassPanel({
           title: "Bakım düzenle",
           body: `<form method="POST" action="/maintenance/edit/${m.id}" class="form-grid" style="max-width:520px">

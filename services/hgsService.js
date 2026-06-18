@@ -3,7 +3,10 @@ const db = require("../lib/db");
 function listReports(limit = 25) {
   return db
     .prepare(
-      `SELECT r.*, v.plate AS vehicle_plate
+      `SELECT r.*, v.plate AS vehicle_plate,
+        (SELECT COUNT(*) FROM transactions t
+          INNER JOIN hgs_transactions h ON h.id = t.hgs_transaction_id
+          WHERE h.report_id = r.id) AS expense_count
        FROM hgs_reports r
        LEFT JOIN vehicles v ON v.id = r.vehicle_id
        ORDER BY r.created_at DESC
