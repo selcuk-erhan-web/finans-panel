@@ -2,28 +2,19 @@
  * FLEETOS-MAINTENANCE-02 — evrak takip testleri (temp DB)
  * node scripts/test-document-tracking.js
  */
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+const {
+  prepareIsolatedTestDatabase,
+  cleanupTestDatabase,
+  purgeDbFromRequireCache,
+} = require("./lib/testDbIsolation");
 
-const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "fleetos-doc-test-"));
-const testDbPath = path.join(tmpDir, "test.db");
-process.env.FLEETOS_DB_PATH = testDbPath;
+const CACHE_PATTERNS = ["/services/documentService", "/services/alertService", "/services/profitService"];
 
-function clearModuleCache() {
-  Object.keys(require.cache).forEach((key) => {
-    if (
-      key.includes("/lib/db.js") ||
-      key.includes("/services/documentService") ||
-      key.includes("/services/alertService") ||
-      key.includes("/services/profitService")
-    ) {
-      delete require.cache[key];
-    }
-  });
-}
-
-clearModuleCache();
+const { tmpDir } = prepareIsolatedTestDatabase(
+  "fleetos-doc-test-",
+  "test-document-tracking.js",
+  CACHE_PATTERNS
+);
 
 const db = require("../lib/db");
 const documentService = require("../services/documentService");
@@ -38,10 +29,7 @@ function assert(cond, msg) {
 }
 
 function cleanup() {
-  try {
-    if (fs.existsSync(testDbPath)) fs.unlinkSync(testDbPath);
-    fs.rmdirSync(tmpDir);
-  } catch (e) {}
+  cleanupTestDatabase(tmpDir);
 }
 
 function seedVehicle(plate) {
@@ -115,22 +103,19 @@ function main() {
   assert(expiredAlert?.severity === "critical", "expired alert critical");
 
   console.log("7) Boş veri — hata yok…");
-  const emptyDir = fs.mkdtempSync(path.join(os.tmpdir(), "fleetos-doc-empty-"));
-  const emptyDb = path.join(emptyDir, "empty.db");
-  process.env.FLEETOS_DB_PATH = emptyDb;
-  clearModuleCache();
-  require("../lib/db");
+  const { tmpDir: emptyDir } = prepareIsolatedTestDatabase(
+    "fleetos-doc-empty-",
+    "test-document-tracking-empty",
+    CACHE_PATTERNS
+  );
   const docSvc = require("../services/documentService");
   const alertSvc = require("../services/alertService");
   assert(docSvc.listAll().length === 0, "empty list");
   assert(alertSvc.detectDocumentExpiryAlerts().length === 0, "empty alerts");
+  cleanupTestDatabase(emptyDir);
 
   console.log("\n✓ FLEETOS-MAINTENANCE-02 tests passed");
   cleanup();
-  try {
-    if (fs.existsSync(emptyDb)) fs.unlinkSync(emptyDb);
-    fs.rmdirSync(emptyDir);
-  } catch (e) {}
 }
 
 try {
