@@ -13,6 +13,7 @@ const {
   financialMovementsPanel,
 } = require("../lib/components");
 const { dashboardAlertsPanel } = require("../lib/components/alerts");
+const { complianceDashboardWidgetHtml } = require("../lib/components/complianceDashboard");
 
 const CHART = {
   incomeFill: "rgba(16, 185, 129, 0.2)",
@@ -55,6 +56,7 @@ function registerDashboard(app) {
           ${financeTrendsPanel()}
           <div class="cmd-ops-stack">
             ${dashboardAlertsPanel(corporateAlerts)}
+            ${complianceDashboardWidgetHtml()}
             ${executiveProfitSummary({ profit })}
             ${vehicleProfitRankPanel({ profit })}
             ${operationsCenter({ alerts, profitExpense: profit?.expenseBreakdown })}

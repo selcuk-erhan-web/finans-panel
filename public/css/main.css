@@ -4540,6 +4540,160 @@ input:focus, select:focus {
   border-color: rgba(59, 130, 246, 0.45);
 }
 
+/* FLEETOS CC-4 — Compliance dashboard widget */
+.compliance-widget__loading,
+.compliance-widget__error,
+.compliance-widget-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.compliance-widget__error {
+  color: #dc2626;
+}
+
+.compliance-widget-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.compliance-widget-kpi {
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compliance-widget-kpi span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.compliance-widget-kpi strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.compliance-widget-kpi--active { border-color: #bbf7d0; background: #f0fdf4; }
+.compliance-widget-kpi--active strong { color: #059669; }
+.compliance-widget-kpi--warning { border-color: #fed7aa; background: #fff7ed; }
+.compliance-widget-kpi--warning strong { color: #ea580c; }
+.compliance-widget-kpi--critical { border-color: #fecaca; background: #fff5f5; }
+.compliance-widget-kpi--critical strong { color: #dc2626; }
+.compliance-widget-kpi--expired { border-color: #fecaca; background: #fef2f2; }
+.compliance-widget-kpi--expired strong { color: #b91c1c; }
+
+.compliance-widget-section {
+  margin-top: 10px;
+}
+
+.compliance-widget-section__title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.compliance-widget-risk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compliance-widget-risk-item {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.9fr) minmax(90px, 1.2fr) minmax(72px, 0.8fr) minmax(72px, 0.8fr) minmax(64px, 0.7fr);
+  gap: 6px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(248, 250, 252, 0.85);
+  font-size: 12px;
+}
+
+.compliance-widget-risk-item__plate {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.compliance-widget-risk-item__type,
+.compliance-widget-risk-item__date,
+.compliance-widget-risk-item__days {
+  color: #475569;
+}
+
+.compliance-widget-risk-item__status {
+  font-weight: 700;
+  text-align: right;
+}
+
+.compliance-widget-risk-item--expired .compliance-widget-risk-item__status { color: #b91c1c; }
+.compliance-widget-risk-item--critical .compliance-widget-risk-item__status { color: #dc2626; }
+
+.compliance-widget-score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.compliance-widget-score-card {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #fff;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compliance-widget-score-card__plate {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.compliance-widget-score-card__score {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+.compliance-widget-score-card__status {
+  font-size: 11px;
+  font-style: normal;
+  color: #64748b;
+}
+
+.compliance-widget-score-card--expired .compliance-widget-score-card__score { color: #b91c1c; }
+.compliance-widget-score-card--critical .compliance-widget-score-card__score { color: #dc2626; }
+.compliance-widget-score-card--warning .compliance-widget-score-card__score { color: #ea580c; }
+.compliance-widget-score-card--active .compliance-widget-score-card__score { color: #059669; }
+
+@media (max-width: 900px) {
+  .compliance-widget-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .compliance-widget-risk-item {
+    grid-template-columns: 1fr 1fr;
+  }
+  .compliance-widget-score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* FLEETOS-RECON-01 — Hakediş doğrulama */
 .recon-hub__header {
   margin-bottom: 8px;
