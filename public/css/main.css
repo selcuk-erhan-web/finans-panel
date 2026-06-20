@@ -5702,6 +5702,91 @@ input:focus, select:focus {
   margin: 0;
 }
 
+/* FLEETOS TYR-4 — Tire alerts */
+.masthead__tire-alerts,
+.cmd-tire-alerts-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 34, 206, 0.22);
+  background: rgba(250, 245, 255, 0.92);
+  color: #7e22ce;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.masthead__tire-alerts:hover,
+.cmd-tire-alerts-badge:hover {
+  border-color: rgba(126, 34, 206, 0.35);
+  background: #faf5ff;
+}
+
+.tire-alerts-hub__header {
+  margin-bottom: 8px;
+}
+
+.tire-alerts-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.tire-alerts-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.tire-alerts-hub__desc {
+  margin: 0;
+  color: #64748b;
+}
+
+.tire-alerts-hub__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tire-alerts-hub__counts {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.tire-alerts-hub__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tyr4-alert-row--unread {
+  background: rgba(250, 245, 255, 0.55);
+}
+
+.tyr4-alert-read-form {
+  margin: 0;
+}
+
+.tyr4-pill--mismatch {
+  border-color: #fecaca;
+}
+
+.tyr4-pill--attention {
+  border-color: #fed7aa;
+}
+
 /* FLEETOS CC-6 — Compliance analytics */
 .compliance-analytics-hub__header {
   margin-bottom: 8px;

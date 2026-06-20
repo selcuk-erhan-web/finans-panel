@@ -1,4 +1,5 @@
 const tireSeasonalSchedulerService = require("../services/tireSeasonalSchedulerService");
+const tireAlertService = require("../services/tireAlertService");
 const { tireSeasonalSchedulePageHtml } = require("../lib/components/tireSeasonalSchedule");
 const { getVehicles } = require("./vehicles");
 const { renderLayout, errorPage } = require("../lib/ui");
@@ -30,6 +31,7 @@ function registerTireSeasonalSchedule(app) {
     try {
       const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
       const filters = { vehicle_id: req.query.vehicle_id || "" };
+      tireAlertService.generateTireAlerts(ref);
       const report = tireSeasonalSchedulerService.buildTireSeasonalSchedule(ref, filters);
       res.json({ ok: true, ...report });
     } catch (err) {

@@ -14,6 +14,7 @@ const registerMaintenanceAnalytics = require("./routes/maintenanceAnalytics");
 const registerTireSeasonalSchedule = require("./routes/tireSeasonalSchedule");
 const registerTires = require("./routes/tires");
 const registerTireHistory = require("./routes/tireHistory");
+const registerTireAlerts = require("./routes/tireAlerts");
 const registerFuel = require("./routes/fuel");
 const registerReports = require("./routes/reports");
 const registerProfitability = require("./routes/profitability");
@@ -52,6 +53,7 @@ registerMaintenanceAnalytics(app);
 registerTireSeasonalSchedule(app);
 registerTires(app);
 registerTireHistory(app);
+registerTireAlerts(app);
 registerMaintenanceSchedule(app);
 registerMaintenanceAlerts(app);
 registerMaintenance(app);
@@ -96,5 +98,11 @@ app.listen(port, () => {
     maintenanceAlertService.generateMaintenanceAlerts();
   } catch (err) {
     console.error("maintenance alert sync:", err.message);
+  }
+  try {
+    const tireAlertService = require("./services/tireAlertService");
+    tireAlertService.generateTireAlerts();
+  } catch (err) {
+    console.error("tire alert sync:", err.message);
   }
 });
