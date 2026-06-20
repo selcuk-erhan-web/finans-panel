@@ -21,6 +21,7 @@ assert(fleetGroup.items.some(([href, label]) => href === "/tires" && label === "
 assert(fleetGroup.items.some(([href, label]) => href === "/tire-history" && label === "Lastik Değişim Geçmişi"), "tire history in filo group");
 assert(fleetGroup.items.some(([href, label]) => href === "/tire-seasonal-schedule" && label === "Lastik Sezon Planı"), "tire seasonal schedule in filo group");
 assert(fleetGroup.items.some(([href, label]) => href === "/tire-alerts" && label === "Lastik Uyarıları"), "tire alerts in filo group");
+assert(fleetGroup.items.some(([href, label]) => href === "/tire-analytics" && label === "Lastik Analitiği"), "tire analytics in filo group");
 assert(fleetGroup.items.some(([href, label]) => href === "/documents" && label === "Uygunluk Merkezi"), "compliance nav label");
 
 const expenseGroup = NAV_TREE.find((n) => n.id === "expense");
@@ -43,6 +44,10 @@ assert(
 assert(
   expenseGroup.items.some(([href, label]) => href === "/tire-alerts" && label === "Lastik Uyarıları"),
   "tire alerts also under giderler"
+);
+assert(
+  expenseGroup.items.some(([href, label]) => href === "/tire-analytics" && label === "Lastik Analitiği"),
+  "tire analytics also under giderler"
 );
 
 const financeGroup = NAV_TREE.find((n) => n.id === "finance");
@@ -97,5 +102,9 @@ assert(tireSeasonalHtml.includes("Lastik Sezon Planı"), "tire seasonal schedule
 const tireAlertsHtml = renderNav("/tire-alerts");
 assert(getOpenGroupId("/tire-alerts") === "fleet", "tire alerts opens fleet group");
 assert(tireAlertsHtml.includes("Lastik Uyarıları"), "tire alerts label in nav");
+
+const tireAnalyticsHtml = renderNav("/tire-analytics");
+assert(getOpenGroupId("/tire-analytics") === "fleet", "tire analytics opens fleet group");
+assert(tireAnalyticsHtml.includes("Lastik Analitiği"), "tire analytics label in nav");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");
