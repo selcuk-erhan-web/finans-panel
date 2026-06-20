@@ -10,8 +10,17 @@ function assert(cond, msg) {
 }
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
-assert(!fleetGroup.items.some(([href]) => href === "/maintenance"), "bakim removed from filo");
+assert(
+  fleetGroup.items.some(([href, label]) => href === "/maintenance" && label === "Bakım Merkezi"),
+  "maintenance center in filo group"
+);
 assert(fleetGroup.items.some(([href, label]) => href === "/documents" && label === "Uygunluk Merkezi"), "compliance nav label");
+
+const expenseGroup = NAV_TREE.find((n) => n.id === "expense");
+assert(
+  expenseGroup.items.some(([href, label]) => href === "/maintenance" && label === "Bakım Merkezi"),
+  "maintenance center also under giderler"
+);
 
 const financeGroup = NAV_TREE.find((n) => n.id === "finance");
 assert(financeGroup, "finance group exists");
@@ -23,8 +32,6 @@ assert(!opsGroup.items.some(([href]) => href === "/cashflow"), "cashflow removed
 const homeHtml = renderNav("/");
 assert(homeHtml.includes('href="/"') && homeHtml.includes("is-active"), "home active");
 assert(homeHtml.includes('data-nav-group="finance"'), "finance group in nav");
-const fleetSub = homeHtml.match(/id="nav-sub-fleet"[^>]*>([\s\S]*?)<\/div>/);
-assert(fleetSub && !fleetSub[1].includes("Bakım"), "no bakim under fleet subnav");
 
 const incomeHubHtml = renderNav("/income");
 assert(getOpenGroupId("/income") === "income", "income group open on hub");
@@ -35,7 +42,8 @@ assert(getOpenGroupId("/cashflow") === "finance", "cashflow opens finance group"
 assert(cashflowHtml.includes('data-nav-group="finance"') && cashflowHtml.includes("is-open"), "finance expanded");
 
 const maintHtml = renderNav("/maintenance");
-assert(getOpenGroupId("/maintenance") === "expense", "maintenance only under expense");
-assert(maintHtml.includes('data-nav-group="expense"') && maintHtml.includes("is-open"), "expense expanded on maintenance");
+assert(getOpenGroupId("/maintenance") === "fleet", "maintenance opens fleet group first");
+assert(maintHtml.includes('data-nav-group="fleet"') && maintHtml.includes("is-open"), "fleet expanded on maintenance");
+assert(maintHtml.includes("Bakım Merkezi"), "maintenance center label in nav");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");
