@@ -4869,6 +4869,191 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS TYR-3 — Tire Seasonal Schedule */
+.tire-seasonal-hub__header {
+  margin-bottom: 18px;
+}
+
+.tire-seasonal-hub__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0 0 6px;
+}
+
+.tire-seasonal-hub__title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.tire-seasonal-hub__desc {
+  margin: 0;
+  color: #64748b;
+  max-width: 720px;
+}
+
+.tyr3-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tyr3-kpi {
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tyr3-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tyr3-kpi strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.tyr3-kpi--ready { border-color: #bbf7d0; background: #f0fdf4; }
+.tyr3-kpi--ready strong { color: #15803d; }
+.tyr3-kpi--attention { border-color: #fed7aa; background: #fff7ed; }
+.tyr3-kpi--attention strong { color: #c2410c; }
+.tyr3-kpi--mismatch { border-color: #fecaca; background: #fef2f2; }
+.tyr3-kpi--mismatch strong { color: #b91c1c; }
+.tyr3-kpi--unknown { border-color: #e2e8f0; background: #f8fafc; }
+.tyr3-kpi--unknown strong { color: #64748b; }
+
+.tyr3-season-banner {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #bfdbfe;
+  background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+}
+
+.tyr3-season-banner__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tyr3-season-banner__item span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tyr3-season-banner__item strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.tyr3-filter-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+  color: #0c4a6e;
+  font-size: 13px;
+}
+
+.tyr3-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.tyr3-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.tyr3-badge--ready {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.tyr3-badge--attention {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.tyr3-badge--mismatch {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.tyr3-badge--unknown {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.vc-tire-seasonal-preview {
+  display: grid;
+  gap: 8px;
+}
+
+.vc-tire-seasonal-preview__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.vc-tire-seasonal-preview__row span {
+  color: #64748b;
+}
+
+.vc-tire-seasonal-preview__row strong {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.vc-tire-seasonal-preview__message {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+@media (max-width: 900px) {
+  .tyr3-kpi-row,
+  .tyr3-season-banner {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* FLEETOS MNT-3 — Maintenance Scheduler */
 .mnt-schedule-kpi-row {
   display: grid;

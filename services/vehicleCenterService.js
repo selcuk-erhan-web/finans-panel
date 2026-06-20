@@ -8,6 +8,7 @@ const maintenanceService = require("./maintenanceService");
 const maintenanceSchedulerService = require("./maintenanceSchedulerService");
 const tireService = require("./tireService");
 const tireHistoryService = require("./tireHistoryService");
+const tireSeasonalSchedulerService = require("./tireSeasonalSchedulerService");
 const documentService = require("./documentService");
 const alertService = require("./alertService");
 
@@ -89,6 +90,7 @@ function getVehicleCenterBundle(vehicleId) {
   const maintenanceSchedule = maintenanceSchedulerService.getVehicleSchedulePreview(vehicleId, 5);
   const tireStatus = tireService.getVehicleTireStatus(vehicleId);
   const tireChangeHistory = tireHistoryService.getVehicleTireHistory(vehicleId);
+  const tireSeasonalStatus = tireSeasonalSchedulerService.getVehicleSeasonalPreview(vehicleId);
   const maintenance = maintenanceHistory.records.slice(0, 6).map((row) => ({
     type_label: row.maintenance_type_label,
     amount: row.cost,
@@ -144,6 +146,7 @@ function getVehicleCenterBundle(vehicleId) {
     maintenanceSchedule,
     tireStatus,
     tireChangeHistory,
+    tireSeasonalStatus,
     upcomingMaintenance,
     documents,
     hgsRecords,
