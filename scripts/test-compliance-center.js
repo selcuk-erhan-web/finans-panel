@@ -164,7 +164,53 @@ function main() {
   assert(documentService.INSURANCE_TYPES.has("casco"), "insurance set");
   assert(documentService.TECHNICAL_TYPES.has("inspection"), "technical set");
 
-  console.log("\n✓ FLEETOS CC-1 compliance center tests passed");
+  console.log("11) Compliance Entry UI HTML…");
+  const { documentsPageHtml, complianceTypeOptions } = require("../lib/components/documents");
+  const html = documentsPageHtml({
+    kpi: { expired: 0, within7: 0, within30: 0, within60: 0 },
+    upcoming: [],
+    rows: [],
+    vehicles: [{ id: vehicleId, plate: "16 SYV 16" }],
+    filters: {},
+  });
+  assert(html.includes("Uygunluk Merkezi"), "page title");
+  assert(html.includes("Sigorta, muayene, egzoz ve araç evrak takibi"), "subtitle");
+  assert(html.includes("PDF'den Otomatik Evrak Aktar"), "import panel title");
+  assert(html.includes("Manuel Evrak Kaydı"), "manual form title");
+  assert(html.includes('enctype="multipart/form-data"'), "import multipart form");
+  assert(html.includes("/documents/import/preview"), "import preview route");
+  assert(html.includes('name="issue_date"'), "issue_date field");
+  assert(html.includes('name="policy_number"'), "policy_number field");
+  assert(html.includes('name="insurer"'), "insurer field");
+  assert(html.includes('name="premium_amount"'), "premium_amount field");
+  assert(html.includes('name="station"'), "station field");
+  assert(html.includes('name="result"'), "result field");
+  assert(html.includes("complianceDocType"), "type select id");
+  assert(html.includes("complianceInsuranceFields"), "insurance section");
+  assert(html.includes("complianceTechnicalFields"), "technical section");
+  assert(html.includes("İlk sigorta, muayene veya egzoz kaydını oluşturun."), "empty hint");
+
+  const typeOpts = complianceTypeOptions("");
+  assert(typeOpts.includes('value="emission"'), "emission in options");
+  assert(typeOpts.includes("Egzoz Emisyon"), "emission label");
+  assert(typeOpts.includes('value="license"'), "license in options");
+  assert(typeOpts.includes("Ruhsat"), "Ruhsat label");
+
+  const legacyOpts = complianceTypeOptions("src_psychotechnic");
+  assert(legacyOpts.includes('value="src_psychotechnic"'), "legacy type in edit options");
+
+  console.log("12) Technical fields round-trip via service…");
+  const technical = documentService.create({
+    vehicle_id: vehicleId,
+    document_type: "inspection",
+    expiry_date: "2026-09-01",
+    station: "TÜVTÜRK İstanbul",
+    result: "kaldı",
+  });
+  assert(technical.station === "TÜVTÜRK İstanbul", "inspection station");
+  assert(technical.result === "failed", "inspection result");
+
+  console.log("\n✓ FLEETOS CC-1/CC-2 compliance center tests passed");
 }
 
 try {

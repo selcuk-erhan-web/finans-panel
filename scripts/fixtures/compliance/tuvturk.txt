@@ -1,0 +1,17 @@
+ARAÇ MUAYENE RAPORU | VEHICLE INSPECTION REPORT
+İstasyon:BURSA
+Rapor No | Report No: 1601438707701
+Plaka : 16S4275
+Şasi No : NM0EXXTTRENR45956
+Motor No : NR45956
+Markası : FORD
+Cinsi : Minibüs
+Model Yılı : 2022
+Km : 127370
+Muay. Tarihi : 14/07/2025 14:06:53
+Muayene Sonucu | Inspection Result
+HAFİF KUSURLU | MINOR FAULT
+MUAYENE ONAYLANDI | INSPECTION APPROVED
+14.07.2026 Muayene Geçerlilik Tarihi
+(Inspection Valid Until)
+TÜVTÜRK araç muayene istasyonu raporudur.

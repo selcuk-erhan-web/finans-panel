@@ -11,6 +11,7 @@ function assert(cond, msg) {
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
 assert(!fleetGroup.items.some(([href]) => href === "/maintenance"), "bakim removed from filo");
+assert(fleetGroup.items.some(([href, label]) => href === "/documents" && label === "Uygunluk Merkezi"), "compliance nav label");
 
 const financeGroup = NAV_TREE.find((n) => n.id === "finance");
 assert(financeGroup, "finance group exists");

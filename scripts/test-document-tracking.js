@@ -102,7 +102,23 @@ function main() {
   const expiredAlert = docAlerts.find((a) => a.plate === "34 ABC 99" && a.daysLeft < 0);
   assert(expiredAlert?.severity === "critical", "expired alert critical");
 
-  console.log("7) Boş veri — hata yok…");
+  console.log("8) Compliance UI smoke…");
+  const { documentsPageHtml } = require("../lib/components/documents");
+  const ui = documentsPageHtml({
+    kpi,
+    upcoming,
+    rows: documentService.listAll({}, REF),
+    vehicles: [{ id: vehicleId, plate: "16 SYV 16" }, { id: v2, plate: "34 ABC 99" }],
+    filters: {},
+  });
+  assert(ui.includes("Uygunluk Merkezi"), "compliance page title");
+  assert(ui.includes("PDF'den Otomatik Evrak Aktar"), "import panel title");
+  assert(ui.includes("Manuel Evrak Kaydı"), "manual form title");
+  assert(ui.includes('enctype="multipart/form-data"'), "import multipart form");
+  assert(ui.includes("/documents/import/preview"), "import preview route");
+  assert(ui.includes('name="issue_date"'), "issue_date in form");
+
+  console.log("9) Boş veri — hata yok…");
   const { tmpDir: emptyDir } = prepareIsolatedTestDatabase(
     "fleetos-doc-empty-",
     "test-document-tracking-empty",

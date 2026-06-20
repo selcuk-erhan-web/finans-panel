@@ -4365,6 +4365,181 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS CC-2 — Compliance Entry UI */
+.compliance-form__section {
+  padding: 12px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.75);
+}
+
+.compliance-form__section[hidden] {
+  display: none !important;
+}
+
+.compliance-form__section-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.compliance-form__section-grid {
+  gap: 10px 12px;
+}
+
+.compliance-form__hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.compliance-form .field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  align-self: end;
+  margin-bottom: -4px;
+}
+
+.data-table__empty-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #64748b;
+}
+
+.documents-hub__entry-grid {
+  align-items: start;
+}
+
+.documents-hub__left-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.compliance-import-panel {
+  margin-bottom: 0;
+  border-color: rgba(59, 130, 246, 0.22);
+}
+
+.compliance-import-panel .compliance-upload-dropzone {
+  min-height: 108px;
+  padding: 18px 16px;
+}
+
+.compliance-import-upload__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  margin-top: 10px;
+}
+
+.compliance-import-upload__meta select {
+  min-width: 200px;
+}
+
+.compliance-preview-panel {
+  margin-bottom: 0;
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.compliance-preview-panel .panel__head {
+  padding-bottom: 8px;
+}
+
+.compliance-preview-panel .panel__body--compact {
+  padding: 10px 14px 12px;
+}
+
+.compliance-preview-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+.compliance-preview-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.compliance-preview-field[hidden] {
+  display: none !important;
+}
+
+.compliance-preview-field--full {
+  grid-column: 1 / -1;
+}
+
+.compliance-preview-field .field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0;
+}
+
+.compliance-preview-field input,
+.compliance-preview-field select,
+.compliance-preview-field .money-input {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.compliance-preview-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.compliance-preview-warnings {
+  margin: 0 0 8px;
+  padding-left: 16px;
+  color: #b45309;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.compliance-preview-dup {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+.compliance-import-result {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line, #e2e8f0);
+}
+
+.compliance-import-result--ok {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: #f0fdf4;
+}
+
+.compliance-import-result--err {
+  border-color: rgba(244, 63, 94, 0.25);
+  background: #fff1f2;
+}
+
+.compliance-upload-dropzone.has-file {
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
 /* FLEETOS-RECON-01 — Hakediş doğrulama */
 .recon-hub__header {
   margin-bottom: 8px;
@@ -5362,11 +5537,17 @@ input:focus, select:focus {
   }
 }
 
-/* Evrak — reduce vertical gaps */
-.dash--dense.documents-hub .doc-kpi-row {
+/* Evrak — reduce vertical gaps; KPI below entry grid for above-fold import */
+.dash--dense.documents-hub .documents-hub__header {
+  margin-bottom: 4px;
+}
+.dash--dense.documents-hub .documents-hub__entry-grid {
   margin-bottom: 0;
 }
-.dash--dense.documents-hub .grid2 + .panel {
+.dash--dense.documents-hub .doc-kpi-row {
+  margin: 10px 0 12px;
+}
+.dash--dense.documents-hub .doc-kpi-row + .panel {
   margin-top: 0;
 }
 
