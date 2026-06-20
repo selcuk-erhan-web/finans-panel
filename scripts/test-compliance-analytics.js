@@ -124,8 +124,8 @@ function main() {
 
   console.log("\n4) UI page render");
   const html = complianceAnalyticsPageHtml(analytics);
-  assert("page title", html.includes("Compliance Analytics"), "missing title");
-  assert("health section", html.includes("Fleet Health Score"), "missing health");
+  assert("page title", html.includes("Uygunluk Analitiği"), "missing title");
+  assert("health section", html.includes("Filo Sağlık Skoru"), "missing health");
   assert("vehicle ranking section", html.includes("Vehicle Risk Ranking"), "missing ranking");
   assert("distribution section", html.includes("Document Type Distribution"), "missing distribution");
   assert("renewals section", html.includes("Upcoming Renewals"), "missing renewals");

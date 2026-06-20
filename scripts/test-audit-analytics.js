@@ -249,7 +249,7 @@ function main() {
   test("UI page renders", () => {
     const html = auditAnalyticsPageHtml(analytics, analytics.filters || {});
     assert(html.includes("Denetim Analitiği"), "title");
-    assert(html.includes("Audit Health Score"), "health");
+    assert(html.includes("Denetim Sağlık Skoru"), "health");
     assert(html.includes("Modül Dağılımı"), "modules");
     assert(html.includes("Kritik Değişiklikler"), "critical");
     assert(html.includes("Yönetici Öngörüleri"), "insights");

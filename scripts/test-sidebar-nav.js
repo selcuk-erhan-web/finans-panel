@@ -33,7 +33,9 @@ assert(fleetGroup.items.some(([href, label]) => href === "/tire-history" && labe
 assert(fleetGroup.items.some(([href, label]) => href === "/tire-seasonal-schedule" && label === "Lastik Sezon Planı"), "tire seasonal schedule in filo group");
 assert(fleetGroup.items.some(([href, label]) => href === "/tire-alerts" && label === "Lastik Uyarıları"), "tire alerts in filo group");
 assert(fleetGroup.items.some(([href, label]) => href === "/tire-analytics" && label === "Lastik Analitiği"), "tire analytics in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/documents" && label === "Uygunluk Merkezi"), "compliance nav label");
+assert(fleetGroup.items.some(([href, label]) => href === "/vehicles" && label === "Araç Merkezi"), "vehicle center in filo group");
+assert(fleetGroup.items[0][0] === "/vehicles" && fleetGroup.items[0][1] === "Araç Merkezi", "fleet starts with vehicle center");
+assert(fleetGroup.items[1][0] === "/documents" && fleetGroup.items[1][1] === "Uygunluk Merkezi", "fleet compliance center second");
 
 const expenseGroup = NAV_TREE.find((n) => n.id === "expense");
 assert(
