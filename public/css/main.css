@@ -6255,6 +6255,138 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS AUD-3 — Before/after diff engine */
+.aud1-hub__entity-filter {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.audit-diff-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.audit-diff-group {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  padding: 10px 12px;
+}
+
+.audit-diff-group__title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.audit-diff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.audit-diff-card {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.9fr) minmax(0, 1.4fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.audit-diff-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.audit-diff-field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.audit-diff-values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.audit-diff-old {
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+.audit-diff-new {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.audit-diff-arrow {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.audit-diff-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+}
+
+.audit-diff-badge--added {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.audit-diff-badge--removed {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.audit-diff-badge--modified {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.audit-importance-important {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.audit-importance-critical {
+  border-color: #fecaca;
+  background: #fef2f2;
+  box-shadow: inset 3px 0 0 #dc2626;
+}
+
+@media (max-width: 900px) {
+  .audit-diff-card {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* FLEETOS CC-6 — Compliance analytics */
 .compliance-analytics-hub__header {
   margin-bottom: 8px;

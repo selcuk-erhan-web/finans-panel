@@ -192,6 +192,7 @@ function normalizeAuditRow(row) {
   if (!row) return null;
   const metadata = parseMetadata(row.metadata);
   const parsedLegacy = !metadata && row.new_value ? parseMetadata(row.new_value) : null;
+  const diff = require("./auditDiffService").enrichAuditDiff({ metadata: metadata || parsedLegacy });
 
   return {
     id: String(row.id),
@@ -207,6 +208,7 @@ function normalizeAuditRow(row) {
     metadata: metadata || parsedLegacy,
     metadata_raw: row.metadata || row.new_value || null,
     created_at: row.created_at,
+    ...diff,
   };
 }
 
