@@ -4533,6 +4533,20 @@ input:focus, select:focus {
   max-width: 720px;
 }
 
+.tire-hub__title-row,
+.tire-history-hub__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 8px;
+}
+
+.tire-hub__title-row .tire-hub__title,
+.tire-history-hub__title-row .tire-history-hub__title {
+  margin: 0;
+}
+
 .tyr-kpi-row {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -4672,6 +4686,185 @@ input:focus, select:focus {
 
 @media (max-width: 900px) {
   .tyr-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* FLEETOS TYR-2 — Tire Change History */
+.tire-history-hub__header {
+  margin-bottom: 18px;
+}
+
+.tire-history-hub__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0 0 6px;
+}
+
+.tire-history-hub__title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.tire-history-hub__desc {
+  margin: 0;
+  color: #64748b;
+  max-width: 720px;
+}
+
+.tyr2-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tyr2-kpi {
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tyr2-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tyr2-kpi strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.tyr2-kpi--qty { border-color: #e9d5ff; background: #faf5ff; }
+.tyr2-kpi--qty strong { color: #7e22ce; }
+.tyr2-kpi--cost { border-color: #bbf7d0; background: #f0fdf4; }
+.tyr2-kpi--cost strong { color: #15803d; }
+.tyr2-kpi--installed { border-color: #bbf7d0; background: #f0fdf4; }
+.tyr2-kpi--installed strong { color: #15803d; }
+.tyr2-kpi--removed { border-color: #fecaca; background: #fef2f2; }
+.tyr2-kpi--removed strong { color: #b91c1c; }
+.tyr2-kpi--swap { border-color: #fed7aa; background: #fff7ed; }
+.tyr2-kpi--swap strong { color: #c2410c; }
+.tyr2-kpi--storage { border-color: #bfdbfe; background: #eff6ff; }
+.tyr2-kpi--storage strong { color: #2563eb; }
+.tyr2-kpi--disposed { border-color: #e2e8f0; background: #f8fafc; }
+.tyr2-kpi--disposed strong { color: #64748b; }
+
+.tire-history-hub__entry-grid {
+  margin-bottom: 16px;
+}
+
+.tire-history-info-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.tire-history-info-list li + li {
+  margin-top: 8px;
+}
+
+.tyr2-filter-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #c4b5fd;
+  background: #f5f3ff;
+  color: #5b21b6;
+  font-size: 13px;
+}
+
+.tyr2-filter-banner strong {
+  font-weight: 800;
+}
+
+.tyr2-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.tyr2-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.tyr2-badge--installed {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.tyr2-badge--removed {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.tyr2-badge--seasonal_swap {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.tyr2-badge--storage_move {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.tyr2-badge--disposed {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.tyr2-badge--replacement {
+  border-color: #ddd6fe;
+  background: #faf5ff;
+  color: #6d28d9;
+}
+
+.tyr2-badge--other {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.vc-tire-history-wrap {
+  margin-top: 4px;
+}
+
+@media (max-width: 1400px) {
+  .tyr2-kpi-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .tyr2-kpi-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
