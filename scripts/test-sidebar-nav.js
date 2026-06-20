@@ -14,6 +14,7 @@ assert(
   fleetGroup.items.some(([href, label]) => href === "/maintenance" && label === "Bakım Merkezi"),
   "maintenance center in filo group"
 );
+assert(fleetGroup.items.some(([href, label]) => href === "/maintenance-schedule" && label === "Bakım Planı"), "maintenance schedule in filo group");
 assert(fleetGroup.items.some(([href, label]) => href === "/documents" && label === "Uygunluk Merkezi"), "compliance nav label");
 
 const expenseGroup = NAV_TREE.find((n) => n.id === "expense");
@@ -45,5 +46,9 @@ const maintHtml = renderNav("/maintenance");
 assert(getOpenGroupId("/maintenance") === "fleet", "maintenance opens fleet group first");
 assert(maintHtml.includes('data-nav-group="fleet"') && maintHtml.includes("is-open"), "fleet expanded on maintenance");
 assert(maintHtml.includes("Bakım Merkezi"), "maintenance center label in nav");
+
+const scheduleHtml = renderNav("/maintenance-schedule");
+assert(getOpenGroupId("/maintenance-schedule") === "fleet", "maintenance schedule opens fleet group");
+assert(scheduleHtml.includes("Bakım Planı"), "maintenance schedule label in nav");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");

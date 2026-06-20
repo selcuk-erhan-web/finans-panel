@@ -4506,6 +4506,117 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS MNT-3 — Maintenance Scheduler */
+.mnt-schedule-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mnt-schedule-kpi {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mnt-schedule-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.mnt-schedule-kpi strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.mnt-schedule-kpi--ok { border-color: #bbf7d0; background: #f0fdf4; }
+.mnt-schedule-kpi--ok strong { color: #15803d; }
+.mnt-schedule-kpi--upcoming { border-color: #fed7aa; background: #fff7ed; }
+.mnt-schedule-kpi--upcoming strong { color: #ea580c; }
+.mnt-schedule-kpi--due { border-color: #bfdbfe; background: #eff6ff; }
+.mnt-schedule-kpi--due strong { color: #2563eb; }
+.mnt-schedule-kpi--overdue { border-color: #fecaca; background: #fef2f2; }
+.mnt-schedule-kpi--overdue strong { color: #dc2626; }
+.mnt-schedule-kpi--unknown { border-color: #e2e8f0; background: #f8fafc; }
+.mnt-schedule-kpi--unknown strong { color: #64748b; }
+
+.mnt-schedule-table-wrap {
+  overflow-x: auto;
+}
+
+.vc-maintenance-stack {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.vc-schedule-preview .panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vc-schedule-preview__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vc-schedule-preview__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.vc-schedule-preview__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vc-schedule-preview__main strong {
+  font-size: 13px;
+}
+
+.vc-schedule-preview__main span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.vc-schedule-preview__empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .mnt-schedule-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vc-maintenance-stack {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* FLEETOS CC-2 — Compliance Entry UI */
 .compliance-form__section {
   padding: 12px 14px;
