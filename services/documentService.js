@@ -96,6 +96,28 @@ function logDocumentAudit(action, doc, auditContext) {
   });
 }
 
+function documentAuditSnapshot(doc) {
+  if (!doc) return {};
+  return {
+    vehicle_id: doc.vehicle_id != null ? String(doc.vehicle_id) : null,
+    plate: doc.plate || "",
+    document_type: doc.document_type,
+    title: doc.title || "",
+    expiry_date: doc.expiry_date || null,
+    note: doc.note || "",
+    issue_date: doc.issue_date || null,
+    policy_number: doc.policy_number || null,
+    insurer: doc.insurer || null,
+    premium_amount: doc.premium_amount ?? null,
+    file_path: doc.file_path || null,
+    file_name: doc.file_name || null,
+    station: doc.station || null,
+    result: doc.result || null,
+    reminder_days: doc.reminder_days ?? null,
+    status: doc.status || null,
+  };
+}
+
 function normalizeRefDate(ref = new Date()) {
   const d = ref instanceof Date ? ref : new Date(ref);
   if (Number.isNaN(d.getTime())) return new Date();
@@ -351,6 +373,7 @@ function create(data, auditContext = null) {
 function update(id, data, auditContext = null) {
   const cur = getById(id);
   if (!cur) return null;
+  const before = documentAuditSnapshot(cur);
 
   const vehicle_id = data.vehicle_id != null ? Number(data.vehicle_id) : cur.vehicle_id;
   const document_type = data.document_type || cur.document_type;
@@ -389,7 +412,20 @@ function update(id, data, auditContext = null) {
 
   const doc = getById(id);
   if (!auditContext?.skipAudit) {
-    logDocumentAudit("update", doc, auditContext);
+    auditLogService.createUpdateAuditLog({
+      module: "compliance",
+      entity_type: "vehicle_document",
+      entity_id: String(doc.id),
+      actor: auditActorFrom(auditContext),
+      before,
+      after: documentAuditSnapshot(doc),
+      summary: documentActionSummary("update", doc),
+      metadata: {
+        vehicle_id: String(doc.vehicle_id),
+        plate: doc.plate || "",
+        document_type: doc.document_type,
+      },
+    });
   }
   return doc;
 }

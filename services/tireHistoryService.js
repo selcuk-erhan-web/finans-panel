@@ -243,21 +243,21 @@ function createTireChangeRecord(data, auditContext = null) {
 }
 
 function updateTireChangeRecord(id, data, auditContext = null) {
-  const cur = getTireChangeRecord(id);
-  if (!cur) throw new Error("Kayıt bulunamadı");
+  const before = getTireChangeRecord(id);
+  if (!before) throw new Error("Kayıt bulunamadı");
 
   const merged = parseTireChangeInput({
-    vehicle_id: data.vehicle_id ?? cur.vehicle_id,
-    tire_id: data.tire_id !== undefined ? data.tire_id : cur.tire_id,
-    change_type: data.change_type ?? cur.change_type,
-    change_date: data.change_date ?? cur.change_date,
-    odometer_km: data.odometer_km !== undefined ? data.odometer_km : cur.odometer_km,
-    season: data.season !== undefined ? data.season : cur.season,
-    position: data.position ?? cur.position,
-    quantity: data.quantity ?? cur.quantity,
-    cost: data.cost !== undefined ? data.cost : cur.cost,
-    vendor: data.vendor ?? cur.vendor,
-    notes: data.notes ?? cur.notes,
+    vehicle_id: data.vehicle_id ?? before.vehicle_id,
+    tire_id: data.tire_id !== undefined ? data.tire_id : before.tire_id,
+    change_type: data.change_type ?? before.change_type,
+    change_date: data.change_date ?? before.change_date,
+    odometer_km: data.odometer_km !== undefined ? data.odometer_km : before.odometer_km,
+    season: data.season !== undefined ? data.season : before.season,
+    position: data.position ?? before.position,
+    quantity: data.quantity ?? before.quantity,
+    cost: data.cost !== undefined ? data.cost : before.cost,
+    vendor: data.vendor ?? before.vendor,
+    notes: data.notes ?? before.notes,
   });
 
   db.prepare(
@@ -282,7 +282,19 @@ function updateTireChangeRecord(id, data, auditContext = null) {
   );
 
   const record = getTireChangeRecord(id);
-  logTireHistoryAudit("update", record, auditContext);
+  auditLogService.createUpdateAuditLog({
+    module: "tire",
+    entity_type: "tire_change_record",
+    entity_id: record.id,
+    actor: auditActorFrom(auditContext),
+    before,
+    after: record,
+    summary: tireHistoryActionSummary("update", record),
+    metadata: {
+      vehicle_id: String(record.vehicle_id),
+      plate: record.plate || "",
+    },
+  });
   return record;
 }
 

@@ -6167,6 +6167,94 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS AUD-2 — Change history */
+.aud1-row--detail td {
+  background: #f8fafc;
+  border-top: none;
+  padding-top: 0;
+}
+
+.audit-change-details {
+  margin: 4px 0 8px;
+}
+
+.audit-change-details summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  list-style: none;
+}
+
+.audit-change-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.audit-change-panel {
+  margin-top: 8px;
+}
+
+.audit-change-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.audit-change-item {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1.4fr);
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.audit-field-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.audit-change-values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.audit-old-value {
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+.audit-new-value {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.audit-change-arrow {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.audit-change-empty,
+.audit-change-hint {
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .audit-change-item {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* FLEETOS CC-6 — Compliance analytics */
 .compliance-analytics-hub__header {
   margin-bottom: 8px;

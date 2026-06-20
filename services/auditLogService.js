@@ -54,6 +54,83 @@ const ACTION_LABELS = {
   system: "Sistem",
 };
 
+const DEFAULT_IGNORE_FIELDS = new Set([
+  "id",
+  "created_at",
+  "updated_at",
+]);
+
+const DERIVED_FIELD_SUFFIX = "_label";
+
+function normalizeCompareValue(value) {
+  if (value === undefined || value === null) return null;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed === "" ? null : trimmed;
+  }
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === "boolean") return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function valuesEqual(a, b) {
+  const left = normalizeCompareValue(a);
+  const right = normalizeCompareValue(b);
+  if (left === right) return true;
+  if (left == null && right == null) return true;
+  return false;
+}
+
+function computeChanges(beforeRecord, afterRecord, options = {}) {
+  const ignore = new Set([...DEFAULT_IGNORE_FIELDS, ...(options.ignore || [])]);
+  const before = beforeRecord && typeof beforeRecord === "object" ? beforeRecord : {};
+  const after = afterRecord && typeof afterRecord === "object" ? afterRecord : {};
+  const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
+  const changes = [];
+
+  for (const field of keys) {
+    if (ignore.has(field)) continue;
+    if (field.endsWith(DERIVED_FIELD_SUFFIX)) continue;
+    const oldVal = before[field];
+    const newVal = after[field];
+    if (valuesEqual(oldVal, newVal)) continue;
+    changes.push({
+      field,
+      old_value: oldVal === undefined ? null : oldVal,
+      new_value: newVal === undefined ? null : newVal,
+    });
+  }
+
+  const maxChanges = Number(options.maxChanges) > 0 ? Number(options.maxChanges) : 50;
+  return changes.slice(0, maxChanges);
+}
+
+function sanitizeChangeValue(value) {
+  if (value == null) return null;
+  if (typeof value === "string") return value.slice(0, 500);
+  if (typeof value === "number" || typeof value === "boolean") return value;
+  try {
+    const text = JSON.stringify(value);
+    return text.length <= 500 ? JSON.parse(text) : text.slice(0, 500);
+  } catch {
+    return String(value).slice(0, 500);
+  }
+}
+
+function compactChanges(changes) {
+  return (changes || []).map((row) => ({
+    field: row.field,
+    old_value: sanitizeChangeValue(row.old_value),
+    new_value: sanitizeChangeValue(row.new_value),
+  }));
+}
+
 function sanitizeText(value, max = 500) {
   if (value == null) return null;
   return String(value).slice(0, max);
@@ -210,6 +287,44 @@ function createAuditLog(entry) {
   }
 }
 
+function createUpdateAuditLog({
+  module,
+  entity_type,
+  entity_id,
+  actor,
+  before,
+  after,
+  summary,
+  metadata = {},
+}) {
+  try {
+    const changes = compactChanges(computeChanges(before, after));
+    if (!changes.length) {
+      return { ok: true, skipped: true, reason: "no_changes" };
+    }
+
+    const actor_id = sanitizeText(actor?.actor_id || "system", 64) || "system";
+    const actor_name = sanitizeText(actor?.actor_name || "System", 128) || "System";
+
+    return createAuditLog({
+      module,
+      entity_type,
+      entity_id,
+      action: "update",
+      actor_id,
+      actor_name,
+      summary,
+      metadata: {
+        ...metadata,
+        changes,
+      },
+    });
+  } catch (err) {
+    console.error("createUpdateAuditLog:", err.message);
+    return { ok: false, error: err.message || "Güncelleme audit kaydı yazılamadı." };
+  }
+}
+
 function listAuditLogs(filters = {}) {
   const limit = Math.min(Math.max(Number(filters.limit) || 50, 1), 500);
   const { where, params } = buildWhere(filters);
@@ -254,15 +369,45 @@ function buildAuditSummary(filters = {}) {
   };
 }
 
+function getEntityAuditHistory(filters = {}) {
+  const module = sanitizeText(filters.module, 64);
+  const entity_type = sanitizeText(filters.entity_type, 128);
+  const entity_id = filters.entity_id != null ? String(filters.entity_id) : "";
+
+  if (!module || !entity_type || !entity_id) {
+    throw new Error("module, entity_type ve entity_id zorunlu.");
+  }
+
+  const history = listAuditLogs({
+    module,
+    entity_type,
+    entity_id,
+    limit: filters.limit || 100,
+  });
+
+  return {
+    entity: {
+      module,
+      entity_type,
+      entity_id,
+    },
+    history,
+  };
+}
+
 module.exports = {
   VALID_MODULES,
   VALID_ACTIONS,
   MODULE_LABELS,
   ACTION_LABELS,
+  DEFAULT_IGNORE_FIELDS,
   normalizeAction,
   normalizeAuditRow,
+  computeChanges,
   createAuditLog,
+  createUpdateAuditLog,
   listAuditLogs,
   getAuditLog,
   buildAuditSummary,
+  getEntityAuditHistory,
 };

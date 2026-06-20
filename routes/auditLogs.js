@@ -16,6 +16,21 @@ function parseFilters(query) {
 }
 
 function registerAuditLogs(app) {
+  app.get("/api/audit-logs/entity-history", (req, res) => {
+    try {
+      const payload = auditLogService.getEntityAuditHistory({
+        module: req.query.module,
+        entity_type: req.query.entity_type,
+        entity_id: req.query.entity_id,
+        limit: req.query.limit,
+      });
+      res.json(payload);
+    } catch (err) {
+      const status = /zorunlu/i.test(err.message) ? 400 : 500;
+      res.status(status).json({ error: err.message || "Varlık geçmişi alınamadı." });
+    }
+  });
+
   app.get("/api/audit-logs", (req, res) => {
     try {
       const filters = parseFilters(req.query || {});

@@ -250,24 +250,24 @@ function createTireRecord(data, auditContext = null) {
 }
 
 function updateTireRecord(id, data, auditContext = null) {
-  const cur = getTireRecord(id);
-  if (!cur) throw new Error("Kayıt bulunamadı");
+  const before = getTireRecord(id);
+  if (!before) throw new Error("Kayıt bulunamadı");
 
   const merged = parseTireInput({
-    vehicle_id: data.vehicle_id ?? cur.vehicle_id,
-    season: data.season ?? cur.season,
-    status: data.status ?? cur.status,
-    brand: data.brand ?? cur.brand,
-    model: data.model ?? cur.model,
-    size: data.size ?? cur.size,
-    dot: data.dot ?? cur.dot,
-    tread_depth_mm: data.tread_depth_mm !== undefined ? data.tread_depth_mm : cur.tread_depth_mm,
-    quantity: data.quantity ?? cur.quantity,
-    position: data.position ?? cur.position,
-    purchase_date: data.purchase_date !== undefined ? data.purchase_date : cur.purchase_date,
-    cost: data.cost !== undefined ? data.cost : cur.cost,
-    vendor: data.vendor ?? cur.vendor,
-    notes: data.notes ?? cur.notes,
+    vehicle_id: data.vehicle_id ?? before.vehicle_id,
+    season: data.season ?? before.season,
+    status: data.status ?? before.status,
+    brand: data.brand ?? before.brand,
+    model: data.model ?? before.model,
+    size: data.size ?? before.size,
+    dot: data.dot ?? before.dot,
+    tread_depth_mm: data.tread_depth_mm !== undefined ? data.tread_depth_mm : before.tread_depth_mm,
+    quantity: data.quantity ?? before.quantity,
+    position: data.position ?? before.position,
+    purchase_date: data.purchase_date !== undefined ? data.purchase_date : before.purchase_date,
+    cost: data.cost !== undefined ? data.cost : before.cost,
+    vendor: data.vendor ?? before.vendor,
+    notes: data.notes ?? before.notes,
   });
 
   db.prepare(
@@ -296,7 +296,19 @@ function updateTireRecord(id, data, auditContext = null) {
   );
 
   const record = getTireRecord(id);
-  logTireAudit("update", record, auditContext);
+  auditLogService.createUpdateAuditLog({
+    module: "tire",
+    entity_type: "tire_record",
+    entity_id: record.id,
+    actor: auditActorFrom(auditContext),
+    before,
+    after: record,
+    summary: tireActionSummary("update", record),
+    metadata: {
+      vehicle_id: String(record.vehicle_id),
+      plate: record.plate || "",
+    },
+  });
   return record;
 }
 

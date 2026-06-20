@@ -439,10 +439,25 @@ function update(id, data) {
 }
 
 function updateMaintenanceRecord(id, data, auditContext = null) {
+  const before = getMaintenanceRecord(id);
+  if (!before) throw new Error("Kayıt bulunamadı");
   const updated = update(id, data);
   if (!updated) throw new Error("Kayıt bulunamadı");
   const record = toMaintenanceRecord(updated);
-  logMaintenanceAudit("update", record, auditContext);
+  auditLogService.createUpdateAuditLog({
+    module: "maintenance",
+    entity_type: "maintenance_record",
+    entity_id: record.id,
+    actor: auditActorFrom(auditContext),
+    before,
+    after: record,
+    summary: maintenanceActionSummary("update", record),
+    metadata: {
+      vehicle_id: String(record.vehicle_id),
+      plate: record.plate || "",
+      maintenance_type: record.maintenance_type,
+    },
+  });
   return record;
 }
 
