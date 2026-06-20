@@ -1,6 +1,7 @@
 const multer = require("multer");
 const documentService = require("../services/documentService");
 const complianceImportService = require("../services/complianceImportService");
+const complianceStatusService = require("../services/complianceStatusService");
 const { documentsPageHtml } = require("../lib/components/documents");
 const { redirectWithFlash } = require("../lib/flash");
 const { getVehicles } = require("./vehicles");
@@ -48,6 +49,17 @@ function renderDocumentsPage(req, res, extra = {}) {
 }
 
 function registerDocuments(app) {
+  app.get("/api/compliance/status", (req, res) => {
+    try {
+      const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
+      const report = complianceStatusService.buildStatusReport(ref);
+      res.json(report);
+    } catch (err) {
+      console.error("api/compliance/status:", err);
+      res.status(500).json({ error: err.message || "Uygunluk durumu alınamadı." });
+    }
+  });
+
   app.get("/documents", (req, res) => {
     try {
       renderDocumentsPage(req, res);
