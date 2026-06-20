@@ -3,6 +3,7 @@ const tireHistoryService = require("../services/tireHistoryService");
 const tireService = require("../services/tireService");
 const { tireHistoryPageHtml } = require("../lib/components/tireHistory");
 const { redirectWithFlash } = require("../lib/flash");
+const { resolveAuditActor } = require("../lib/auditActor");
 const { getVehicles } = require("./vehicles");
 const { renderLayout, errorPage } = require("../lib/ui");
 
@@ -85,7 +86,7 @@ function registerTireHistory(app) {
 
   app.post("/api/tire-history", express.json({ limit: "256kb" }), (req, res) => {
     try {
-      const record = tireHistoryService.createTireChangeRecord(req.body || {});
+      const record = tireHistoryService.createTireChangeRecord(req.body || {}, resolveAuditActor(req));
       res.status(201).json({ ok: true, record });
     } catch (err) {
       res.status(400).json({ ok: false, error: err.message || "Lastik geçmişi oluşturulamadı." });
@@ -94,7 +95,7 @@ function registerTireHistory(app) {
 
   app.put("/api/tire-history/:id", express.json({ limit: "256kb" }), (req, res) => {
     try {
-      const record = tireHistoryService.updateTireChangeRecord(req.params.id, req.body || {});
+      const record = tireHistoryService.updateTireChangeRecord(req.params.id, req.body || {}, resolveAuditActor(req));
       res.json({ ok: true, record });
     } catch (err) {
       const status = /bulunamad/i.test(err.message) ? 404 : 400;
@@ -104,7 +105,7 @@ function registerTireHistory(app) {
 
   app.delete("/api/tire-history/:id", (req, res) => {
     try {
-      const record = tireHistoryService.deleteTireChangeRecord(req.params.id);
+      const record = tireHistoryService.deleteTireChangeRecord(req.params.id, resolveAuditActor(req));
       res.json({ ok: true, record });
     } catch (err) {
       const status = /bulunamad/i.test(err.message) ? 404 : 400;
@@ -123,7 +124,7 @@ function registerTireHistory(app) {
 
   app.post("/tire-history/add", (req, res) => {
     try {
-      tireHistoryService.createTireChangeRecord(req.body);
+      tireHistoryService.createTireChangeRecord(req.body, resolveAuditActor(req));
       const q = new URLSearchParams();
       if (req.body.vehicle_id) q.set("vehicle_id", req.body.vehicle_id);
       const back = q.toString() ? `/tire-history?${q.toString()}` : "/tire-history";
@@ -136,7 +137,7 @@ function registerTireHistory(app) {
   app.get("/tire-history/delete/:id", (req, res) => {
     try {
       const record = tireHistoryService.getTireChangeRecord(req.params.id);
-      tireHistoryService.deleteTireChangeRecord(req.params.id);
+      tireHistoryService.deleteTireChangeRecord(req.params.id, resolveAuditActor(req));
       const back = record?.vehicle_id ? `/tire-history?vehicle_id=${record.vehicle_id}` : "/tire-history";
       redirectWithFlash(res, back, "tire_history_deleted");
     } catch (e) {
@@ -157,7 +158,7 @@ function registerTireHistory(app) {
 
   app.post("/tire-history/edit/:id", (req, res) => {
     try {
-      tireHistoryService.updateTireChangeRecord(req.params.id, req.body);
+      tireHistoryService.updateTireChangeRecord(req.params.id, req.body, resolveAuditActor(req));
       redirectWithFlash(res, "/tire-history", "tire_history_updated");
     } catch (e) {
       redirectWithFlash(

@@ -502,7 +502,9 @@ function movePdfToVehicleDir(buffer, vehicleId, originalName, documentId) {
   return `compliance/${vehicleId}/${filename}`;
 }
 
-function confirmImport(token, corrections = {}, { allowDuplicate = false } = {}) {
+function confirmImport(token, corrections = {}, options = {}) {
+  const allowDuplicate = Boolean(options.allowDuplicate);
+  const auditContext = options.auditContext || null;
   const staged = getStagedPreview(token);
   if (!staged) throw new Error("Önizleme süresi doldu veya geçersiz. PDF'i yeniden yükleyin.");
 
@@ -559,14 +561,21 @@ function confirmImport(token, corrections = {}, { allowDuplicate = false } = {})
   }
 
   const buffer = fs.readFileSync(pdfPath);
-  const created = documentService.create({
-    ...payload,
-    file_path: null,
-    file_name: payload.file_name,
-  });
+  const created = documentService.create(
+    {
+      ...payload,
+      file_path: null,
+      file_name: payload.file_name,
+    },
+    { ...auditContext, action: "import" }
+  );
 
   const relPath = movePdfToVehicleDir(buffer, vehicle_id, payload.file_name, created.id);
-  const updated = documentService.update(created.id, { file_path: relPath, file_name: payload.file_name });
+  const updated = documentService.update(
+    created.id,
+    { file_path: relPath, file_name: payload.file_name },
+    { skipAudit: true }
+  );
 
   discardStaging(token);
 

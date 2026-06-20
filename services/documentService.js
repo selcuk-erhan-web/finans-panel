@@ -1,6 +1,7 @@
 const db = require("../lib/db");
 const { parseDateInput } = require("../utils/date");
 const { parseMoneyInput } = require("../utils/money");
+const auditLogService = require("./auditLogService");
 
 const COMPLIANCE_TYPES = {
   traffic_insurance: "Trafik Sigortası",
@@ -53,6 +54,46 @@ function isValidDocumentType(type) {
 function typeLabel(key) {
   if (key === "license_note") return "Ruhsat";
   return DOCUMENT_TYPES[key] || key;
+}
+
+function auditActorFrom(ctx) {
+  if (!ctx) return { actor_id: "system", actor_name: "System" };
+  return {
+    actor_id: ctx.actor_id || "system",
+    actor_name: ctx.actor_name || "System",
+  };
+}
+
+function documentActionSummary(action, doc) {
+  const plate = doc.plate || "—";
+  const docType = typeLabel(doc.document_type);
+  if (action === "create") return `${plate} için ${docType} evrak kaydı oluşturuldu.`;
+  if (action === "update") return `${plate} için ${docType} evrak kaydı güncellendi.`;
+  if (action === "delete") return `${plate} için ${docType} evrak kaydı silindi.`;
+  if (action === "import") return `${plate} için ${docType} belgesi içe aktarıldı.`;
+  return `${plate} evrak kaydı ${action}.`;
+}
+
+function logDocumentAudit(action, doc, auditContext) {
+  if (!doc) return;
+  const actor = auditActorFrom(auditContext);
+  auditLogService.createAuditLog({
+    module: "compliance",
+    entity_type: "vehicle_document",
+    entity_id: String(doc.id),
+    action,
+    actor_id: actor.actor_id,
+    actor_name: actor.actor_name,
+    summary: documentActionSummary(action, doc),
+    metadata: {
+      vehicle_id: String(doc.vehicle_id),
+      plate: doc.plate || "",
+      document_type: doc.document_type,
+      document_type_label: typeLabel(doc.document_type),
+      expiry_date: doc.expiry_date,
+      file_name: doc.file_name || null,
+    },
+  });
 }
 
 function normalizeRefDate(ref = new Date()) {
@@ -264,7 +305,7 @@ function resolveComplianceFields(data, cur = null) {
   };
 }
 
-function create(data) {
+function create(data, auditContext = null) {
   const vehicle_id = Number(data.vehicle_id);
   if (!vehicle_id) throw new Error("Araç seçilmeli");
   if (!data.document_type || !isValidDocumentType(data.document_type)) {
@@ -301,10 +342,13 @@ function create(data) {
       extra.reminder_days
     );
 
-  return getById(info.lastInsertRowid);
+  const doc = getById(info.lastInsertRowid);
+  const action = auditContext?.action === "import" ? "import" : "create";
+  logDocumentAudit(action, doc, auditContext);
+  return doc;
 }
 
-function update(id, data) {
+function update(id, data, auditContext = null) {
   const cur = getById(id);
   if (!cur) return null;
 
@@ -343,13 +387,18 @@ function update(id, data) {
     id
   );
 
-  return getById(id);
+  const doc = getById(id);
+  if (!auditContext?.skipAudit) {
+    logDocumentAudit("update", doc, auditContext);
+  }
+  return doc;
 }
 
-function remove(id) {
+function remove(id, auditContext = null) {
   const old = getById(id);
   if (!old) return false;
   db.prepare("DELETE FROM vehicle_documents WHERE id = ?").run(id);
+  logDocumentAudit("delete", old, auditContext);
   return true;
 }
 

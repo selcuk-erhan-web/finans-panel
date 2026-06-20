@@ -2,6 +2,7 @@ const express = require("express");
 const tireService = require("../services/tireService");
 const { tireCenterPageHtml } = require("../lib/components/tireCenter");
 const { redirectWithFlash } = require("../lib/flash");
+const { resolveAuditActor } = require("../lib/auditActor");
 const { getVehicles } = require("./vehicles");
 const { renderLayout, errorPage } = require("../lib/ui");
 
@@ -66,7 +67,7 @@ function registerTires(app) {
 
   app.post("/api/tires", express.json({ limit: "256kb" }), (req, res) => {
     try {
-      const record = tireService.createTireRecord(req.body || {});
+      const record = tireService.createTireRecord(req.body || {}, resolveAuditActor(req));
       res.status(201).json({ ok: true, record });
     } catch (err) {
       res.status(400).json({ ok: false, error: err.message || "Lastik kaydı oluşturulamadı." });
@@ -75,7 +76,7 @@ function registerTires(app) {
 
   app.put("/api/tires/:id", express.json({ limit: "256kb" }), (req, res) => {
     try {
-      const record = tireService.updateTireRecord(req.params.id, req.body || {});
+      const record = tireService.updateTireRecord(req.params.id, req.body || {}, resolveAuditActor(req));
       res.json({ ok: true, record });
     } catch (err) {
       const status = /bulunamad/i.test(err.message) ? 404 : 400;
@@ -85,7 +86,7 @@ function registerTires(app) {
 
   app.delete("/api/tires/:id", (req, res) => {
     try {
-      const record = tireService.deleteTireRecord(req.params.id);
+      const record = tireService.deleteTireRecord(req.params.id, resolveAuditActor(req));
       res.json({ ok: true, record });
     } catch (err) {
       const status = /bulunamad/i.test(err.message) ? 404 : 400;
@@ -104,7 +105,7 @@ function registerTires(app) {
 
   app.post("/tires/add", (req, res) => {
     try {
-      tireService.createTireRecord(req.body);
+      tireService.createTireRecord(req.body, resolveAuditActor(req));
       const q = new URLSearchParams();
       if (req.body.vehicle_id) q.set("vehicle_id", req.body.vehicle_id);
       const back = q.toString() ? `/tires?${q.toString()}` : "/tires";
@@ -117,7 +118,7 @@ function registerTires(app) {
   app.get("/tires/delete/:id", (req, res) => {
     try {
       const record = tireService.getTireRecord(req.params.id);
-      tireService.deleteTireRecord(req.params.id);
+      tireService.deleteTireRecord(req.params.id, resolveAuditActor(req));
       const back = record?.vehicle_id ? `/tires?vehicle_id=${record.vehicle_id}` : "/tires";
       redirectWithFlash(res, back, "tire_deleted");
     } catch (e) {
@@ -138,7 +139,7 @@ function registerTires(app) {
 
   app.post("/tires/edit/:id", (req, res) => {
     try {
-      tireService.updateTireRecord(req.params.id, req.body);
+      tireService.updateTireRecord(req.params.id, req.body, resolveAuditActor(req));
       redirectWithFlash(res, "/tires", "tire_updated");
     } catch (e) {
       redirectWithFlash(

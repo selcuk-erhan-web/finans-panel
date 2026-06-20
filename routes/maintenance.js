@@ -2,6 +2,7 @@ const express = require("express");
 const maintenanceService = require("../services/maintenanceService");
 const { maintenanceCenterPageHtml } = require("../lib/components/maintenanceCenter");
 const { redirectWithFlash } = require("../lib/flash");
+const { resolveAuditActor } = require("../lib/auditActor");
 const { getVehicles } = require("./vehicles");
 const { renderLayout, errorPage } = require("../lib/ui");
 
@@ -70,7 +71,7 @@ function registerMaintenance(app) {
 
   app.post("/api/maintenance", express.json({ limit: "256kb" }), (req, res) => {
     try {
-      const record = maintenanceService.createMaintenanceRecord(req.body || {});
+      const record = maintenanceService.createMaintenanceRecord(req.body || {}, resolveAuditActor(req));
       res.status(201).json({ ok: true, record });
     } catch (err) {
       res.status(400).json({ ok: false, error: err.message || "Bakım kaydı oluşturulamadı." });
@@ -79,7 +80,7 @@ function registerMaintenance(app) {
 
   app.put("/api/maintenance/:id", express.json({ limit: "256kb" }), (req, res) => {
     try {
-      const record = maintenanceService.updateMaintenanceRecord(req.params.id, req.body || {});
+      const record = maintenanceService.updateMaintenanceRecord(req.params.id, req.body || {}, resolveAuditActor(req));
       res.json({ ok: true, record });
     } catch (err) {
       const status = /bulunamad/i.test(err.message) ? 404 : 400;
@@ -89,7 +90,7 @@ function registerMaintenance(app) {
 
   app.delete("/api/maintenance/:id", (req, res) => {
     try {
-      const record = maintenanceService.deleteMaintenanceRecord(req.params.id);
+      const record = maintenanceService.deleteMaintenanceRecord(req.params.id, resolveAuditActor(req));
       res.json({ ok: true, record });
     } catch (err) {
       const status = /bulunamad/i.test(err.message) ? 404 : 400;
@@ -108,7 +109,7 @@ function registerMaintenance(app) {
 
   app.post("/maintenance/add", (req, res) => {
     try {
-      maintenanceService.createMaintenanceRecord(req.body);
+      maintenanceService.createMaintenanceRecord(req.body, resolveAuditActor(req));
       const back = req.body.vehicle_id ? `/maintenance?vehicle_id=${req.body.vehicle_id}` : "/maintenance";
       redirectWithFlash(res, back, "maintenance_added");
     } catch (e) {
@@ -119,7 +120,7 @@ function registerMaintenance(app) {
   app.get("/maintenance/delete/:id", (req, res) => {
     try {
       const record = maintenanceService.getMaintenanceRecord(req.params.id);
-      maintenanceService.deleteMaintenanceRecord(req.params.id);
+      maintenanceService.deleteMaintenanceRecord(req.params.id, resolveAuditActor(req));
       const back = record?.vehicle_id ? `/maintenance?vehicle_id=${record.vehicle_id}` : "/maintenance";
       redirectWithFlash(res, back, "maintenance_deleted");
     } catch (e) {
@@ -140,7 +141,7 @@ function registerMaintenance(app) {
 
   app.post("/maintenance/edit/:id", (req, res) => {
     try {
-      maintenanceService.updateMaintenanceRecord(req.params.id, req.body);
+      maintenanceService.updateMaintenanceRecord(req.params.id, req.body, resolveAuditActor(req));
       redirectWithFlash(res, "/maintenance", "maintenance_updated");
     } catch (e) {
       redirectWithFlash(

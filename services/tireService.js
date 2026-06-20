@@ -2,6 +2,7 @@ const db = require("../lib/db");
 const { parseMoneyInput } = require("../utils/money");
 const { parseDateInput } = require("../utils/date");
 const { TIRE_SEASONS, TIRE_STATUSES, TIRE_POSITIONS } = require("../lib/constants");
+const auditLogService = require("./auditLogService");
 
 const SEASON_LABELS = Object.fromEntries(TIRE_SEASONS);
 const STATUS_LABELS = Object.fromEntries(TIRE_STATUSES);
@@ -21,6 +22,46 @@ function statusLabel(key) {
 
 function positionLabel(key) {
   return POSITION_LABELS[key] || key;
+}
+
+function auditActorFrom(ctx) {
+  if (!ctx) return { actor_id: "system", actor_name: "System" };
+  return {
+    actor_id: ctx.actor_id || "system",
+    actor_name: ctx.actor_name || "System",
+  };
+}
+
+function tireActionSummary(action, record) {
+  const plate = record.plate || "—";
+  const season = seasonLabel(record.season);
+  if (action === "create") return `${plate} için ${season} lastik kaydı oluşturuldu.`;
+  if (action === "update") return `${plate} için lastik kaydı güncellendi.`;
+  if (action === "delete") return `${plate} için lastik kaydı silindi.`;
+  return `${plate} lastik kaydı ${action}.`;
+}
+
+function logTireAudit(action, record, auditContext) {
+  if (!record) return;
+  const actor = auditActorFrom(auditContext);
+  auditLogService.createAuditLog({
+    module: "tire",
+    entity_type: "tire_record",
+    entity_id: String(record.id),
+    action,
+    actor_id: actor.actor_id,
+    actor_name: actor.actor_name,
+    summary: tireActionSummary(action, record),
+    metadata: {
+      vehicle_id: String(record.vehicle_id),
+      plate: record.plate || "",
+      season: record.season,
+      season_label: seasonLabel(record.season),
+      status: record.status,
+      quantity: record.quantity,
+      cost: record.cost,
+    },
+  });
 }
 
 function toTireRecord(row) {
@@ -177,7 +218,7 @@ function parseTireInput(data) {
   };
 }
 
-function createTireRecord(data) {
+function createTireRecord(data, auditContext = null) {
   const parsed = parseTireInput(data);
   const info = db
     .prepare(
@@ -203,10 +244,12 @@ function createTireRecord(data) {
       parsed.vendor,
       parsed.notes
     );
-  return getTireRecord(info.lastInsertRowid);
+  const record = getTireRecord(info.lastInsertRowid);
+  logTireAudit("create", record, auditContext);
+  return record;
 }
 
-function updateTireRecord(id, data) {
+function updateTireRecord(id, data, auditContext = null) {
   const cur = getTireRecord(id);
   if (!cur) throw new Error("Kayıt bulunamadı");
 
@@ -252,13 +295,16 @@ function updateTireRecord(id, data) {
     id
   );
 
-  return getTireRecord(id);
+  const record = getTireRecord(id);
+  logTireAudit("update", record, auditContext);
+  return record;
 }
 
-function deleteTireRecord(id) {
+function deleteTireRecord(id, auditContext = null) {
   const existing = getTireRecord(id);
   if (!existing) throw new Error("Kayıt bulunamadı");
   db.prepare("DELETE FROM tires WHERE id = ?").run(id);
+  logTireAudit("delete", existing, auditContext);
   return existing;
 }
 

@@ -5,6 +5,7 @@ const complianceStatusService = require("../services/complianceStatusService");
 const complianceNotificationService = require("../services/complianceNotificationService");
 const { documentsPageHtml } = require("../lib/components/documents");
 const { redirectWithFlash } = require("../lib/flash");
+const { resolveAuditActor } = require("../lib/auditActor");
 const { getVehicles } = require("./vehicles");
 const { renderLayout } = require("../lib/ui");
 
@@ -103,7 +104,9 @@ function registerDocuments(app) {
   app.post("/documents/import/confirm", (req, res) => {
     try {
       const token = String(req.body.preview_token || "").trim();
-      const result = complianceImportService.confirmImport(token, req.body);
+      const result = complianceImportService.confirmImport(token, req.body, {
+        auditContext: resolveAuditActor(req),
+      });
       return redirectWithFlash(
         res,
         "/documents",
@@ -131,7 +134,7 @@ function registerDocuments(app) {
 
   app.post("/documents/add", (req, res) => {
     try {
-      documentService.create(req.body);
+      documentService.create(req.body, resolveAuditActor(req));
       redirectWithFlash(res, "/documents", "success", "Evrak kaydı eklendi.");
     } catch (err) {
       redirectWithFlash(res, "/documents", "error", err.message || "Evrak eklenemedi.");
@@ -158,7 +161,7 @@ function registerDocuments(app) {
 
   app.post("/documents/edit/:id", (req, res) => {
     try {
-      const updated = documentService.update(req.params.id, req.body);
+      const updated = documentService.update(req.params.id, req.body, resolveAuditActor(req));
       if (!updated) {
         redirectWithFlash(res, "/documents", "error", "Evrak kaydı bulunamadı.");
         return;
@@ -171,7 +174,7 @@ function registerDocuments(app) {
 
   app.get("/documents/delete/:id", (req, res) => {
     try {
-      const ok = documentService.remove(req.params.id);
+      const ok = documentService.remove(req.params.id, resolveAuditActor(req));
       redirectWithFlash(
         res,
         "/documents",

@@ -9,6 +9,13 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
+const systemGroup = NAV_TREE.find((n) => n.id === "system");
+assert(systemGroup, "system group exists");
+assert(
+  systemGroup.items.some(([href, label]) => href === "/audit-logs" && label === "İşlem Geçmişi"),
+  "audit logs in system group"
+);
+
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
 assert(
   fleetGroup.items.some(([href, label]) => href === "/maintenance" && label === "Bakım Merkezi"),
@@ -106,5 +113,9 @@ assert(tireAlertsHtml.includes("Lastik Uyarıları"), "tire alerts label in nav"
 const tireAnalyticsHtml = renderNav("/tire-analytics");
 assert(getOpenGroupId("/tire-analytics") === "fleet", "tire analytics opens fleet group");
 assert(tireAnalyticsHtml.includes("Lastik Analitiği"), "tire analytics label in nav");
+
+const auditLogsHtml = renderNav("/audit-logs");
+assert(getOpenGroupId("/audit-logs") === "system", "audit logs opens system group");
+assert(auditLogsHtml.includes("İşlem Geçmişi"), "audit logs label in nav");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");

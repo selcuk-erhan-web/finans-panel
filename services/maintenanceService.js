@@ -1,7 +1,7 @@
 const db = require("../lib/db");
 const { parseMoneyInput } = require("../utils/money");
 const { parseDateInput } = require("../utils/date");
-const auditService = require("./auditService");
+const auditLogService = require("./auditLogService");
 const { UPCOMING_DAYS, MAINTENANCE_TYPES, LEGACY_MAINTENANCE_TYPES } = require("../lib/constants");
 
 const TYPE_LABELS = {
@@ -78,6 +78,44 @@ function toMaintenanceRecord(row) {
     created_at: normalized.created_at || null,
     updated_at: normalized.updated_at || normalized.created_at || null,
   };
+}
+
+function auditActorFrom(ctx) {
+  if (!ctx) return { actor_id: "system", actor_name: "System" };
+  return {
+    actor_id: ctx.actor_id || "system",
+    actor_name: ctx.actor_name || "System",
+  };
+}
+
+function maintenanceActionSummary(action, record) {
+  const plate = record.plate || "—";
+  const typeLabelText = typeLabel(record.maintenance_type || record.type);
+  if (action === "create") return `${plate} için ${typeLabelText} bakım kaydı oluşturuldu.`;
+  if (action === "update") return `${plate} için ${typeLabelText} bakım kaydı güncellendi.`;
+  if (action === "delete") return `${plate} için ${typeLabelText} bakım kaydı silindi.`;
+  return `${plate} bakım kaydı ${action}.`;
+}
+
+function logMaintenanceAudit(action, record, auditContext) {
+  if (!record) return;
+  const actor = auditActorFrom(auditContext);
+  auditLogService.createAuditLog({
+    module: "maintenance",
+    entity_type: "maintenance_record",
+    entity_id: String(record.id),
+    action,
+    actor_id: actor.actor_id,
+    actor_name: actor.actor_name,
+    summary: maintenanceActionSummary(action, record),
+    metadata: {
+      vehicle_id: String(record.vehicle_id),
+      plate: record.plate || "",
+      maintenance_type: record.maintenance_type || record.type,
+      maintenance_type_label: typeLabel(record.maintenance_type || record.type),
+      cost: record.cost ?? record.amount ?? 0,
+    },
+  });
 }
 
 function computeStatus(nextServiceDate, serviceDate) {
@@ -319,8 +357,10 @@ function create(data) {
   return getById(info.lastInsertRowid);
 }
 
-function createMaintenanceRecord(data) {
-  return toMaintenanceRecord(create(parseMaintenanceInput(data)));
+function createMaintenanceRecord(data, auditContext = null) {
+  const record = toMaintenanceRecord(create(parseMaintenanceInput(data)));
+  logMaintenanceAudit("create", record, auditContext);
+  return record;
 }
 
 function update(id, data) {
@@ -398,10 +438,12 @@ function update(id, data) {
   return getById(id);
 }
 
-function updateMaintenanceRecord(id, data) {
+function updateMaintenanceRecord(id, data, auditContext = null) {
   const updated = update(id, data);
   if (!updated) throw new Error("Kayıt bulunamadı");
-  return toMaintenanceRecord(updated);
+  const record = toMaintenanceRecord(updated);
+  logMaintenanceAudit("update", record, auditContext);
+  return record;
 }
 
 function markDone(id, serviceDate) {
@@ -412,18 +454,18 @@ function markDone(id, serviceDate) {
   return getById(id);
 }
 
-function remove(id) {
+function remove(id, auditContext = null) {
   const old = getById(id);
   db.prepare("DELETE FROM maintenance_records WHERE id = ?").run(id);
   if (old) {
-    auditService.log("maintenance_delete", "maintenance_record", id, old, null, "Bakım kaydı silindi");
+    logMaintenanceAudit("delete", toMaintenanceRecord(old), auditContext);
   }
 }
 
-function deleteMaintenanceRecord(id) {
+function deleteMaintenanceRecord(id, auditContext = null) {
   const existing = getMaintenanceRecord(id);
   if (!existing) throw new Error("Kayıt bulunamadı");
-  remove(id);
+  remove(id, auditContext);
   return existing;
 }
 
