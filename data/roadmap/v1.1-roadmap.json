@@ -1,0 +1,81 @@
+{
+  "version": "1.1.0",
+  "codename": "Vehicle Intelligence & Operational Control",
+  "status": "planning",
+  "base_version": "1.0.1",
+  "branch": "v1.1-planning",
+  "created_at": "2026-06-20",
+  "primary_goal": "Turn vehicle-level data into executive intelligence and operational control.",
+  "pillars": [
+    "Vehicle Intelligence",
+    "Vehicle Health Scoring",
+    "Vehicle Operational Timeline",
+    "Profit/Risk Fusion",
+    "Executive Vehicle Intelligence Dashboard"
+  ],
+  "phases": [
+    {
+      "id": "V11-PLN-1",
+      "name": "Roadmap Planning",
+      "status": "planning",
+      "summary": "Official v1.1 roadmap, planning service, roadmap page, and validation foundation."
+    },
+    {
+      "id": "VI-1",
+      "name": "Vehicle Intelligence Foundation",
+      "status": "planned",
+      "summary": "Create vehicle intelligence service that aggregates vehicle data from existing modules."
+    },
+    {
+      "id": "VI-2",
+      "name": "Vehicle Health Score",
+      "status": "planned",
+      "summary": "Calculate vehicle health based on compliance, maintenance, tire status, alerts, and audit signals."
+    },
+    {
+      "id": "VI-3",
+      "name": "Vehicle Operational Timeline",
+      "status": "planned",
+      "summary": "Create unified vehicle timeline across compliance, maintenance, tire, audit, and financial events."
+    },
+    {
+      "id": "VI-4",
+      "name": "Vehicle Profit/Risk Fusion",
+      "status": "planned",
+      "summary": "Combine cost, maintenance, tire, compliance risk, and profitability into vehicle-level operational score."
+    },
+    {
+      "id": "VI-5",
+      "name": "Executive Vehicle Intelligence Dashboard",
+      "status": "planned",
+      "summary": "Executive view for best/worst vehicles, high-risk, high-cost, incomplete data, and action priorities."
+    },
+    {
+      "id": "STB-2",
+      "name": "v1.1 Stabilization",
+      "status": "planned",
+      "summary": "v1.1 QA sprint for consistency, navigation, regression, and release readiness."
+    },
+    {
+      "id": "RC-2",
+      "name": "v1.1 Release Candidate",
+      "status": "planned",
+      "summary": "v1.1 RC preparation with inventory, known issues, and release validation."
+    },
+    {
+      "id": "PRD-2",
+      "name": "v1.1 Production Release",
+      "status": "planned",
+      "summary": "v1.1 production preparation and certification."
+    }
+  ],
+  "out_of_scope": [
+    "Multi-user RBAC",
+    "External notification channels",
+    "Mobile app",
+    "Driver management",
+    "Advanced fuel/HGS intelligence",
+    "Export/reporting engine",
+    "Approval workflow"
+  ]
+}

@@ -27,6 +27,10 @@ assert(
   systemGroup.items.some(([href, label]) => href === "/production" && label === "Production Release"),
   "production release in system group"
 );
+assert(
+  systemGroup.items.some(([href, label]) => href === "/roadmap/v1.1" && label === "v1.1 Roadmap"),
+  "v1.1 roadmap in system group"
+);
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
 assert(
@@ -143,5 +147,15 @@ assert(releaseHtml.includes("Release Candidate"), "release candidate label in na
 const productionHtml = renderNav("/production");
 assert(getOpenGroupId("/production") === "system", "production opens system group");
 assert(productionHtml.includes("Production Release"), "production release label in nav");
+
+const roadmapHtml = renderNav("/roadmap/v1.1");
+assert(getOpenGroupId("/roadmap/v1.1") === "system", "roadmap opens system group");
+assert(roadmapHtml.includes("v1.1 Roadmap"), "v1.1 roadmap label in nav");
+
+const prodIdx = systemGroup.items.findIndex(([href]) => href === "/production");
+const roadmapIdx = systemGroup.items.findIndex(([href]) => href === "/roadmap/v1.1");
+const settingsIdx = systemGroup.items.findIndex(([href]) => href === "/settings");
+assert(prodIdx >= 0 && roadmapIdx > prodIdx, "roadmap after production release");
+assert(roadmapIdx >= 0 && settingsIdx > roadmapIdx, "roadmap before settings");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");
