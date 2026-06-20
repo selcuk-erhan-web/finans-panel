@@ -6387,6 +6387,213 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS AUD-4 — Executive audit dashboard */
+.audit-widget__loading,
+.audit-widget__error {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.audit-widget__error {
+  color: #dc2626;
+}
+
+.audit-widget-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.audit-widget-kpi {
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.audit-widget-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.audit-widget-kpi strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.audit-widget-kpi--window { border-color: #bfdbfe; background: #eff6ff; }
+.audit-widget-kpi--window strong { color: #2563eb; }
+.audit-widget-kpi--today { border-color: #ddd6fe; background: #f5f3ff; }
+.audit-widget-kpi--today strong { color: #7c3aed; }
+.audit-widget-kpi--create { border-color: #bbf7d0; background: #f0fdf4; }
+.audit-widget-kpi--create strong { color: #15803d; }
+.audit-widget-kpi--update { border-color: #fde68a; background: #fffbeb; }
+.audit-widget-kpi--update strong { color: #ca8a04; }
+.audit-widget-kpi--delete { border-color: #fecaca; background: #fef2f2; }
+.audit-widget-kpi--delete strong { color: #dc2626; }
+.audit-widget-kpi--import { border-color: #c4b5fd; background: #f5f3ff; }
+.audit-widget-kpi--import strong { color: #6d28d9; }
+.audit-widget-kpi--critical { border-color: #fecaca; background: #fef2f2; }
+.audit-widget-kpi--critical strong { color: #dc2626; }
+.audit-widget-kpi--important { border-color: #fed7aa; background: #fff7ed; }
+.audit-widget-kpi--important strong { color: #ea580c; }
+
+.audit-widget-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.audit-widget-activity-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.audit-widget-activity-meta {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.audit-widget-activity-summary {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.audit-widget-activity-empty {
+  font-size: 13px;
+  color: #64748b;
+  padding: 8px 0;
+}
+
+.audit-widget-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+}
+
+.audit-widget-badge--critical {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.audit-widget-badge--important {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.aud4-executive-summary {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.aud4-executive-summary__title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.aud4-executive-summary__desc {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.aud4-executive-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.aud4-executive-summary__grid article {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aud4-executive-summary__grid span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.aud4-executive-summary__grid strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.aud4-insight-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aud4-insight {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.aud4-insight--warning {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.aud4-insight--critical {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.aud4-insight--info {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+@media (max-width: 1100px) {
+  .audit-widget-kpi-row,
+  .aud4-executive-summary__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* FLEETOS CC-6 — Compliance analytics */
 .compliance-analytics-hub__header {
   margin-bottom: 8px;

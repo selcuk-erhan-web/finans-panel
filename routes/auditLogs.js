@@ -1,4 +1,5 @@
 const auditLogService = require("../services/auditLogService");
+const auditDashboardService = require("../services/auditDashboardService");
 const { auditLogsPageHtml } = require("../lib/components/auditLogs");
 const { renderLayout } = require("../lib/ui");
 
@@ -61,7 +62,10 @@ function registerAuditLogs(app) {
       const filters = parseFilters(req.query || {});
       const summary = auditLogService.buildAuditSummary(filters);
       const records = auditLogService.listAuditLogs(filters);
-      const content = auditLogsPageHtml({ summary, records, filters });
+      const executiveDashboard = auditDashboardService.buildExecutiveAuditDashboard(
+        req.query.date ? new Date(String(req.query.date)) : new Date()
+      );
+      const content = auditLogsPageHtml({ summary, records, filters, executiveDashboard });
 
       renderLayout(res, "İşlem Geçmişi", content, "/audit-logs", req, {
         pageTitle: "İşlem Geçmişi",
