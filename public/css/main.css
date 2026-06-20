@@ -6594,6 +6594,212 @@ input:focus, select:focus {
   }
 }
 
+.cmd-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* FLEETOS AUD-5 — Audit analytics */
+.aud5-analytics-hub__header {
+  margin-bottom: 8px;
+}
+
+.aud5-analytics-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.aud5-analytics-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.aud5-analytics-hub__desc {
+  margin: 0 0 8px;
+  color: #64748b;
+}
+
+.aud5-analytics-hub__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.aud5-analytics-filters {
+  margin-bottom: 14px;
+}
+
+.aud5-filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 0 16px 16px;
+}
+
+.aud5-filter-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.aud5-filter-form select,
+.aud5-filter-form input {
+  min-width: 140px;
+}
+
+.aud5-analytics-health {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.4fr);
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.aud5-analytics-health__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aud5-analytics-health__hero span {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.aud5-analytics-health__hero strong {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.aud5-analytics-health__hero em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.aud5-analytics-health__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.aud5-analytics-health__grid article {
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(248, 250, 252, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aud5-analytics-health__grid span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.aud5-analytics-health__grid strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.aud5-analytics-health--healthy { border-color: rgba(16, 185, 129, 0.25); }
+.aud5-analytics-health--healthy .aud5-analytics-health__hero em { color: #059669; }
+.aud5-analytics-health--watch { border-color: rgba(59, 130, 246, 0.22); }
+.aud5-analytics-health--watch .aud5-analytics-health__hero em { color: #2563eb; }
+.aud5-analytics-health--risk { border-color: rgba(245, 158, 11, 0.25); }
+.aud5-analytics-health--risk .aud5-analytics-health__hero em { color: #ea580c; }
+.aud5-analytics-health--critical { border-color: rgba(244, 63, 94, 0.22); }
+.aud5-analytics-health--critical .aud5-analytics-health__hero em { color: #dc2626; }
+.aud5-analytics-health--unknown .aud5-analytics-health__hero em { color: #64748b; }
+
+.aud5-analytics-grid {
+  margin-bottom: 14px;
+}
+
+.aud5-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.aud5-badge--module {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.aud5-badge--action {
+  border-color: #ddd6fe;
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.aud5-analytics-insights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aud5-analytics-insight {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.aud5-analytics-insight--warning {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.aud5-analytics-insight--critical {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.aud5-analytics-insight--info {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+@media (max-width: 1100px) {
+  .aud5-analytics-health {
+    grid-template-columns: 1fr;
+  }
+
+  .aud5-analytics-health__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* FLEETOS CC-6 — Compliance analytics */
 .compliance-analytics-hub__header {
   margin-bottom: 8px;

@@ -15,6 +15,10 @@ assert(
   systemGroup.items.some(([href, label]) => href === "/audit-logs" && label === "İşlem Geçmişi"),
   "audit logs in system group"
 );
+assert(
+  systemGroup.items.some(([href, label]) => href === "/audit-analytics" && label === "Denetim Analitiği"),
+  "audit analytics in system group"
+);
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
 assert(
@@ -117,5 +121,9 @@ assert(tireAnalyticsHtml.includes("Lastik Analitiği"), "tire analytics label in
 const auditLogsHtml = renderNav("/audit-logs");
 assert(getOpenGroupId("/audit-logs") === "system", "audit logs opens system group");
 assert(auditLogsHtml.includes("İşlem Geçmişi"), "audit logs label in nav");
+
+const auditAnalyticsHtml = renderNav("/audit-analytics");
+assert(getOpenGroupId("/audit-analytics") === "system", "audit analytics opens system group");
+assert(auditAnalyticsHtml.includes("Denetim Analitiği"), "audit analytics label in nav");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");
