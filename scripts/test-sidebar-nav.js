@@ -23,6 +23,10 @@ assert(
   systemGroup.items.some(([href, label]) => href === "/release" && label === "Release Candidate"),
   "release candidate in system group"
 );
+assert(
+  systemGroup.items.some(([href, label]) => href === "/production" && label === "Production Release"),
+  "production release in system group"
+);
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
 assert(
@@ -135,5 +139,9 @@ assert(auditAnalyticsHtml.includes("Denetim Analitiği"), "audit analytics label
 const releaseHtml = renderNav("/release");
 assert(getOpenGroupId("/release") === "system", "release opens system group");
 assert(releaseHtml.includes("Release Candidate"), "release candidate label in nav");
+
+const productionHtml = renderNav("/production");
+assert(getOpenGroupId("/production") === "system", "production opens system group");
+assert(productionHtml.includes("Production Release"), "production release label in nav");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");

@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "compliance",
+      "label": "Compliance",
+      "phases": "CC-1 → CC-6",
+      "ready": true
+    },
+    {
+      "id": "maintenance",
+      "label": "Maintenance",
+      "phases": "MNT-1 → MNT-5",
+      "ready": true
+    },
+    {
+      "id": "tire",
+      "label": "Tire",
+      "phases": "TYR-1 → TYR-5",
+      "ready": true
+    },
+    {
+      "id": "audit",
+      "label": "Audit",
+      "phases": "AUD-1 → AUD-5",
+      "ready": true
+    }
+  ],
+  "pages": [
+    { "path": "/documents", "label": "Uygunluk Merkezi", "module": "compliance" },
+    { "path": "/notifications", "label": "Uygunluk Bildirimleri", "module": "compliance" },
+    { "path": "/compliance-analytics", "label": "Uygunluk Analitiği", "module": "compliance" },
+    { "path": "/maintenance", "label": "Bakım Merkezi", "module": "maintenance" },
+    { "path": "/maintenance-schedule", "label": "Bakım Planı", "module": "maintenance" },
+    { "path": "/maintenance-alerts", "label": "Bakım Uyarıları", "module": "maintenance" },
+    { "path": "/maintenance-analytics", "label": "Bakım Analitiği", "module": "maintenance" },
+    { "path": "/tires", "label": "Lastik Merkezi", "module": "tire" },
+    { "path": "/tire-history", "label": "Lastik Değişim Geçmişi", "module": "tire" },
+    { "path": "/tire-seasonal-schedule", "label": "Lastik Sezon Planı", "module": "tire" },
+    { "path": "/tire-alerts", "label": "Lastik Uyarıları", "module": "tire" },
+    { "path": "/tire-analytics", "label": "Lastik Analitiği", "module": "tire" },
+    { "path": "/audit-logs", "label": "İşlem Geçmişi", "module": "audit" },
+    { "path": "/audit-analytics", "label": "Denetim Analitiği", "module": "audit" },
+    { "path": "/vehicles", "label": "Araç Merkezi", "module": "fleet" },
+    { "path": "/release", "label": "Release Candidate", "module": "system" },
+    { "path": "/production", "label": "Production Release", "module": "system" }
+  ],
+  "apis": [
+    { "path": "/api/compliance/status", "module": "compliance", "kind": "status" },
+    { "path": "/api/compliance/analytics", "module": "compliance", "kind": "analytics" },
+    { "path": "/api/notifications", "module": "compliance", "kind": "notifications" },
+    { "path": "/api/notifications/unread-count", "module": "compliance", "kind": "notifications" },
+    { "path": "/api/maintenance", "module": "maintenance", "kind": "crud" },
+    { "path": "/api/maintenance/schedule", "module": "maintenance", "kind": "schedule" },
+    { "path": "/api/maintenance/alerts", "module": "maintenance", "kind": "alerts" },
+    { "path": "/api/maintenance/analytics", "module": "maintenance", "kind": "analytics" },
+    { "path": "/api/tires", "module": "tire", "kind": "crud" },
+    { "path": "/api/tires/analytics", "module": "tire", "kind": "analytics" },
+    { "path": "/api/tires/seasonal-schedule", "module": "tire", "kind": "schedule" },
+    { "path": "/api/tire-history", "module": "tire", "kind": "history" },
+    { "path": "/api/tire-alerts", "module": "tire", "kind": "alerts" },
+    { "path": "/api/audit-logs", "module": "audit", "kind": "logs" },
+    { "path": "/api/audit-logs/entity-history", "module": "audit", "kind": "history" },
+    { "path": "/api/audit/dashboard", "module": "audit", "kind": "dashboard" },
+    { "path": "/api/audit/analytics", "module": "audit", "kind": "analytics" },
+    { "path": "/api/release/readiness", "module": "system", "kind": "release" },
+    { "path": "/api/production/readiness", "module": "system", "kind": "production" }
+  ],
+  "dashboard_widgets": [
+    { "id": "complianceDashboardWidget", "label": "Compliance Status", "module": "compliance" },
+    { "id": "maintenanceDashboardWidget", "label": "Maintenance Overview", "module": "maintenance" },
+    { "id": "tireDashboardWidget", "label": "Tire Overview", "module": "tire" },
+    { "id": "auditDashboardWidget", "label": "İşlem Aktivitesi", "module": "audit" }
+  ],
+  "analytics_pages": [
+    { "path": "/compliance-analytics", "label": "Uygunluk Analitiği", "module": "compliance" },
+    { "path": "/maintenance-analytics", "label": "Bakım Analitiği", "module": "maintenance" },
+    { "path": "/tire-analytics", "label": "Lastik Analitiği", "module": "tire" },
+    { "path": "/audit-analytics", "label": "Denetim Analitiği", "module": "audit" }
+  ],
+  "audit_coverage": {
+    "maintenance_crud": "covered",
+    "tire_crud": "covered",
+    "tire_history_crud": "covered",
+    "compliance_documents": "covered",
+    "compliance_import": "covered",
+    "vehicle_crud": "not_covered",
+    "schedule_rules": "not_covered",
+    "alert_mark_read": "not_covered",
+    "fuel_hgs": "partial"
+  },
+  "counts": {
+    "modules": 4,
+    "pages": 17,
+    "apis": 19,
+    "dashboard_widgets": 4,
+    "analytics_pages": 4,
+    "known_issues": 8,
+    "audit_covered": 5,
+    "audit_partial": 1,
+    "audit_not_covered": 3
+  }
+}

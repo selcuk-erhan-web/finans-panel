@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "release_name": "FleetOS Production Release",
+  "release_date": "2026-06-20",
+  "status": "production",
+  "branch": "panel-refactor",
+  "release_commit": "bcb5971547d464123ee259abfdde98ebd1c1d922",
+  "release_candidate": "1.0.0-rc1",
+  "production_ready": true,
+  "known_issues_count": 8,
+  "support_level": "stable"
+}

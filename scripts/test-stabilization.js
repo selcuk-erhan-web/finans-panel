@@ -329,7 +329,7 @@ function main() {
 
   test("layout version present", () => {
     assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
-    assert(LAYOUT_VERSION === "fleetos-rc1-release-candidate-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-prd1-production-release-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");
