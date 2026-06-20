@@ -123,7 +123,7 @@ function listMaintenanceRecords(filters = {}) {
     sql += " AND m.type = ?";
     params.push(typeFilter);
   }
-  sql += " ORDER BY COALESCE(m.service_date, m.created_at) DESC, m.id DESC";
+  sql += " ORDER BY COALESCE(m.service_date, m.created_at) DESC, COALESCE(m.km, 0) DESC, m.id DESC";
   return db
     .prepare(sql)
     .all(...params)
@@ -134,10 +134,39 @@ function getSummary(filters = {}) {
   const rows = listMaintenanceRecords(filters);
   const vehicleIds = new Set(rows.map((r) => r.vehicle_id));
   const totalCost = rows.reduce((sum, row) => sum + (row.cost || 0), 0);
+  const latest = rows[0] || null;
   return {
     total_records: rows.length,
     total_cost: totalCost,
     vehicles_with_maintenance: vehicleIds.size,
+    last_maintenance_date: latest?.maintenance_date || null,
+    last_odometer_km: latest?.odometer_km ?? null,
+  };
+}
+
+function buildHistorySummary(records) {
+  const latest = records[0] || null;
+  return {
+    total_records: records.length,
+    total_cost: records.reduce((sum, row) => sum + (row.cost || 0), 0),
+    last_maintenance_date: latest?.maintenance_date || null,
+    last_odometer_km: latest?.odometer_km ?? null,
+  };
+}
+
+function getVehicleMaintenanceHistory(vehicleId) {
+  const id = Number(vehicleId);
+  if (!id || !Number.isFinite(id)) throw new Error("Araç geçersiz");
+
+  const vehicle = db.prepare("SELECT id, plate FROM vehicles WHERE id = ?").get(id);
+  if (!vehicle) throw new Error("Araç bulunamadı");
+
+  const records = listMaintenanceRecords({ vehicle_id: id });
+  return {
+    vehicle_id: String(id),
+    plate: vehicle.plate,
+    records,
+    summary: buildHistorySummary(records),
   };
 }
 
@@ -408,6 +437,8 @@ module.exports = {
   listAll,
   listMaintenanceRecords,
   getSummary,
+  buildHistorySummary,
+  getVehicleMaintenanceHistory,
   listByVehicle,
   getUpcoming,
   getUpcomingMuayeneSigorta,

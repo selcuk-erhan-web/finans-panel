@@ -10,6 +10,9 @@ function renderMaintenancePage(req, res, extra = {}) {
   const filters = { vehicle_id: req.query.vehicle_id || "" };
   const rows = maintenanceService.listMaintenanceRecords(filters);
   const summary = maintenanceService.getSummary(filters);
+  const selectedVehicle = filters.vehicle_id
+    ? vehicles.find((v) => String(v.id) === String(filters.vehicle_id))
+    : null;
 
   const content = maintenanceCenterPageHtml({
     summary,
@@ -17,6 +20,7 @@ function renderMaintenancePage(req, res, extra = {}) {
     vehicles,
     filters,
     editRecord: extra.editRecord || null,
+    selectedVehiclePlate: selectedVehicle?.plate || "",
   });
 
   renderLayout(res, "Bakım Merkezi", content, "/maintenance", req, {
@@ -26,6 +30,16 @@ function renderMaintenancePage(req, res, extra = {}) {
 }
 
 function registerMaintenance(app) {
+  app.get("/api/vehicles/:vehicleId/maintenance-history", (req, res) => {
+    try {
+      const history = maintenanceService.getVehicleMaintenanceHistory(req.params.vehicleId);
+      res.json({ ok: true, ...history });
+    } catch (err) {
+      const status = /bulunamad/i.test(err.message) ? 404 : 400;
+      res.status(status).json({ ok: false, error: err.message || "Bakım geçmişi alınamadı." });
+    }
+  });
+
   app.get("/api/maintenance", (req, res) => {
     try {
       const filters = {

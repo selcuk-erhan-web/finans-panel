@@ -82,8 +82,14 @@ function getVehicleCenterBundle(vehicleId) {
   const profit = getVehicleProfit(vehicleId, vehicle);
   const monthly = getVehicleMonthlyData(vehicleId, 6);
   const fuelStats = fuelService.vehicleStats(vehicleId);
-  const maintenance = maintenanceService.listByVehicle(vehicleId);
-  const upcomingMaintenance = maintenance
+  const maintenanceHistory = maintenanceService.getVehicleMaintenanceHistory(vehicleId);
+  const maintenance = maintenanceHistory.records.slice(0, 6).map((row) => ({
+    type_label: row.maintenance_type_label,
+    amount: row.cost,
+    service_date: row.maintenance_date,
+  }));
+  const upcomingMaintenance = maintenanceService
+    .listByVehicle(vehicleId)
     .filter((m) => m.status === "upcoming" || m.status === "overdue")
     .slice(0, 6);
   const documents = documentService
@@ -128,6 +134,7 @@ function getVehicleCenterBundle(vehicleId) {
     monthly,
     fuelStats,
     maintenance,
+    maintenanceHistory,
     upcomingMaintenance,
     documents,
     hgsRecords,
