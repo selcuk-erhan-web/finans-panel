@@ -4771,6 +4771,150 @@ input:focus, select:focus {
   margin: 0;
 }
 
+/* FLEETOS CC-6 — Compliance analytics */
+.compliance-analytics-hub__header {
+  margin-bottom: 8px;
+}
+
+.compliance-analytics-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.compliance-analytics-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.compliance-analytics-hub__desc {
+  margin: 0;
+  color: #64748b;
+}
+
+.compliance-analytics-health {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.4fr);
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #fff;
+}
+
+.compliance-analytics-health__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.compliance-analytics-health__hero span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.compliance-analytics-health__hero strong {
+  font-size: 34px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.compliance-analytics-health__hero em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.compliance-analytics-health__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.compliance-analytics-health__grid article {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.85);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compliance-analytics-health__grid span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.compliance-analytics-health__grid strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.compliance-analytics-health--healthy { border-color: rgba(16, 185, 129, 0.25); }
+.compliance-analytics-health--healthy .compliance-analytics-health__hero em { color: #059669; }
+.compliance-analytics-health--watch { border-color: rgba(59, 130, 246, 0.22); }
+.compliance-analytics-health--watch .compliance-analytics-health__hero em { color: #2563eb; }
+.compliance-analytics-health--risk { border-color: rgba(245, 158, 11, 0.25); }
+.compliance-analytics-health--risk .compliance-analytics-health__hero em { color: #ea580c; }
+.compliance-analytics-health--critical { border-color: rgba(244, 63, 94, 0.22); }
+.compliance-analytics-health--critical .compliance-analytics-health__hero em { color: #dc2626; }
+.compliance-analytics-health--unknown .compliance-analytics-health__hero em { color: #64748b; }
+
+.compliance-analytics-grid {
+  align-items: start;
+}
+
+.compliance-analytics-insights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compliance-analytics-insight {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(248, 250, 252, 0.85);
+  font-size: 13px;
+  color: #334155;
+}
+
+.compliance-analytics-insight--warning {
+  border-color: rgba(245, 158, 11, 0.25);
+  background: #fff7ed;
+}
+
+.compliance-analytics-insight--critical {
+  border-color: rgba(244, 63, 94, 0.22);
+  background: #fff1f2;
+}
+
+.compliance-analytics-insight--info {
+  border-color: rgba(59, 130, 246, 0.18);
+  background: #eff6ff;
+}
+
+@media (max-width: 1100px) {
+  .compliance-analytics-health {
+    grid-template-columns: 1fr;
+  }
+  .compliance-analytics-health__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* FLEETOS-RECON-01 — Hakediş doğrulama */
 .recon-hub__header {
   margin-bottom: 8px;
