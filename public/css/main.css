@@ -4506,6 +4506,176 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS TYR-1 — Tire Center */
+.tire-hub__header {
+  margin-bottom: 18px;
+}
+
+.tire-hub__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0 0 6px;
+}
+
+.tire-hub__title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0 0 8px;
+}
+
+.tire-hub__desc {
+  margin: 0;
+  color: #64748b;
+  max-width: 720px;
+}
+
+.tyr-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tyr-kpi {
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tyr-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tyr-kpi strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.tyr-kpi--qty { border-color: #e9d5ff; background: #faf5ff; }
+.tyr-kpi--qty strong { color: #7e22ce; }
+.tyr-kpi--on { border-color: #bbf7d0; background: #f0fdf4; }
+.tyr-kpi--on strong { color: #15803d; }
+.tyr-kpi--storage { border-color: #bfdbfe; background: #eff6ff; }
+.tyr-kpi--storage strong { color: #2563eb; }
+.tyr-kpi--summer { border-color: #fed7aa; background: #fff7ed; }
+.tyr-kpi--summer strong { color: #c2410c; }
+.tyr-kpi--winter { border-color: #bae6fd; background: #f0f9ff; }
+.tyr-kpi--winter strong { color: #0369a1; }
+.tyr-kpi--cost { border-color: #bbf7d0; background: #f0fdf4; }
+.tyr-kpi--cost strong { color: #15803d; }
+
+.tire-hub__entry-grid {
+  margin-bottom: 16px;
+}
+
+.tire-info-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.tire-info-list li + li {
+  margin-top: 8px;
+}
+
+.tyr-filter-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e9d5ff;
+  background: #faf5ff;
+  color: #581c87;
+  font-size: 13px;
+}
+
+.tyr-filter-banner strong {
+  font-weight: 800;
+}
+
+.tyr-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.tyr-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.tyr-badge--on_vehicle {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.tyr-badge--in_storage {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.tyr-badge--disposed {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.tyr-badge--unknown {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.vc-section--compact .vc-section__head {
+  margin-bottom: 10px;
+}
+
+.vc-tire-table-wrap {
+  margin-top: 4px;
+}
+
+.vc-empty-note {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+@media (max-width: 1200px) {
+  .tyr-kpi-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .tyr-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* FLEETOS MNT-3 — Maintenance Scheduler */
 .mnt-schedule-kpi-row {
   display: grid;
