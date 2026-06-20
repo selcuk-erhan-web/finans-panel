@@ -4694,6 +4694,83 @@ input:focus, select:focus {
   }
 }
 
+/* FLEETOS CC-5 — Compliance notification center */
+.masthead__notifications,
+.cmd-notifications-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  background: rgba(239, 246, 255, 0.85);
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.masthead__notifications:hover,
+.cmd-notifications-badge:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  background: #eff6ff;
+}
+
+.notifications-hub__header {
+  margin-bottom: 8px;
+}
+
+.notifications-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.notifications-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.notifications-hub__desc {
+  margin: 0;
+  color: #64748b;
+}
+
+.notifications-hub__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.notifications-hub__counts {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.notifications-hub__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notification-row--unread {
+  background: rgba(239, 246, 255, 0.55);
+}
+
+.notification-read-form {
+  margin: 0;
+}
+
 /* FLEETOS-RECON-01 — Hakediş doğrulama */
 .recon-hub__header {
   margin-bottom: 8px;

@@ -2,6 +2,7 @@ const multer = require("multer");
 const documentService = require("../services/documentService");
 const complianceImportService = require("../services/complianceImportService");
 const complianceStatusService = require("../services/complianceStatusService");
+const complianceNotificationService = require("../services/complianceNotificationService");
 const { documentsPageHtml } = require("../lib/components/documents");
 const { redirectWithFlash } = require("../lib/flash");
 const { getVehicles } = require("./vehicles");
@@ -52,6 +53,7 @@ function registerDocuments(app) {
   app.get("/api/compliance/status", (req, res) => {
     try {
       const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
+      complianceNotificationService.generateComplianceNotifications(ref);
       const report = complianceStatusService.buildStatusReport(ref);
       res.json(report);
     } catch (err) {

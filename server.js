@@ -16,6 +16,7 @@ const registerExport = require("./routes/export");
 const registerHgs = require("./routes/hgs");
 const registerAlerts = require("./routes/alerts");
 const registerDocuments = require("./routes/documents");
+const registerNotifications = require("./routes/notifications");
 const registerReconciliation = require("./routes/reconciliation");
 const registerSubcontractors = require("./routes/subcontractors");
 const registerEmployees = require("./routes/employees");
@@ -45,6 +46,7 @@ registerFuel(app);
 registerHgs(app);
 registerAlerts(app);
 registerDocuments(app);
+registerNotifications(app);
 registerReconciliation(app);
 registerSubcontractors(app);
 registerEmployees(app);
@@ -69,4 +71,10 @@ app.use((err, _req, res, _next) => {
 app.listen(port, () => {
   console.log(`MISTUR FleetOS (${LAYOUT_VERSION}): http://localhost:${port}`);
   console.log("Giriş: /login · admin / 1234 (ilk kurulum)");
+  try {
+    const complianceNotificationService = require("./services/complianceNotificationService");
+    complianceNotificationService.generateComplianceNotifications();
+  } catch (err) {
+    console.error("compliance notification sync:", err.message);
+  }
 });
