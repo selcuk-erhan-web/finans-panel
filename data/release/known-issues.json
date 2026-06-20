@@ -1,0 +1,58 @@
+[
+  {
+    "id": "RC1-001",
+    "severity": "low",
+    "module": "vehicle",
+    "title": "Vehicle CRUD audit coverage not implemented",
+    "status": "known"
+  },
+  {
+    "id": "RC1-002",
+    "severity": "low",
+    "module": "maintenance",
+    "title": "Maintenance schedule rule CRUD is not audited",
+    "status": "known"
+  },
+  {
+    "id": "RC1-003",
+    "severity": "low",
+    "module": "system",
+    "title": "Alert mark-read actions are not written to audit logs",
+    "status": "known"
+  },
+  {
+    "id": "RC1-004",
+    "severity": "low",
+    "module": "fuel",
+    "title": "Fuel and HGS governance is only partially covered via legacy audit rows",
+    "status": "known"
+  },
+  {
+    "id": "RC1-005",
+    "severity": "medium",
+    "module": "system",
+    "title": "No role-based permission or approval workflow",
+    "status": "known"
+  },
+  {
+    "id": "RC1-006",
+    "severity": "low",
+    "module": "audit",
+    "title": "No audit export or formal reporting engine",
+    "status": "known"
+  },
+  {
+    "id": "RC1-007",
+    "severity": "low",
+    "module": "compliance",
+    "title": "Compliance analytics page still mixes some English KPI labels",
+    "status": "known"
+  },
+  {
+    "id": "RC1-008",
+    "severity": "low",
+    "module": "vehicle",
+    "title": "Vehicles page title (Araçlar) differs from nav label (Araç Merkezi)",
+    "status": "known"
+  }
+]

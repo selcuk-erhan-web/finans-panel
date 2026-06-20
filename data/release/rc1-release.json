@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-rc1",
+  "release_name": "FleetOS RC-1",
+  "release_date": "2026-06-20",
+  "status": "release_candidate",
+  "branch": "panel-refactor",
+  "base_commit": "bd948dae913dff728f2c87c6fe20c377c93d4d91",
+  "modules": {
+    "compliance": true,
+    "maintenance": true,
+    "tire": true,
+    "audit": true
+  },
+  "stabilization_complete": true,
+  "known_issues_count": 8,
+  "release_ready": true
+}

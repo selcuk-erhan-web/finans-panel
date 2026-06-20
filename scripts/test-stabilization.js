@@ -328,7 +328,8 @@ function main() {
   });
 
   test("layout version present", () => {
-    assert(LAYOUT_VERSION === "fleetos-stb1-stabilization-01", LAYOUT_VERSION);
+    assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-rc1-release-candidate-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");
