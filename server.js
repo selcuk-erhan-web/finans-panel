@@ -9,6 +9,7 @@ const registerTransactions = require("./routes/transactions");
 const registerIncome = require("./routes/income");
 const registerMaintenance = require("./routes/maintenance");
 const registerMaintenanceSchedule = require("./routes/maintenanceSchedule");
+const registerMaintenanceAlerts = require("./routes/maintenanceAlerts");
 const registerFuel = require("./routes/fuel");
 const registerReports = require("./routes/reports");
 const registerProfitability = require("./routes/profitability");
@@ -44,6 +45,7 @@ registerVehicles(app);
 registerTransactions(app);
 registerIncome(app);
 registerMaintenanceSchedule(app);
+registerMaintenanceAlerts(app);
 registerMaintenance(app);
 registerFuel(app);
 registerHgs(app);
@@ -80,5 +82,11 @@ app.listen(port, () => {
     complianceNotificationService.generateComplianceNotifications();
   } catch (err) {
     console.error("compliance notification sync:", err.message);
+  }
+  try {
+    const maintenanceAlertService = require("./services/maintenanceAlertService");
+    maintenanceAlertService.generateMaintenanceAlerts();
+  } catch (err) {
+    console.error("maintenance alert sync:", err.message);
   }
 });

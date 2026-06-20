@@ -5023,6 +5023,83 @@ input:focus, select:focus {
   margin: 0;
 }
 
+/* FLEETOS MNT-4 — Maintenance alerts */
+.masthead__maintenance-alerts,
+.cmd-maintenance-alerts-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 88, 12, 0.22);
+  background: rgba(255, 247, 237, 0.9);
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.masthead__maintenance-alerts:hover,
+.cmd-maintenance-alerts-badge:hover {
+  border-color: rgba(234, 88, 12, 0.35);
+  background: #fff7ed;
+}
+
+.maintenance-alerts-hub__header {
+  margin-bottom: 8px;
+}
+
+.maintenance-alerts-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.maintenance-alerts-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.maintenance-alerts-hub__desc {
+  margin: 0;
+  color: #64748b;
+}
+
+.maintenance-alerts-hub__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.maintenance-alerts-hub__counts {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.maintenance-alerts-hub__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mnt-alert-row--unread {
+  background: rgba(255, 247, 237, 0.55);
+}
+
+.mnt-alert-read-form {
+  margin: 0;
+}
+
 /* FLEETOS CC-6 — Compliance analytics */
 .compliance-analytics-hub__header {
   margin-bottom: 8px;

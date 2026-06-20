@@ -1,5 +1,6 @@
 const express = require("express");
 const maintenanceSchedulerService = require("../services/maintenanceSchedulerService");
+const maintenanceAlertService = require("../services/maintenanceAlertService");
 const { maintenanceSchedulePageHtml } = require("../lib/components/maintenanceSchedule");
 const { getVehicles } = require("./vehicles");
 const { renderLayout, errorPage } = require("../lib/ui");
@@ -32,6 +33,7 @@ function registerMaintenanceSchedule(app) {
     try {
       const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
       const filters = { vehicle_id: req.query.vehicle_id || "" };
+      maintenanceAlertService.generateMaintenanceAlerts(ref);
       const report = maintenanceSchedulerService.buildMaintenanceScheduleReport(ref, filters);
       res.json({ ok: true, ...report });
     } catch (err) {
