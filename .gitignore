@@ -3,6 +3,14 @@ node_modules/
 uploads/
 
 # SQLite runtime files
+data.db
+*.db
 *.db-shm
 *.db-wal
-backups/
+*.sqlite
+*.sqlite3
+data/runtime/
+
+# Local backup databases (keep folder placeholder only)
+backups/*
+!backups/.gitkeep
