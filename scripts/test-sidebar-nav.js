@@ -59,10 +59,15 @@ assert(
   fleetGroup.items.some(([href, label]) => href === "/vehicle-timeline" && label === "Araç Operasyon Geçmişi"),
   "vehicle timeline in filo group"
 );
+assert(
+  fleetGroup.items.some(([href, label]) => href === "/vehicle-profit-risk" && label === "Araç Kâr / Risk Analizi"),
+  "vehicle profit risk in filo group"
+);
 assert(fleetGroup.items[1][0] === "/vehicle-intelligence" && fleetGroup.items[1][1] === "Araç Zekâsı", "vehicle intelligence second in fleet");
 assert(fleetGroup.items[2][0] === "/vehicle-health" && fleetGroup.items[2][1] === "Araç Sağlık Skoru", "vehicle health third in fleet");
 assert(fleetGroup.items[3][0] === "/vehicle-timeline" && fleetGroup.items[3][1] === "Araç Operasyon Geçmişi", "vehicle timeline fourth in fleet");
-assert(fleetGroup.items[4][0] === "/documents" && fleetGroup.items[4][1] === "Uygunluk Merkezi", "fleet compliance center fifth");
+assert(fleetGroup.items[4][0] === "/vehicle-profit-risk" && fleetGroup.items[4][1] === "Araç Kâr / Risk Analizi", "vehicle profit risk fifth in fleet");
+assert(fleetGroup.items[5][0] === "/documents" && fleetGroup.items[5][1] === "Uygunluk Merkezi", "fleet compliance center sixth");
 
 const expenseGroup = NAV_TREE.find((n) => n.id === "expense");
 assert(
@@ -112,6 +117,10 @@ assert(vhHtml.includes("Araç Sağlık Skoru"), "vehicle health label in nav");
 const vtHtml = renderNav("/vehicle-timeline");
 assert(getOpenGroupId("/vehicle-timeline") === "fleet", "vehicle timeline opens fleet group");
 assert(vtHtml.includes("Araç Operasyon Geçmişi"), "vehicle timeline label in nav");
+
+const vprHtml = renderNav("/vehicle-profit-risk");
+assert(getOpenGroupId("/vehicle-profit-risk") === "fleet", "vehicle profit risk opens fleet group");
+assert(vprHtml.includes("Araç Kâr / Risk Analizi"), "vehicle profit risk label in nav");
 
 const incomeHubHtml = renderNav("/income");
 assert(getOpenGroupId("/income") === "income", "income group open on hub");

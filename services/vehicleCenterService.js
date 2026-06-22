@@ -14,6 +14,7 @@ const alertService = require("./alertService");
 const vehicleIntelligenceService = require("./vehicleIntelligenceService");
 const vehicleHealthService = require("./vehicleHealthService");
 const vehicleTimelineService = require("./vehicleTimelineService");
+const vehicleProfitRiskService = require("./vehicleProfitRiskService");
 
 function getIncomeBreakdown(vehicleId) {
   const rows = db
@@ -156,6 +157,13 @@ function getVehicleCenterBundle(vehicleId) {
     timeline = null;
   }
 
+  let profitRisk = null;
+  try {
+    profitRisk = vehicleProfitRiskService.buildVehicleProfitRisk(vehicleId);
+  } catch {
+    profitRisk = null;
+  }
+
   return {
     vehicle,
     summary,
@@ -183,6 +191,7 @@ function getVehicleCenterBundle(vehicleId) {
     intelligence,
     health,
     timeline,
+    profitRisk,
   };
 }
 

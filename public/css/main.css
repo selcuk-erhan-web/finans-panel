@@ -10490,3 +10490,245 @@ input:focus, select:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* FLEETOS VI-4 — Vehicle Profit / Risk Fusion */
+.vpr-hub__header {
+  margin-bottom: 8px;
+}
+
+.vpr-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.vpr-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vpr-hub__desc {
+  margin: 0 0 8px;
+  color: #64748b;
+  max-width: 760px;
+}
+
+.vpr-hub__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vpr-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vpr-kpi {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vpr-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vpr-kpi strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vpr-kpi--star { border-color: #bbf7d0; background: #f0fdf4; }
+.vpr-kpi--star strong { color: #15803d; }
+.vpr-kpi--net { border-color: #bfdbfe; background: #eff6ff; }
+.vpr-kpi--crit { border-color: #fecaca; background: #fef2f2; }
+.vpr-kpi--crit strong { color: #dc2626; }
+.vpr-kpi--warn { border-color: #fed7aa; background: #fff7ed; }
+.vpr-kpi--warn strong { color: #ea580c; }
+
+.vpr-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.vpr-badge--ok { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+.vpr-badge--info { border-color: #bfdbfe; background: #eff6ff; color: #2563eb; }
+.vpr-badge--warn { border-color: #fed7aa; background: #fff7ed; color: #ea580c; }
+.vpr-badge--crit { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
+.vpr-badge--muted { border-color: #e2e8f0; background: #f8fafc; color: #64748b; }
+
+.vpr-table .vpr-comment,
+.vpr-table .vpr-action {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #334155;
+  max-width: 220px;
+}
+
+.vpr-driver-row td {
+  padding-top: 0;
+  border-top: none;
+}
+
+.vpr-driver {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 6px;
+  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.vpr-driver--success { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+.vpr-driver--warning { border-color: #fed7aa; background: #fff7ed; color: #ea580c; }
+.vpr-driver--critical { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
+.vpr-driver--info { border-color: #bfdbfe; background: #eff6ff; color: #2563eb; }
+.vpr-driver--muted { color: #94a3b8; }
+
+.vpr-inline-link {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.vpr-net--pos { color: #15803d; font-weight: 800; }
+.vpr-net--neg { color: #dc2626; font-weight: 800; }
+
+.vpr-summary-panel .panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vpr-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.vpr-summary-grid article {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vpr-summary-grid span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vpr-summary-grid strong {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.vpr-summary-text,
+.vpr-summary-action {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #334155;
+}
+
+.vpr-summary-drivers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vpr-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.vehicle-profit-risk-widget__loading,
+.vehicle-profit-risk-widget__error {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.vehicle-profit-risk-widget__error {
+  color: #dc2626;
+}
+
+.vehicle-profit-risk-widget-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vehicle-profit-risk-widget-kpi {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vehicle-profit-risk-widget-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vehicle-profit-risk-widget-kpi strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vehicle-profit-risk-widget-kpi--net { border-color: #bfdbfe; background: #eff6ff; }
+.vehicle-profit-risk-widget-kpi--star { border-color: #bbf7d0; background: #f0fdf4; }
+.vehicle-profit-risk-widget-kpi--star strong { color: #15803d; }
+.vehicle-profit-risk-widget-kpi--crit { border-color: #fecaca; background: #fef2f2; }
+.vehicle-profit-risk-widget-kpi--crit strong { color: #dc2626; }
+.vehicle-profit-risk-widget-kpi--urgent { border-color: #fecaca; background: #fff1f2; }
+.vehicle-profit-risk-widget-kpi--urgent strong { color: #b91c1c; }
+.vehicle-profit-risk-widget-kpi--warn { border-color: #fed7aa; background: #fff7ed; }
+.vehicle-profit-risk-widget-kpi--warn strong { color: #ea580c; }
+
+@media (max-width: 1100px) {
+  .vpr-kpi-row,
+  .vpr-summary-grid,
+  .vehicle-profit-risk-widget-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

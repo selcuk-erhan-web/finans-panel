@@ -18,6 +18,7 @@ const { maintenanceDashboardWidgetHtml } = require("../lib/components/maintenanc
 const { tireDashboardWidgetHtml } = require("../lib/components/tireDashboard");
 const { auditDashboardWidgetHtml } = require("../lib/components/auditDashboard");
 const { vehicleHealthDashboardWidgetHtml } = require("../lib/components/vehicleHealth");
+const { vehicleProfitRiskDashboardWidgetHtml } = require("../lib/components/vehicleProfitRisk");
 
 const CHART = {
   incomeFill: "rgba(16, 185, 129, 0.2)",
@@ -65,6 +66,7 @@ function registerDashboard(app) {
             ${tireDashboardWidgetHtml()}
             ${auditDashboardWidgetHtml()}
             ${vehicleHealthDashboardWidgetHtml()}
+            ${vehicleProfitRiskDashboardWidgetHtml()}
             ${executiveProfitSummary({ profit })}
             ${vehicleProfitRankPanel({ profit })}
             ${operationsCenter({ alerts, profitExpense: profit?.expenseBreakdown })}
