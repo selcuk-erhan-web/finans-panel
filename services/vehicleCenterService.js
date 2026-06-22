@@ -13,6 +13,7 @@ const documentService = require("./documentService");
 const alertService = require("./alertService");
 const vehicleIntelligenceService = require("./vehicleIntelligenceService");
 const vehicleHealthService = require("./vehicleHealthService");
+const vehicleTimelineService = require("./vehicleTimelineService");
 
 function getIncomeBreakdown(vehicleId) {
   const rows = db
@@ -148,6 +149,13 @@ function getVehicleCenterBundle(vehicleId) {
     health = null;
   }
 
+  let timeline = null;
+  try {
+    timeline = vehicleTimelineService.buildVehicleTimeline(vehicleId, { limit: 5 });
+  } catch {
+    timeline = null;
+  }
+
   return {
     vehicle,
     summary,
@@ -174,6 +182,7 @@ function getVehicleCenterBundle(vehicleId) {
     expenseCount: expenses.length,
     intelligence,
     health,
+    timeline,
   };
 }
 

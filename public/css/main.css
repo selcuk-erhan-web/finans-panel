@@ -10241,3 +10241,252 @@ input:focus, select:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* FLEETOS VI-3 — Vehicle Operational Timeline */
+.vt-hub__header {
+  margin-bottom: 8px;
+}
+
+.vt-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.vt-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vt-hub__desc {
+  margin: 0 0 8px;
+  color: #64748b;
+  max-width: 760px;
+}
+
+.vt-hub__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vt-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vt-kpi {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vt-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vt-kpi strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vt-kpi--crit { border-color: #fecaca; background: #fef2f2; }
+.vt-kpi--crit strong { color: #dc2626; }
+.vt-kpi--warn { border-color: #fed7aa; background: #fff7ed; }
+.vt-kpi--warn strong { color: #ea580c; }
+
+.vt-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.vt-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.vt-filters select,
+.vt-filters input {
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.vt-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.vt-badge--ok { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+.vt-badge--info { border-color: #bfdbfe; background: #eff6ff; color: #2563eb; }
+.vt-badge--warn { border-color: #fed7aa; background: #fff7ed; color: #ea580c; }
+.vt-badge--crit { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
+.vt-badge--muted { border-color: #e2e8f0; background: #f8fafc; color: #64748b; }
+
+.vt-timeline {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vt-event {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.vt-event__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.vt-event__badges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.vt-source {
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.vt-event__title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vt-event__desc {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.vt-event__meta {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.vt-event--critical { border-color: #fecaca; background: #fff1f2; }
+.vt-event--warning { border-color: #fed7aa; background: #fff7ed; }
+.vt-event--success { border-color: #bbf7d0; background: #f0fdf4; }
+
+.vt-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.vt-back-link {
+  margin-top: 12px;
+}
+
+.vt-preview-panel .panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vt-preview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vt-preview-item {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vt-preview-item__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.vt-preview-item strong {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.vt-preview-item span {
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.vt-preview-item__meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.vt-preview-item--critical { border-color: #fecaca; background: #fef2f2; }
+.vt-preview-item--warning { border-color: #fed7aa; background: #fff7ed; }
+.vt-preview-item--success { border-color: #bbf7d0; background: #f0fdf4; }
+
+@media (max-width: 1100px) {
+  .vt-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vt-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

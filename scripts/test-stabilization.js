@@ -165,6 +165,7 @@ function main() {
       "Araç Merkezi",
       "Araç Zekâsı",
       "Araç Sağlık Skoru",
+      "Araç Operasyon Geçmişi",
       "Uygunluk Merkezi",
       "Uygunluk Bildirimleri",
       "Uygunluk Analitiği",
@@ -331,7 +332,7 @@ function main() {
 
   test("layout version present", () => {
     assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
-    assert(LAYOUT_VERSION === "fleetos-vi2-vehicle-health-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-vi3-vehicle-timeline-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");
