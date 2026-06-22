@@ -167,6 +167,7 @@ function main() {
       "Araç Sağlık Skoru",
       "Araç Operasyon Geçmişi",
       "Araç Kâr / Risk Analizi",
+      "Yönetici Araç Zekâsı",
       "Uygunluk Merkezi",
       "Uygunluk Bildirimleri",
       "Uygunluk Analitiği",
@@ -333,7 +334,7 @@ function main() {
 
   test("layout version present", () => {
     assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
-    assert(LAYOUT_VERSION === "fleetos-vi4-profit-risk-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-vi5-executive-dashboard-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");
