@@ -11,6 +11,7 @@ const tireHistoryService = require("./tireHistoryService");
 const tireSeasonalSchedulerService = require("./tireSeasonalSchedulerService");
 const documentService = require("./documentService");
 const alertService = require("./alertService");
+const vehicleIntelligenceService = require("./vehicleIntelligenceService");
 
 function getIncomeBreakdown(vehicleId) {
   const rows = db
@@ -132,6 +133,13 @@ function getVehicleCenterBundle(vehicleId) {
 
   const hasFinancialData = profit.income > 0 || profit.totalExpense > 0;
 
+  let intelligence = null;
+  try {
+    intelligence = vehicleIntelligenceService.buildVehicleIntelligence(vehicleId);
+  } catch {
+    intelligence = null;
+  }
+
   return {
     vehicle,
     summary,
@@ -156,6 +164,7 @@ function getVehicleCenterBundle(vehicleId) {
     hasFinancialData,
     incomeCount: incomes.length,
     expenseCount: expenses.length,
+    intelligence,
   };
 }
 

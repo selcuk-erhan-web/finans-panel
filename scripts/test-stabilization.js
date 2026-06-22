@@ -163,6 +163,7 @@ function main() {
     const fleetLabels = fleet.items.map(([, label]) => label);
     const expectedFleet = [
       "Araç Merkezi",
+      "Araç Zekâsı",
       "Uygunluk Merkezi",
       "Uygunluk Bildirimleri",
       "Uygunluk Analitiği",
@@ -329,7 +330,7 @@ function main() {
 
   test("layout version present", () => {
     assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
-    assert(LAYOUT_VERSION === "fleetos-v11-pln1-roadmap-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-vi1-vehicle-intelligence-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");
