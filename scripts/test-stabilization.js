@@ -164,6 +164,7 @@ function main() {
     const expectedFleet = [
       "Araç Merkezi",
       "Araç Zekâsı",
+      "Araç Sağlık Skoru",
       "Uygunluk Merkezi",
       "Uygunluk Bildirimleri",
       "Uygunluk Analitiği",
@@ -330,7 +331,7 @@ function main() {
 
   test("layout version present", () => {
     assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
-    assert(LAYOUT_VERSION === "fleetos-vi1-vehicle-intelligence-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-vi2-vehicle-health-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");

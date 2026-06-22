@@ -12,6 +12,7 @@ const tireSeasonalSchedulerService = require("./tireSeasonalSchedulerService");
 const documentService = require("./documentService");
 const alertService = require("./alertService");
 const vehicleIntelligenceService = require("./vehicleIntelligenceService");
+const vehicleHealthService = require("./vehicleHealthService");
 
 function getIncomeBreakdown(vehicleId) {
   const rows = db
@@ -140,6 +141,13 @@ function getVehicleCenterBundle(vehicleId) {
     intelligence = null;
   }
 
+  let health = null;
+  try {
+    health = intelligence ? vehicleHealthService.calculateVehicleHealth(intelligence) : null;
+  } catch {
+    health = null;
+  }
+
   return {
     vehicle,
     summary,
@@ -165,6 +173,7 @@ function getVehicleCenterBundle(vehicleId) {
     incomeCount: incomes.length,
     expenseCount: expenses.length,
     intelligence,
+    health,
   };
 }
 

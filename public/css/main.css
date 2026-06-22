@@ -9972,3 +9972,272 @@ input:focus, select:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* FLEETOS VI-2 — Vehicle Health Score */
+.vh-hub__header {
+  margin-bottom: 8px;
+}
+
+.vh-hub__eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.vh-hub__title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vh-hub__desc {
+  margin: 0 0 8px;
+  color: #64748b;
+  max-width: 760px;
+}
+
+.vh-hub__links {
+  display: flex;
+  gap: 8px;
+}
+
+.vh-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.vh-kpi {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vh-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vh-kpi strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vh-kpi em {
+  font-style: normal;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vh-kpi--score { border-color: #bfdbfe; background: #eff6ff; }
+.vh-kpi--ok { border-color: #bbf7d0; background: #f0fdf4; }
+.vh-kpi--ok strong { color: #15803d; }
+.vh-kpi--watch { border-color: #fde68a; background: #fffbeb; }
+.vh-kpi--watch strong { color: #ca8a04; }
+.vh-kpi--risk { border-color: #fed7aa; background: #fff7ed; }
+.vh-kpi--risk strong { color: #ea580c; }
+.vh-kpi--crit { border-color: #fecaca; background: #fef2f2; }
+.vh-kpi--crit strong { color: #dc2626; }
+
+.vh-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.vh-badge--ok { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+.vh-badge--watch { border-color: #fde68a; background: #fffbeb; color: #ca8a04; }
+.vh-badge--risk { border-color: #fed7aa; background: #fff7ed; color: #ea580c; }
+.vh-badge--crit { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
+.vh-badge--muted { border-color: #e2e8f0; background: #f8fafc; color: #64748b; }
+
+.vh-score {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.vh-recommendation {
+  font-size: 12px;
+  color: #334155;
+  max-width: 280px;
+  line-height: 1.4;
+}
+
+.vh-risk-row td {
+  padding-top: 0;
+  border-top: none;
+}
+
+.vh-risk {
+  display: block;
+  font-size: 11px;
+  line-height: 1.35;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+}
+
+.vh-risk--critical { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+.vh-risk--warning { border-color: #fed7aa; background: #fff7ed; color: #92400e; }
+.vh-risk--info { border-color: #bfdbfe; background: #eff6ff; color: #1e40af; }
+.vh-risk--muted { color: #94a3b8; font-style: italic; }
+
+.vh-summary-panel .panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vh-summary-hero {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.vh-summary-hero__score {
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vh-summary-hero__score span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.vh-summary-hero__score strong {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+.vh-summary-hero__meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.vh-summary-hero__meta article {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vh-summary-hero__meta span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.vh-summary-recommendation {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.vh-summary-empty {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.vehicle-health-widget__loading,
+.vehicle-health-widget__error {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.vehicle-health-widget__error {
+  color: #dc2626;
+}
+
+.vehicle-health-widget-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vehicle-health-widget-kpi {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vehicle-health-widget-kpi span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.vehicle-health-widget-kpi strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.vehicle-health-widget-kpi--score { border-color: #bfdbfe; background: #eff6ff; }
+.vehicle-health-widget-kpi--crit { border-color: #fecaca; background: #fef2f2; }
+.vehicle-health-widget-kpi--crit strong { color: #dc2626; }
+.vehicle-health-widget-kpi--risk { border-color: #fed7aa; background: #fff7ed; }
+.vehicle-health-widget-kpi--risk strong { color: #ea580c; }
+.vehicle-health-widget-kpi--watch { border-color: #fde68a; background: #fffbeb; }
+.vehicle-health-widget-kpi--watch strong { color: #ca8a04; }
+
+.vehicle-health-widget__highlight {
+  margin: 0;
+  font-size: 12px;
+  color: #334155;
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .vh-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vh-summary-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .vehicle-health-widget-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
