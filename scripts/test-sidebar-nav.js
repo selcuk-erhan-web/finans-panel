@@ -35,6 +35,10 @@ assert(
   systemGroup.items.some(([href, label]) => href === "/release/v1.1" && label === "v1.1 Release Candidate"),
   "v1.1 release candidate in system group"
 );
+assert(
+  systemGroup.items.some(([href, label]) => href === "/production/v1.1" && label === "v1.1 Production Release"),
+  "v1.1 production release in system group"
+);
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
 assert(
@@ -205,12 +209,18 @@ const v11ReleaseHtml = renderNav("/release/v1.1");
 assert(getOpenGroupId("/release/v1.1") === "system", "v1.1 release opens system group");
 assert(v11ReleaseHtml.includes("v1.1 Release Candidate"), "v1.1 release label in nav");
 
+const v11ProdHtml = renderNav("/production/v1.1");
+assert(getOpenGroupId("/production/v1.1") === "system", "v1.1 production opens system group");
+assert(v11ProdHtml.includes("v1.1 Production Release"), "v1.1 production label in nav");
+
 const prodIdx = systemGroup.items.findIndex(([href]) => href === "/production");
 const roadmapIdx = systemGroup.items.findIndex(([href]) => href === "/roadmap/v1.1");
 const v11ReleaseIdx = systemGroup.items.findIndex(([href]) => href === "/release/v1.1");
+const v11ProdIdx = systemGroup.items.findIndex(([href]) => href === "/production/v1.1");
 const settingsIdx = systemGroup.items.findIndex(([href]) => href === "/settings");
 assert(prodIdx >= 0 && roadmapIdx > prodIdx, "roadmap after production release");
 assert(roadmapIdx >= 0 && v11ReleaseIdx > roadmapIdx, "v1.1 release after roadmap");
-assert(v11ReleaseIdx >= 0 && settingsIdx > v11ReleaseIdx, "v1.1 release before settings");
+assert(v11ReleaseIdx >= 0 && v11ProdIdx > v11ReleaseIdx, "v1.1 production after release candidate");
+assert(v11ProdIdx >= 0 && settingsIdx > v11ProdIdx, "v1.1 production before settings");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");

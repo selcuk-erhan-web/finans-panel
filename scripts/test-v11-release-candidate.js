@@ -141,7 +141,7 @@ function main() {
   });
 
   test("layout version updated", () => {
-    assert(LAYOUT_VERSION === "fleetos-rc2-v11-release-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-prd2-v11-production-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");
