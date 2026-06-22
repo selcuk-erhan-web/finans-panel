@@ -66,9 +66,11 @@ function registerDashboard(app) {
             ${maintenanceDashboardWidgetHtml()}
             ${tireDashboardWidgetHtml()}
             ${auditDashboardWidgetHtml()}
-            ${vehicleHealthDashboardWidgetHtml()}
-            ${vehicleProfitRiskDashboardWidgetHtml()}
-            ${executiveVehicleDashboardWidgetHtml()}
+            <div class="cmd-vi-widget-stack">
+              ${vehicleHealthDashboardWidgetHtml()}
+              ${vehicleProfitRiskDashboardWidgetHtml()}
+              ${executiveVehicleDashboardWidgetHtml()}
+            </div>
             ${executiveProfitSummary({ profit })}
             ${vehicleProfitRankPanel({ profit })}
             ${operationsCenter({ alerts, profitExpense: profit?.expenseBreakdown })}
@@ -94,7 +96,7 @@ function registerDashboard(app) {
 
     renderPage(res, {
       title: "Ana Ekran",
-      subtitle: "Filo Operasyon Merkezi · Executive Dashboard",
+      subtitle: "Filo Operasyon Merkezi · Yönetici Özeti",
       content,
       path: "/",
       req,

@@ -11000,3 +11000,39 @@ input:focus, select:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* FLEETOS STB-2 — v1.1 dashboard widget stack */
+.cmd-vi-widget-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.cmd-vi-widget-stack .cmd-panel {
+  margin-bottom: 0;
+}
+
+.cmd-vi-widget-stack .cmd-panel__head {
+  padding-bottom: 8px;
+}
+
+.cmd-vi-widget-stack .cmd-panel__title {
+  font-size: 15px;
+}
+
+.cmd-vi-widget-stack .vehicle-health-widget-kpi-row,
+.cmd-vi-widget-stack .vehicle-profit-risk-widget-kpi-row,
+.cmd-vi-widget-stack .executive-vehicle-widget-kpi-row {
+  gap: 8px;
+}
+
+.cmd-vi-widget-stack .vehicle-health-widget-kpi,
+.cmd-vi-widget-stack .vehicle-profit-risk-widget-kpi,
+.cmd-vi-widget-stack .executive-vehicle-widget-kpi {
+  padding: 10px 12px;
+}
+
+.cmd-vi-widget-stack .vehicle-health-widget-kpi strong,
+.cmd-vi-widget-stack .vehicle-profit-risk-widget-kpi strong,
+.cmd-vi-widget-stack .executive-vehicle-widget-kpi strong {
+  font-size: 16px;
+}
