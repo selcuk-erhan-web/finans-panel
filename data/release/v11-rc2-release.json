@@ -1,0 +1,13 @@
+{
+  "version": "1.1.0-rc2",
+  "release_name": "FleetOS Vehicle Intelligence RC-2",
+  "release_date": "2026-06-18",
+  "status": "release_candidate",
+  "base_version": "1.0.1",
+  "branch": "v1.1-planning",
+  "base_commit": "2cde92326f7674770993ee67564eddef1fcc74de",
+  "stabilization_complete": true,
+  "vehicle_intelligence_complete": true,
+  "known_issues_count": 8,
+  "release_ready": true
+}

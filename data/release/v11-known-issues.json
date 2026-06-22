@@ -1,0 +1,74 @@
+[
+  {
+    "id": "V11-001",
+    "severity": "low",
+    "module": "finance",
+    "title": "Araç bazlı finans kapsamı kısmi olabilir",
+    "description": "Vehicle Intelligence finans verisi mevcut işlem kayıtlarına dayanır; eksik gelir/gider girişi skor ve füzyon kalitesini düşürür.",
+    "planned_version": "1.2",
+    "status": "known"
+  },
+  {
+    "id": "V11-002",
+    "severity": "low",
+    "module": "operations",
+    "title": "Sürücü yönetimi modülü yok",
+    "description": "v1.1 kapsamında sürücü atama, vardiya veya sürücü performansı desteklenmez.",
+    "planned_version": "1.2",
+    "status": "known"
+  },
+  {
+    "id": "V11-003",
+    "severity": "medium",
+    "module": "system",
+    "title": "Rol tabanlı yetkilendirme (RBAC) yok",
+    "description": "Tek oturum modeli devam eder; onay akışı ve rol bazlı erişim v1.1 dışındadır.",
+    "planned_version": "1.2",
+    "status": "known"
+  },
+  {
+    "id": "V11-004",
+    "severity": "low",
+    "module": "notifications",
+    "title": "Harici bildirim kanalları yok",
+    "description": "Telegram, WhatsApp, e-posta veya mobil push entegrasyonu bulunmuyor.",
+    "planned_version": "1.2",
+    "status": "known"
+  },
+  {
+    "id": "V11-005",
+    "severity": "low",
+    "module": "system",
+    "title": "Merkezi export / raporlama motoru yok",
+    "description": "VI ekranları panel içi görünümdür; toplu PDF/Excel export motoru tanımlı değildir.",
+    "planned_version": "1.2",
+    "status": "known"
+  },
+  {
+    "id": "V11-006",
+    "severity": "low",
+    "module": "audit",
+    "title": "Araç CRUD denetim kapsamı eksik",
+    "description": "Araç oluşturma/güncelleme/silme işlemleri audit log kapsamına tam alınmamıştır (v1.0.1'den devam).",
+    "planned_version": "1.1.1",
+    "status": "known"
+  },
+  {
+    "id": "V11-007",
+    "severity": "low",
+    "module": "system",
+    "title": "Uyarı okundu işaretleme denetlenmiyor",
+    "description": "Bakım/lastik/uygunluk uyarılarında mark-read aksiyonları audit log'a yazılmaz.",
+    "planned_version": "1.1.1",
+    "status": "known"
+  },
+  {
+    "id": "V11-008",
+    "severity": "low",
+    "module": "fuel",
+    "title": "Yakıt ve HGS denetim kapsamı kısmi",
+    "description": "Yakıt/HGS işlemleri legacy audit satırları ile sınırlı kapsamdadır.",
+    "planned_version": "1.1.1",
+    "status": "known"
+  }
+]

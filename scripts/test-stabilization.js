@@ -334,7 +334,7 @@ function main() {
 
   test("layout version present", () => {
     assert(typeof LAYOUT_VERSION === "string" && LAYOUT_VERSION.length > 0, LAYOUT_VERSION);
-    assert(LAYOUT_VERSION === "fleetos-stb2-v11-stabilization-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-rc2-v11-release-01", LAYOUT_VERSION);
   });
 
   console.log("\n--- PASS/FAIL SUMMARY ---");

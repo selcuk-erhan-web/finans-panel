@@ -11036,3 +11036,73 @@ input:focus, select:focus {
 .cmd-vi-widget-stack .executive-vehicle-widget-kpi strong {
   font-size: 16px;
 }
+
+/* FLEETOS RC-2 — v1.1 Release Candidate */
+.v11rc-hub__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.v11rc-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.v11rc-summary-grid article {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.v11rc-summary-grid span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.v11rc-summary-grid strong {
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.v11rc-readiness p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.v11rc-blockers {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.v11rc-blockers span {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.v11rc-blockers ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #334155;
+}
+
+@media (max-width: 1100px) {
+  .v11rc-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
