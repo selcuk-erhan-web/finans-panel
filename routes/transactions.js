@@ -136,7 +136,7 @@ function registerTransactions(app) {
 
     const content = `
       <div class="page-intro"><p>Kayıt bilgilerini güncelleyin</p></div>
-      <div class="card" style="max-width:520px">
+      <div class="card form-panel--narrow">
         <form method="POST" action="/expense/edit/${t.id}">
           <select name="vehicle_id">${vehicleOptions(vehicles, t.vehicle_id, { allowShared: true })}</select>
           <select name="category" required>${categoryOptions(categoryNames, t.category)}</select>

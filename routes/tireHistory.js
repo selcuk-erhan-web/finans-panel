@@ -37,6 +37,7 @@ function renderTireHistoryPage(req, res, extra = {}) {
     filters,
     editRecord: extra.editRecord || null,
     selectedVehiclePlate: selectedVehicle?.plate || "",
+    path: req.path,
   });
 
   renderLayout(res, "Lastik Değişim Geçmişi", content, "/tire-history", req, {

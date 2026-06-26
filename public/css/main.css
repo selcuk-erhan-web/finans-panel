@@ -10912,6 +10912,1415 @@ input:focus, select:focus {
   }
 }
 
+/* STB-6A — Executive Density Upgrade */
+.vehicle-360-center--executive-density {
+  gap: 8px;
+}
+
+.vehicle-360-center--executive-density .executive-hub__header {
+  margin-bottom: 0;
+}
+
+.vehicle-360-center--executive-density .executive-hub__description {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-identity {
+  gap: 8px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero {
+  grid-template-columns: minmax(190px, 240px) minmax(260px, 0.8fr) minmax(420px, 1.4fr);
+  gap: 16px;
+  min-height: 220px;
+  padding: 16px 18px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__media {
+  min-height: 170px;
+  padding: 10px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__image-stage {
+  max-width: 240px;
+  min-height: 130px;
+  padding: 8px 10px 6px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__image {
+  max-width: 240px;
+  min-height: 110px;
+  max-height: 135px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__fallback {
+  width: 120px;
+  height: 120px;
+  font-size: 60px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__content {
+  gap: 6px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__title {
+  font-size: clamp(24px, 2.2vw, 32px);
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__meta {
+  font-size: 12px;
+  gap: 6px 8px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__badges {
+  gap: 6px;
+  margin-top: 0;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__actions {
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-hero__pill {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-command-metrics {
+  gap: 8px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-command-metric {
+  min-height: 72px;
+  padding: 10px 12px;
+  gap: 3px;
+  border-radius: 14px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-command-metric__label {
+  font-size: 9px;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-command-metric__value {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-command-metric__meta {
+  font-size: 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-360-center--executive-density .vehicle-executive-scoreboard {
+  gap: 8px;
+}
+
+.vehicle-360-center--executive-density .vehicle-score-card {
+  min-height: 86px;
+  padding: 10px 12px;
+  gap: 2px;
+  border-radius: 16px;
+}
+
+.vehicle-360-center--executive-density .vehicle-score-card__label {
+  font-size: 9px;
+}
+
+.vehicle-360-center--executive-density .vehicle-score-card__value {
+  font-size: 24px;
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-360-center--executive-density .vehicle-score-card__meta {
+  font-size: 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact {
+  gap: 6px;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact .vehicle-action-intelligence__title {
+  font-size: 12px;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact .vehicle-action-grid {
+  gap: 8px;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact .vehicle-action-card {
+  min-height: 80px;
+  padding: 8px 8px 8px 32px;
+  gap: 2px;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact .vehicle-action-card__icon {
+  top: 8px;
+  left: 8px;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact .vehicle-action-card__title {
+  font-size: 10px;
+}
+
+.vehicle-360-center--executive-density .vehicle-action-intelligence--compact .vehicle-action-card__body {
+  font-size: 11px;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vehicle-360-center--executive-density .vehicle-360-kpi-section {
+  margin-top: 0;
+}
+
+.vehicle-360-center--executive-density .executive-kpi-grid--compact {
+  gap: 6px;
+}
+
+.vehicle-360-center--executive-density .executive-kpi-grid--compact .executive-kpi {
+  min-height: 58px;
+  padding: 8px 10px 8px 14px;
+  gap: 2px;
+}
+
+.vehicle-360-center--executive-density .executive-kpi-grid--compact .executive-kpi__label {
+  font-size: 9px;
+}
+
+.vehicle-360-center--executive-density .executive-kpi-grid--compact .executive-kpi__value {
+  font-size: 14px;
+}
+
+.vehicle-360-center--executive-density .executive-kpi-grid--compact .executive-kpi__meta {
+  font-size: 9px;
+}
+
+/* STB-6B — Executive Visual Hierarchy */
+.vehicle-360-center--visual-hierarchy .vehicle-executive-scoreboard {
+  grid-template-columns: 1.35fr 1fr 1fr 1fr 0.9fr;
+}
+
+.vehicle-score-card--primary {
+  position: relative;
+  padding: 12px 14px;
+  border-width: 1.5px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 10px 28px rgba(99, 102, 241, 0.08);
+}
+
+.vehicle-score-card--primary .vehicle-score-card__value {
+  font-size: 34px;
+  line-height: 1.02;
+}
+
+.vehicle-score-card--primary .vehicle-score-card__meta {
+  font-weight: 700;
+}
+
+.vehicle-360-center--executive-density .vehicle-score-card--primary .vehicle-score-card__value {
+  font-size: 34px;
+}
+
+.vehicle-360-center--executive-density .vehicle-score-card--primary {
+  min-height: 86px;
+  padding: 12px 14px;
+}
+
+.vehicle-score-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.vehicle-score-indicator__bar {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+  overflow: hidden;
+}
+
+.vehicle-score-indicator__bar > span {
+  display: block;
+  width: var(--score, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: currentColor;
+  transition: width 0.2s ease;
+}
+
+.vehicle-score-indicator--success {
+  color: #10b981;
+}
+
+.vehicle-score-indicator--info {
+  color: #6366f1;
+}
+
+.vehicle-score-indicator--warning {
+  color: #f59e0b;
+}
+
+.vehicle-score-indicator--danger {
+  color: #f43f5e;
+}
+
+.vehicle-score-indicator--neutral {
+  color: #94a3b8;
+}
+
+.vehicle-score-indicator__segments {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.vehicle-score-indicator__dot {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.vehicle-score-indicator__dot.is-active {
+  background: currentColor;
+}
+
+.vehicle-score-indicator__arrow {
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  color: #f43f5e;
+}
+
+.vehicle-score-indicator__arrow--up {
+  color: #10b981;
+}
+
+.vehicle-score-indicator__bar--profit > span {
+  width: 100%;
+  opacity: 0.35;
+}
+
+.vehicle-score-indicator--danger .vehicle-score-indicator__bar--profit > span {
+  opacity: 0.55;
+  background: #f43f5e;
+}
+
+.vehicle-score-indicator--success .vehicle-score-indicator__bar--profit > span {
+  opacity: 0.45;
+  background: #10b981;
+}
+
+.vehicle-score-indicator__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.16);
+}
+
+.vehicle-score-indicator__chip--pending {
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-hero__image-stage {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(241, 245, 249, 0.92) 100%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(99, 102, 241, 0.035) 0,
+      rgba(99, 102, 241, 0.035) 1px,
+      transparent 1px,
+      transparent 14px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(99, 102, 241, 0.035) 0,
+      rgba(99, 102, 241, 0.035) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(148, 163, 184, 0.14),
+    0 8px 22px rgba(15, 23, 42, 0.05);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-hero__image {
+  filter:
+    drop-shadow(0 10px 18px rgba(15, 23, 42, 0.14))
+    drop-shadow(0 3px 6px rgba(124, 58, 237, 0.08));
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-hero__media::after {
+  width: 62%;
+  height: 14px;
+  bottom: 22px;
+  background: rgba(15, 23, 42, 0.1);
+  filter: blur(8px);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric {
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  box-shadow: none;
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric--danger,
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric--warning {
+  border-left: 3px solid currentColor;
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric--danger {
+  border-left-color: rgba(244, 63, 94, 0.55);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric--warning {
+  border-left-color: rgba(245, 158, 11, 0.55);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric__value {
+  font-size: 16px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-360-command-metric__meta {
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-action-card::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: rgba(99, 102, 241, 0.35);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-action-card--danger::before {
+  background: rgba(244, 63, 94, 0.65);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-action-card--warning::before {
+  background: rgba(245, 158, 11, 0.6);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-action-card--info::before {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+.vehicle-360-center--visual-hierarchy .vehicle-action-card--success::before {
+  background: rgba(16, 185, 129, 0.45);
+}
+
+.vehicle-action-card__priority {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.vehicle-action-card__priority--high {
+  color: #be123c;
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.22);
+}
+
+.vehicle-action-card__priority--med {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+.vehicle-action-card__priority--low {
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.vehicle-360-center--visual-hierarchy .executive-kpi-grid--compact .executive-kpi {
+  border-width: 1px;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.vehicle-360-center--visual-hierarchy .executive-kpi-grid--compact .executive-kpi__value {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.vehicle-360-center--visual-hierarchy .executive-kpi-grid--compact .executive-kpi__meta {
+  font-weight: 600;
+  color: var(--exec-text-subtle);
+}
+
+@media (max-width: 1200px) {
+  .vehicle-360-center--visual-hierarchy .vehicle-executive-scoreboard {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .vehicle-360-center--visual-hierarchy .vehicle-score-card--primary {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .vehicle-360-center--visual-hierarchy .vehicle-executive-scoreboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vehicle-360-center--visual-hierarchy .vehicle-score-card--primary {
+    grid-column: span 2;
+  }
+}
+
+/* STB-6C — Executive Cockpit */
+.vehicle-executive-cockpit {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.95fr) minmax(220px, 1.5fr) minmax(150px, 0.85fr) minmax(150px, 0.85fr);
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--exec-border);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94)),
+    radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.06), transparent 42%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 14px 34px rgba(15, 23, 42, 0.06);
+}
+
+.vehicle-executive-cockpit--success {
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+.vehicle-executive-cockpit--info {
+  border-color: rgba(99, 102, 241, 0.24);
+}
+
+.vehicle-executive-cockpit--warning {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.vehicle-executive-cockpit--danger {
+  border-color: rgba(244, 63, 94, 0.3);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 241, 242, 0.92)),
+    radial-gradient(circle at 12% 18%, rgba(244, 63, 94, 0.08), transparent 42%);
+}
+
+.vehicle-executive-cockpit__state,
+.vehicle-executive-cockpit__priority,
+.vehicle-executive-cockpit__risk,
+.vehicle-executive-cockpit__financial {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vehicle-executive-cockpit__state-label {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--exec-text-strong);
+}
+
+.vehicle-executive-cockpit--danger .vehicle-executive-cockpit__state-label {
+  color: #be123c;
+}
+
+.vehicle-executive-cockpit--warning .vehicle-executive-cockpit__state-label {
+  color: #b45309;
+}
+
+.vehicle-executive-cockpit--success .vehicle-executive-cockpit__state-label {
+  color: #047857;
+}
+
+.vehicle-executive-cockpit--info .vehicle-executive-cockpit__state-label {
+  color: #4338ca;
+}
+
+.vehicle-executive-cockpit__score {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--exec-text-strong);
+}
+
+.vehicle-executive-cockpit__readiness {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-text-muted);
+}
+
+.vehicle-executive-cockpit__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--exec-text-subtle);
+}
+
+.vehicle-executive-cockpit__priority-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--exec-text-strong);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vehicle-executive-cockpit__risk-value,
+.vehicle-executive-cockpit__financial-value {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--exec-text-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-executive-cockpit__risk-meta,
+.vehicle-executive-cockpit__financial-meta {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--exec-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-executive-cockpit__financial--danger .vehicle-executive-cockpit__financial-value {
+  color: #be123c;
+}
+
+.vehicle-executive-cockpit__financial--success .vehicle-executive-cockpit__financial-value {
+  color: #047857;
+}
+
+.vehicle-360-center--cockpit .vehicle-executive-scoreboard {
+  gap: 8px;
+  opacity: 0.96;
+}
+
+.vehicle-360-center--cockpit .vehicle-score-card {
+  min-height: 76px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.vehicle-360-center--cockpit .vehicle-score-card--primary {
+  min-height: 76px;
+  padding: 8px 10px;
+  box-shadow: none;
+}
+
+.vehicle-360-center--cockpit .vehicle-score-card--primary .vehicle-score-card__value {
+  font-size: 26px;
+}
+
+.vehicle-360-center--cockpit .vehicle-score-card__value {
+  font-size: 22px;
+}
+
+.vehicle-360-center--cockpit .vehicle-score-card__meta {
+  font-size: 9px;
+}
+
+.vehicle-action-intelligence--ticker {
+  gap: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.vehicle-action-ticker-lane {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.vehicle-action-ticker-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(52px, 0.7fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+}
+
+.vehicle-action-ticker-item::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: rgba(99, 102, 241, 0.35);
+}
+
+.vehicle-action-ticker-item--danger::before {
+  background: rgba(244, 63, 94, 0.65);
+}
+
+.vehicle-action-ticker-item--warning::before {
+  background: rgba(245, 158, 11, 0.6);
+}
+
+.vehicle-action-ticker-item--info::before {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+.vehicle-action-ticker-item--success::before {
+  background: rgba(16, 185, 129, 0.45);
+}
+
+.vehicle-action-ticker-item__icon {
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.vehicle-action-ticker-item__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-text-subtle);
+  white-space: nowrap;
+}
+
+.vehicle-action-ticker-item__text {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--exec-text-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vehicle-action-ticker-item__badge {
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  white-space: nowrap;
+}
+
+.vehicle-action-ticker-item__badge--high {
+  color: #be123c;
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.22);
+}
+
+.vehicle-action-ticker-item__badge--med {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+.vehicle-action-ticker-item__badge--low {
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.executive-kpi-grid--grouped {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.executive-kpi-group {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.executive-kpi-group--finance,
+.executive-kpi-group--ops {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.executive-kpi-group--risk {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.executive-kpi-group:not(:last-child) {
+  padding-right: 8px;
+  border-right: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.vehicle-360-center--cockpit .executive-kpi-grid--grouped .executive-kpi {
+  background: rgba(255, 255, 255, 0.68);
+}
+
+@media (max-width: 1200px) {
+  .vehicle-executive-cockpit {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vehicle-action-ticker-lane {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .executive-kpi-grid--grouped {
+    flex-direction: column;
+  }
+
+  .executive-kpi-group:not(:last-child) {
+    padding-right: 0;
+    padding-bottom: 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+}
+
+@media (max-width: 640px) {
+  .vehicle-executive-cockpit {
+    grid-template-columns: 1fr;
+  }
+
+  .vehicle-action-ticker-lane {
+    grid-template-columns: 1fr;
+  }
+
+  .executive-kpi-group--finance,
+  .executive-kpi-group--ops,
+  .executive-kpi-group--risk {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* STB-6D — Fleet Comparison Intelligence */
+.fleet-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 242, 255, 0.9)),
+    radial-gradient(circle at 88% 12%, rgba(99, 102, 241, 0.08), transparent 40%);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.fleet-comparison__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fleet-comparison__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-text-strong);
+}
+
+.fleet-comparison-summary {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--exec-text-strong);
+}
+
+.fleet-comparison__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fleet-comparison-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4338ca;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+}
+
+.fleet-comparison-badge--neutral {
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.fleet-comparison__ranks {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fleet-comparison-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 58px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--exec-border);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.fleet-comparison-card--success {
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+.fleet-comparison-card--warning {
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+.fleet-comparison-card--danger {
+  border-color: rgba(244, 63, 94, 0.22);
+}
+
+.fleet-comparison-card--info {
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.fleet-comparison-card__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-text-subtle);
+}
+
+.fleet-comparison-rank {
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--exec-text-strong);
+  white-space: nowrap;
+}
+
+.fleet-comparison-bars {
+  display: grid;
+  gap: 6px;
+}
+
+.fleet-comparison-bars__row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 8px;
+}
+
+.fleet-comparison-bars__label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--exec-text-subtle);
+}
+
+.fleet-comparison-bars__track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+
+.fleet-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.fleet-bar--fleet {
+  background: rgba(148, 163, 184, 0.42);
+  z-index: 1;
+}
+
+.fleet-bar--vehicle {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.75), rgba(124, 58, 237, 0.85));
+  z-index: 2;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35) inset;
+}
+
+.fleet-comparison-bars__values {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--exec-text-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.fleet-comparison-recommendation {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--exec-text-muted);
+}
+
+.vehicle-360-center--fleet-comparison .vehicle-executive-scoreboard {
+  opacity: 0.94;
+}
+
+/* STB-6E — Executive Predictive Fleet Intelligence */
+.executive-predictive {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 243, 255, 0.92)),
+    radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.07), transparent 42%);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.executive-predictive__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.executive-predictive__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-text-strong);
+}
+
+.executive-predictive-summary {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--exec-text-strong);
+}
+
+.executive-predictive__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.executive-predictive-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 72px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--exec-border);
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.executive-predictive-card--success {
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+.executive-predictive-card--info {
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.executive-predictive-card--warning {
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+.executive-predictive-card--danger {
+  border-color: rgba(244, 63, 94, 0.24);
+}
+
+.executive-predictive-card__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-text-subtle);
+}
+
+.executive-predictive-card__value {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--exec-text-strong);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.executive-predictive-risk .executive-predictive-card__value {
+  font-size: 18px;
+  letter-spacing: 0.05em;
+}
+
+.executive-predictive-card__meta {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--exec-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.executive-predictive-timeline {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.executive-predictive-timeline__segment {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.executive-predictive-timeline__marker {
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(124, 58, 237, 0.45);
+}
+
+.executive-predictive-timeline__node {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 92px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.executive-predictive-timeline__node--today {
+  border-color: rgba(99, 102, 241, 0.24);
+  background: rgba(238, 242, 255, 0.9);
+}
+
+.executive-predictive-timeline__node--critical {
+  border-color: rgba(244, 63, 94, 0.28);
+}
+
+.executive-predictive-timeline__node--high,
+.executive-predictive-timeline__node--warning {
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+.executive-predictive-timeline__node strong {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--exec-text-strong);
+}
+
+.executive-predictive-timeline__node span {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--exec-text-strong);
+}
+
+.executive-predictive-timeline__node em {
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--exec-text-muted);
+}
+
+.executive-predictive-recommendation {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--exec-text-muted);
+}
+
+.vehicle-360-center--predictive-intelligence .fleet-comparison,
+.vehicle-360-center--predictive-intelligence .vehicle-executive-scoreboard {
+  opacity: 0.95;
+}
+
+@media (max-width: 1200px) {
+  .executive-predictive__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .executive-predictive__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .fleet-comparison__ranks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .fleet-comparison__ranks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fleet-comparison-bars__row {
+    grid-template-columns: 64px minmax(0, 1fr) 48px;
+  }
+}
+
+/* STB-6F — Executive Information Architecture */
+.vehicle-360-center--information-architecture {
+  gap: 6px;
+}
+
+.vehicle-intelligence-ribbons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.intelligence-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 52px;
+  max-height: 64px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--exec-border);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+}
+
+.fleet-comparison-ribbon {
+  border-color: rgba(99, 102, 241, 0.18);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(238, 242, 255, 0.9));
+}
+
+.executive-predictive-ribbon {
+  border-color: rgba(124, 58, 237, 0.16);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(245, 243, 255, 0.9));
+}
+
+.executive-predictive-ribbon.intelligence-ribbon--danger {
+  border-color: rgba(244, 63, 94, 0.24);
+}
+
+.executive-predictive-ribbon.intelligence-ribbon--warning {
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+.intelligence-ribbon__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.intelligence-ribbon__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--exec-text-subtle);
+}
+
+.intelligence-ribbon__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.intelligence-ribbon__value {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--exec-text-strong);
+  white-space: nowrap;
+}
+
+.intelligence-ribbon__meta {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--exec-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.intelligence-ribbon__badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #4338ca;
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.intelligence-ribbon__cta {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  color: #4338ca;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+}
+
+.intelligence-ribbon__cta:hover {
+  background: rgba(99, 102, 241, 0.16);
+}
+
+.vehicle-detail-accordion--comparison .fleet-comparison,
+.vehicle-detail-accordion--predictive .executive-predictive {
+  margin: 0;
+}
+
+.vehicle-360-center--information-architecture .vehicle-executive-cockpit {
+  gap: 8px;
+  padding: 10px 12px;
+  max-height: 100px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-executive-cockpit__state-label {
+  font-size: 18px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-executive-cockpit__score {
+  font-size: 24px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-executive-scoreboard {
+  gap: 6px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-score-card {
+  min-height: 76px;
+  padding: 8px 10px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-score-card--primary {
+  min-height: 76px;
+  padding: 8px 10px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-score-card--primary .vehicle-score-card__value {
+  font-size: 24px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-score-card__value {
+  font-size: 20px;
+}
+
+.vehicle-360-center--information-architecture .vehicle-action-ticker-item {
+  min-height: 48px;
+  max-height: 56px;
+  padding: 6px 8px 6px 10px;
+}
+
+.vehicle-360-center--information-architecture .executive-kpi-grid--grouped .executive-kpi {
+  min-height: 48px;
+  max-height: 56px;
+  padding: 6px 8px 6px 12px;
+}
+
+.vehicle-360-center--information-architecture .executive-kpi-grid--grouped .executive-kpi__value {
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .vehicle-intelligence-ribbons {
+    grid-template-columns: 1fr;
+  }
+}
+
 .vehicle-360-decision-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

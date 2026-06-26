@@ -38,7 +38,7 @@ function registerVehicleHealth(app) {
   app.get("/vehicle-health", (req, res) => {
     try {
       const payload = vehicleHealthService.buildFleetVehicleHealthReport(parseOptions(req));
-      const content = vehicleHealthPageHtml(payload);
+      const content = vehicleHealthPageHtml(payload, req.path);
 
       renderLayout(res, "Araç Sağlık Skoru", content, "/vehicle-health", req, {
         pageTitle: "Araç Sağlık Skoru",

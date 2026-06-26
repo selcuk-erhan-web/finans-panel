@@ -257,7 +257,7 @@ function registerIncome(app) {
 
     const content = `
       <div class="page-intro"><p>Kayıt bilgilerini güncelleyin</p></div>
-      <div class="card" style="max-width:520px">
+      <div class="card form-panel--narrow">
         <form method="POST" action="/income/edit/${t.id}">
           <select name="vehicle_id" required>${vehicleOptions(vehicles, t.vehicle_id)}</select>
           <select name="category" required>${categoryOptions(categoryNames, t.category)}</select>

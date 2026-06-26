@@ -1,5 +1,11 @@
 const db = require("../lib/db");
+const { vehicleRecordId } = require("../lib/vehicleRoute");
 const { normalizeIncomeSlug } = require("../lib/incomeCategoryMap");
+const {
+  buildVehiclePlateMap,
+  findVehicleByPlate,
+  normalizePlate,
+} = require("../utils/plate");
 const { getVehicleFinance, getVehicleMonthlyData, vehicleStatus, safeAmount } = require("../lib/finance");
 const profitService = require("./profitService");
 const profitabilityService = require("./profitabilityService");
@@ -81,9 +87,43 @@ function getFleetBenchmarks() {
   };
 }
 
-function getVehicleCenterBundle(vehicleId) {
-  const vehicle = db.prepare("SELECT * FROM vehicles WHERE id = ?").get(vehicleId);
+function resolveVehicleRouteParam(rawParam) {
+  if (rawParam == null) return null;
+  if (typeof rawParam === "object") {
+    const id = vehicleRecordId(rawParam);
+    if (!id) return null;
+    return db.prepare("SELECT * FROM vehicles WHERE id = ?").get(id) || null;
+  }
+
+  const param = decodeURIComponent(String(rawParam)).trim();
+  if (!param) return null;
+
+  if (/^\d+$/.test(param)) {
+    const byId = db.prepare("SELECT * FROM vehicles WHERE id = ?").get(Number(param));
+    if (byId) return byId;
+  }
+
+  const vehicles = db.prepare("SELECT * FROM vehicles ORDER BY plate ASC").all();
+  const plateMap = buildVehiclePlateMap(vehicles);
+  const byPlate = findVehicleByPlate(param, plateMap);
+  if (byPlate) return byPlate;
+
+  const norm = normalizePlate(param);
+  if (norm) {
+    const byNorm = vehicles.find(
+      (v) => v.plate_normalized === norm || normalizePlate(v.plate) === norm
+    );
+    if (byNorm) return byNorm;
+  }
+
+  return null;
+}
+
+function getVehicleCenterBundle(vehicleRef) {
+  const vehicle = resolveVehicleRouteParam(vehicleRef);
   if (!vehicle) return null;
+
+  const vehicleId = vehicle.id;
 
   const finance = getVehicleFinance(vehicleId);
   const incomeBySlug = getIncomeBreakdown(vehicleId);
@@ -197,6 +237,7 @@ function getVehicleCenterBundle(vehicleId) {
 
 module.exports = {
   getVehicleCenterBundle,
+  resolveVehicleRouteParam,
   getIncomeBreakdown,
   getVehicleProfit,
   getFleetBenchmarks,

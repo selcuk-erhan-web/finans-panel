@@ -25,7 +25,7 @@ const scoreboardSrc = fs.readFileSync(
 );
 const vehiclesRoute = fs.readFileSync(path.join(root, "routes/vehicles.js"), "utf8");
 
-assert(LAYOUT_VERSION === "fleetos-stb5i-vehicle-executive-scoreboard-01", `layout version: ${LAYOUT_VERSION}`);
+assert(LAYOUT_VERSION === "fleetos-stb6f-executive-information-architecture-01", `layout version: ${LAYOUT_VERSION}`);
 
 [
   ".vehicle-executive-scoreboard",
@@ -102,6 +102,9 @@ const bundle = getVehicleCenterBundle(ins.lastInsertRowid);
 const html = vehicle360PageHtml(bundle);
 
 assert(html.includes("vehicle-executive-scoreboard"), "scoreboard renders");
+assert(html.includes("vehicle-360-center--executive-density"), "executive density class");
+assert(html.includes("vehicle-360-center--visual-hierarchy"), "visual hierarchy class");
+assert(html.includes("vehicle-score-card--primary"), "primary health scoreboard card");
 assert((html.match(/vehicle-score-card/g) || []).length >= 5, "scoreboard cards render");
 [
   "Araç Sağlığı",
@@ -114,11 +117,24 @@ assert((html.match(/vehicle-score-card/g) || []).length >= 5, "scoreboard cards 
 const visibleFocusStrip = html.match(/<section class="vehicle-focus-strip"/);
 assert(!visibleFocusStrip, "old focus strip not visible");
 
+assert(html.includes('aria-label="Fleet Comparison Intelligence"'), "fleet comparison panel");
 assert(
-  html.indexOf("vehicle-executive-scoreboard") < html.indexOf("vehicle-action-intelligence"),
-  "scoreboard before action intelligence"
+  html.indexOf("vehicle-executive-cockpit") < html.indexOf('aria-label="Fleet Comparison Intelligence"'),
+  "cockpit before comparison"
 );
-assert(html.includes("vehicle-action-intelligence--compact"), "compact action intelligence");
+assert(
+  html.indexOf('aria-label="Fleet Comparison Intelligence"') <
+    html.indexOf('aria-label="Executive Predictive Intelligence"'),
+  "comparison before predictive"
+);
+assert(
+  html.indexOf('aria-label="Executive Predictive Intelligence"') <
+    html.indexOf("vehicle-executive-scoreboard"),
+  "predictive before scoreboard"
+);
+assert(html.includes("vehicle-360-center--cockpit"), "cockpit page modifier");
+assert(html.includes("vehicle-executive-cockpit"), "executive cockpit renders");
+assert(html.includes("vehicle-action-intelligence--ticker"), "action ticker");
 assert(html.includes("executive-kpi-grid--compact"), "compact KPI row");
 assert(html.includes("vehicle-detail-accordions"), "accordions render");
 

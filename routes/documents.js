@@ -42,6 +42,7 @@ function renderDocumentsPage(req, res, extra = {}) {
     editDoc: extra.editDoc || null,
     importPreview,
     importResult: extra.importResult || null,
+    path: req.path,
   });
 
   renderLayout(res, extra.pageTitle || "Uygunluk Merkezi", content, "/documents", req, {

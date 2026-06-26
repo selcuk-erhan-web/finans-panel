@@ -98,7 +98,7 @@ function registerVehicles(app) {
         <p class="page-lead">${escapeHtml(formatPlateDisplay(v.plate) || v.plate)} düzenleniyor</p>
         ${glassPanel({
           title: "Araç bilgileri",
-          body: `<form method="POST" action="/vehicle/edit/${v.id}" class="form-grid" style="max-width:520px">
+          body: `<form method="POST" action="/vehicle/edit/${v.id}" class="form-grid form-panel--narrow">
             <input name="plate" value="${escapeHtml(formatPlateDisplay(v.plate) || v.plate)}" required />
             <input name="brand" value="${escapeHtml(v.brand || "")}" placeholder="Marka" />
             <input name="model" value="${escapeHtml(v.model || "")}" placeholder="Model" />
@@ -144,12 +144,9 @@ function registerVehicles(app) {
     redirectWithFlash(res, "/vehicles", "vehicle_deleted");
   });
 
-  app.get("/vehicle/:id", (req, res) => {
-    if (!/^\d+$/.test(String(req.params.id))) {
-      return res.redirect("/vehicles");
-    }
-    return renderVehicleDetail(req, res);
-  });
+  app.get("/vehicle/:id", (req, res) => renderVehicleDetail(req, res));
+
+  app.get("/vehicles/:id/360", (req, res) => renderVehicleDetail(req, res));
 }
 
 module.exports = { registerVehicles, getVehicles };

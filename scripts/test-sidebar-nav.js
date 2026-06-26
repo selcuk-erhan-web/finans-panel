@@ -3,6 +3,7 @@
  * node scripts/test-sidebar-nav.js
  */
 const { renderNav, isNavActive } = require("../lib/components/layout");
+const { renderModuleTabs, MODULE_TABS } = require("../lib/components/moduleTabs");
 const { getOpenGroupId, NAV_TREE } = require("../lib/navConfig");
 
 function assert(cond, msg) {
@@ -41,46 +42,24 @@ assert(
 );
 
 const fleetGroup = NAV_TREE.find((n) => n.id === "fleet");
+assert(fleetGroup.items.length === 5, `fleet should have 5 items, got ${fleetGroup.items.length}`);
+assert(fleetGroup.items[0][0] === "/vehicles" && fleetGroup.items[0][1] === "Araçlar", "fleet starts with Araçlar");
+assert(fleetGroup.items[1][0] === "/vehicle-intelligence" && fleetGroup.items[1][1] === "Araç Zekâsı", "vehicle intelligence second");
+assert(fleetGroup.items[2][0] === "/documents" && fleetGroup.items[2][1] === "Uygunluk", "compliance third");
+assert(fleetGroup.items[3][0] === "/maintenance" && fleetGroup.items[3][1] === "Bakım", "maintenance fourth");
+assert(fleetGroup.items[4][0] === "/tires" && fleetGroup.items[4][1] === "Lastik", "tires fifth");
 assert(
-  fleetGroup.items.some(([href, label]) => href === "/maintenance" && label === "Bakım Merkezi"),
-  "maintenance center in filo group"
-);
-assert(fleetGroup.items.some(([href, label]) => href === "/maintenance-schedule" && label === "Bakım Planı"), "maintenance schedule in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/maintenance-alerts" && label === "Bakım Uyarıları"), "maintenance alerts in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/maintenance-analytics" && label === "Bakım Analitiği"), "maintenance analytics in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/tires" && label === "Lastik Merkezi"), "tire center in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/tire-history" && label === "Lastik Değişim Geçmişi"), "tire history in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/tire-seasonal-schedule" && label === "Lastik Sezon Planı"), "tire seasonal schedule in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/tire-alerts" && label === "Lastik Uyarıları"), "tire alerts in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/tire-analytics" && label === "Lastik Analitiği"), "tire analytics in filo group");
-assert(fleetGroup.items.some(([href, label]) => href === "/vehicles" && label === "Araç Merkezi"), "vehicle center in filo group");
-assert(fleetGroup.items[0][0] === "/vehicles" && fleetGroup.items[0][1] === "Araç Merkezi", "fleet starts with vehicle center");
-assert(
-  fleetGroup.items.some(([href, label]) => href === "/vehicle-intelligence" && label === "Araç Zekâsı"),
-  "vehicle intelligence in filo group"
+  !fleetGroup.items.some(([href]) => href === "/vehicle-health"),
+  "vehicle health removed from fleet sidebar"
 );
 assert(
-  fleetGroup.items.some(([href, label]) => href === "/vehicle-health" && label === "Araç Sağlık Skoru"),
-  "vehicle health in filo group"
+  !fleetGroup.items.some(([href]) => href === "/maintenance-analytics"),
+  "maintenance analytics removed from fleet sidebar"
 );
 assert(
-  fleetGroup.items.some(([href, label]) => href === "/vehicle-timeline" && label === "Araç Operasyon Geçmişi"),
-  "vehicle timeline in filo group"
+  !fleetGroup.items.some(([href]) => href === "/tire-analytics"),
+  "tire analytics removed from fleet sidebar"
 );
-assert(
-  fleetGroup.items.some(([href, label]) => href === "/vehicle-profit-risk" && label === "Araç Kâr / Risk Analizi"),
-  "vehicle profit risk in filo group"
-);
-assert(
-  fleetGroup.items.some(([href, label]) => href === "/executive-vehicle-dashboard" && label === "Yönetici Araç Zekâsı"),
-  "executive vehicle dashboard in filo group"
-);
-assert(fleetGroup.items[1][0] === "/vehicle-intelligence" && fleetGroup.items[1][1] === "Araç Zekâsı", "vehicle intelligence second in fleet");
-assert(fleetGroup.items[2][0] === "/vehicle-health" && fleetGroup.items[2][1] === "Araç Sağlık Skoru", "vehicle health third in fleet");
-assert(fleetGroup.items[3][0] === "/vehicle-timeline" && fleetGroup.items[3][1] === "Araç Operasyon Geçmişi", "vehicle timeline fourth in fleet");
-assert(fleetGroup.items[4][0] === "/vehicle-profit-risk" && fleetGroup.items[4][1] === "Araç Kâr / Risk Analizi", "vehicle profit risk fifth in fleet");
-assert(fleetGroup.items[5][0] === "/executive-vehicle-dashboard" && fleetGroup.items[5][1] === "Yönetici Araç Zekâsı", "executive dashboard sixth in fleet");
-assert(fleetGroup.items[6][0] === "/documents" && fleetGroup.items[6][1] === "Uygunluk Merkezi", "fleet compliance center seventh");
 
 const expenseGroup = NAV_TREE.find((n) => n.id === "expense");
 assert(
@@ -125,19 +104,20 @@ assert(viHtml.includes("Araç Zekâsı"), "vehicle intelligence label in nav");
 
 const vhHtml = renderNav("/vehicle-health");
 assert(getOpenGroupId("/vehicle-health") === "fleet", "vehicle health opens fleet group");
-assert(vhHtml.includes("Araç Sağlık Skoru"), "vehicle health label in nav");
+assert(isNavActive("/vehicle-intelligence", "/vehicle-health"), "vehicle health highlights Araç Zekâsı");
+assert(vhHtml.includes("Araç Zekâsı") && vhHtml.includes("is-active"), "Araç Zekâsı active on vehicle health");
 
 const vtHtml = renderNav("/vehicle-timeline");
 assert(getOpenGroupId("/vehicle-timeline") === "fleet", "vehicle timeline opens fleet group");
-assert(vtHtml.includes("Araç Operasyon Geçmişi"), "vehicle timeline label in nav");
+assert(isNavActive("/vehicle-intelligence", "/vehicle-timeline"), "vehicle timeline highlights Araç Zekâsı");
 
 const vprHtml = renderNav("/vehicle-profit-risk");
 assert(getOpenGroupId("/vehicle-profit-risk") === "fleet", "vehicle profit risk opens fleet group");
-assert(vprHtml.includes("Araç Kâr / Risk Analizi"), "vehicle profit risk label in nav");
+assert(isNavActive("/vehicle-intelligence", "/vehicle-profit-risk"), "vehicle profit risk highlights Araç Zekâsı");
 
 const evdHtml = renderNav("/executive-vehicle-dashboard");
 assert(getOpenGroupId("/executive-vehicle-dashboard") === "fleet", "executive vehicle dashboard opens fleet group");
-assert(evdHtml.includes("Yönetici Araç Zekâsı"), "executive vehicle dashboard label in nav");
+assert(isNavActive("/vehicle-intelligence", "/executive-vehicle-dashboard"), "executive dashboard highlights Araç Zekâsı");
 
 const incomeHubHtml = renderNav("/income");
 assert(getOpenGroupId("/income") === "income", "income group open on hub");
@@ -150,40 +130,48 @@ assert(cashflowHtml.includes('data-nav-group="finance"') && cashflowHtml.include
 const maintHtml = renderNav("/maintenance");
 assert(getOpenGroupId("/maintenance") === "fleet", "maintenance opens fleet group first");
 assert(maintHtml.includes('data-nav-group="fleet"') && maintHtml.includes("is-open"), "fleet expanded on maintenance");
-assert(maintHtml.includes("Bakım Merkezi"), "maintenance center label in nav");
+assert(maintHtml.includes("Bakım") && maintHtml.includes("is-active"), "Bakım active on maintenance");
 
 const scheduleHtml = renderNav("/maintenance-schedule");
 assert(getOpenGroupId("/maintenance-schedule") === "fleet", "maintenance schedule opens fleet group");
-assert(scheduleHtml.includes("Bakım Planı"), "maintenance schedule label in nav");
+assert(isNavActive("/maintenance", "/maintenance-schedule"), "maintenance schedule highlights Bakım");
 
 const alertsHtml = renderNav("/maintenance-alerts");
 assert(getOpenGroupId("/maintenance-alerts") === "fleet", "maintenance alerts opens fleet group");
-assert(alertsHtml.includes("Bakım Uyarıları"), "maintenance alerts label in nav");
+assert(isNavActive("/maintenance", "/maintenance-alerts"), "maintenance alerts highlights Bakım");
 
 const analyticsHtml = renderNav("/maintenance-analytics");
 assert(getOpenGroupId("/maintenance-analytics") === "fleet", "maintenance analytics opens fleet group");
-assert(analyticsHtml.includes("Bakım Analitiği"), "maintenance analytics label in nav");
+assert(isNavActive("/maintenance", "/maintenance-analytics"), "maintenance analytics highlights Bakım");
 
 const tiresHtml = renderNav("/tires");
 assert(getOpenGroupId("/tires") === "fleet", "tire center opens fleet group");
 assert(tiresHtml.includes('data-nav-group="fleet"') && tiresHtml.includes("is-open"), "fleet expanded on tires");
-assert(tiresHtml.includes("Lastik Merkezi"), "tire center label in nav");
+assert(tiresHtml.includes("Lastik") && tiresHtml.includes("is-active"), "Lastik active on tires");
 
 const tireHistoryHtml = renderNav("/tire-history");
 assert(getOpenGroupId("/tire-history") === "fleet", "tire history opens fleet group");
-assert(tireHistoryHtml.includes("Lastik Değişim Geçmişi"), "tire history label in nav");
+assert(isNavActive("/tires", "/tire-history"), "tire history highlights Lastik");
 
 const tireSeasonalHtml = renderNav("/tire-seasonal-schedule");
 assert(getOpenGroupId("/tire-seasonal-schedule") === "fleet", "tire seasonal schedule opens fleet group");
-assert(tireSeasonalHtml.includes("Lastik Sezon Planı"), "tire seasonal schedule label in nav");
+assert(isNavActive("/tires", "/tire-seasonal-schedule"), "tire seasonal highlights Lastik");
 
 const tireAlertsHtml = renderNav("/tire-alerts");
 assert(getOpenGroupId("/tire-alerts") === "fleet", "tire alerts opens fleet group");
-assert(tireAlertsHtml.includes("Lastik Uyarıları"), "tire alerts label in nav");
+assert(isNavActive("/tires", "/tire-alerts"), "tire alerts highlights Lastik");
 
 const tireAnalyticsHtml = renderNav("/tire-analytics");
 assert(getOpenGroupId("/tire-analytics") === "fleet", "tire analytics opens fleet group");
-assert(tireAnalyticsHtml.includes("Lastik Analitiği"), "tire analytics label in nav");
+assert(isNavActive("/tires", "/tire-analytics"), "tire analytics highlights Lastik");
+
+const complianceHtml = renderNav("/notifications");
+assert(getOpenGroupId("/notifications") === "fleet", "notifications opens fleet group");
+assert(isNavActive("/documents", "/notifications"), "notifications highlights Uygunluk");
+
+const complianceAnalyticsHtml = renderNav("/compliance-analytics");
+assert(getOpenGroupId("/compliance-analytics") === "fleet", "compliance analytics opens fleet group");
+assert(isNavActive("/documents", "/compliance-analytics"), "compliance analytics highlights Uygunluk");
 
 const auditLogsHtml = renderNav("/audit-logs");
 assert(getOpenGroupId("/audit-logs") === "system", "audit logs opens system group");
@@ -222,5 +210,12 @@ assert(prodIdx >= 0 && roadmapIdx > prodIdx, "roadmap after production release")
 assert(roadmapIdx >= 0 && v11ReleaseIdx > roadmapIdx, "v1.1 release after roadmap");
 assert(v11ReleaseIdx >= 0 && v11ProdIdx > v11ReleaseIdx, "v1.1 production after release candidate");
 assert(v11ProdIdx >= 0 && settingsIdx > v11ProdIdx, "v1.1 production before settings");
+
+const viTabs = renderModuleTabs("vehicleIntelligence", "/vehicle-health");
+assert(viTabs.includes('class="module-tabs"'), "module tabs render");
+assert(viTabs.includes("module-tab--active") && viTabs.includes("Sağlık Skoru"), "active vehicle intelligence tab");
+assert(MODULE_TABS.compliance.length === 3, "compliance tab count");
+assert(MODULE_TABS.maintenance.length === 4, "maintenance tab count");
+assert(MODULE_TABS.tire.length === 5, "tire tab count");
 
 console.log("✓ FleetOS stabilization sidebar nav tests passed");

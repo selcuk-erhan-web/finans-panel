@@ -1,5 +1,6 @@
 const express = require("express");
 const maintenanceService = require("../services/maintenanceService");
+const maintenanceSchedulerService = require("../services/maintenanceSchedulerService");
 const { maintenanceCenterPageHtml } = require("../lib/components/maintenanceCenter");
 const { redirectWithFlash } = require("../lib/flash");
 const { resolveAuditActor } = require("../lib/auditActor");
@@ -11,6 +12,7 @@ function renderMaintenancePage(req, res, extra = {}) {
   const filters = { vehicle_id: req.query.vehicle_id || "" };
   const rows = maintenanceService.listMaintenanceRecords(filters);
   const summary = maintenanceService.getSummary(filters);
+  const scheduleReport = maintenanceSchedulerService.buildMaintenanceScheduleReport(new Date(), filters);
   const selectedVehicle = filters.vehicle_id
     ? vehicles.find((v) => String(v.id) === String(filters.vehicle_id))
     : null;
@@ -22,6 +24,8 @@ function renderMaintenancePage(req, res, extra = {}) {
     filters,
     editRecord: extra.editRecord || null,
     selectedVehiclePlate: selectedVehicle?.plate || "",
+    scheduleReport,
+    path: req.path,
   });
 
   renderLayout(res, "Bakım Merkezi", content, "/maintenance", req, {

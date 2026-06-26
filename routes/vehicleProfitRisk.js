@@ -38,7 +38,7 @@ function registerVehicleProfitRisk(app) {
   app.get("/vehicle-profit-risk", (req, res) => {
     try {
       const payload = vehicleProfitRiskService.buildFleetVehicleProfitRisk(parseOptions(req));
-      const content = vehicleProfitRiskPageHtml(payload);
+      const content = vehicleProfitRiskPageHtml(payload, req.path);
 
       renderLayout(res, "Araç Kâr / Risk Analizi", content, "/vehicle-profit-risk", req, {
         pageTitle: "Araç Kâr / Risk Analizi",

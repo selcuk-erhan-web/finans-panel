@@ -18,7 +18,7 @@ function registerComplianceAnalytics(app) {
     try {
       const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
       const analytics = complianceAnalyticsService.buildComplianceAnalytics(ref);
-      const content = complianceAnalyticsPageHtml(analytics);
+      const content = complianceAnalyticsPageHtml(analytics, req.path);
 
       renderLayout(res, "Uygunluk Analitiği", content, "/compliance-analytics", req, {
         pageTitle: "Compliance Analytics",

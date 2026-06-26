@@ -12,7 +12,7 @@ function renderVehicleDetail(req, res) {
 
     renderLayout(res, vehicle.plate, content, "/vehicles", req, {
       pageTitle: vehicle.plate,
-      breadcrumb: `Filo / ${vehicle.plate} · Araç Merkezi`,
+      breadcrumb: `Filo / ${vehicle.plate} · Vehicle 360`,
     });
   } catch (err) {
     console.error("vehicle center:", err);

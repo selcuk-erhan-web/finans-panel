@@ -1,5 +1,6 @@
 const express = require("express");
 const tireService = require("../services/tireService");
+const tireSeasonalSchedulerService = require("../services/tireSeasonalSchedulerService");
 const { tireCenterPageHtml } = require("../lib/components/tireCenter");
 const { redirectWithFlash } = require("../lib/flash");
 const { resolveAuditActor } = require("../lib/auditActor");
@@ -15,6 +16,9 @@ function renderTirePage(req, res, extra = {}) {
   };
   const rows = tireService.listTireRecords(filters);
   const summary = tireService.getTireSummary(filters);
+  const seasonalReport = tireSeasonalSchedulerService.buildTireSeasonalSchedule(new Date(), {
+    vehicle_id: filters.vehicle_id || undefined,
+  });
   const selectedVehicle = filters.vehicle_id
     ? vehicles.find((v) => String(v.id) === String(filters.vehicle_id))
     : null;
@@ -26,6 +30,8 @@ function renderTirePage(req, res, extra = {}) {
     filters,
     editRecord: extra.editRecord || null,
     selectedVehiclePlate: selectedVehicle?.plate || "",
+    seasonalReport,
+    path: req.path,
   });
 
   renderLayout(res, "Lastik Merkezi", content, "/tires", req, {

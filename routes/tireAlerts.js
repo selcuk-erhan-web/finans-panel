@@ -70,6 +70,7 @@ function registerTireAlerts(app) {
         alerts: payload.alerts,
         unreadCount: payload.unread_count,
         filter,
+        path: req.path,
       });
 
       renderLayout(res, "Lastik Uyarıları", content, "/tire-alerts", req, {

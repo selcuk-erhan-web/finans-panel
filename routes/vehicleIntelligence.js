@@ -41,7 +41,7 @@ function registerVehicleIntelligence(app) {
   app.get("/vehicle-intelligence", (req, res) => {
     try {
       const payload = vehicleIntelligenceService.buildFleetVehicleIntelligence(parseOptions(req));
-      const content = vehicleIntelligencePageHtml(payload);
+      const content = vehicleIntelligencePageHtml(payload, req.path);
 
       renderLayout(res, "Araç Zekâsı", content, "/vehicle-intelligence", req, {
         pageTitle: "Araç Zekâsı",

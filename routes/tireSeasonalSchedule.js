@@ -18,6 +18,7 @@ function renderTireSeasonalSchedulePage(req, res) {
     vehicles,
     filters,
     selectedVehiclePlate: selectedVehicle?.plate || "",
+    path: req.path,
   });
 
   renderLayout(res, "Lastik Sezon Planı", content, "/tire-seasonal-schedule", req, {

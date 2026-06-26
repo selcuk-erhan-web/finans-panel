@@ -18,7 +18,7 @@ function registerTireAnalytics(app) {
     try {
       const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
       const analytics = tireAnalyticsService.buildTireAnalytics(ref);
-      const content = tireAnalyticsPageHtml(analytics);
+      const content = tireAnalyticsPageHtml(analytics, req.path);
 
       renderLayout(res, "Lastik Analitiği", content, "/tire-analytics", req, {
         pageTitle: "Lastik Analitiği",

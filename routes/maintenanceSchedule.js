@@ -20,6 +20,7 @@ function renderMaintenanceSchedulePage(req, res) {
     vehicles,
     filters,
     selectedVehiclePlate: selectedVehicle?.plate || "",
+    path: req.path,
   });
 
   renderLayout(res, "Bakım Planı", content, "/maintenance-schedule", req, {

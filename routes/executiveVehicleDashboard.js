@@ -22,7 +22,7 @@ function registerExecutiveVehicleDashboard(app) {
   app.get("/executive-vehicle-dashboard", (req, res) => {
     try {
       const payload = executiveVehicleDashboardService.buildExecutiveVehicleDashboard(parseOptions(req));
-      const content = executiveVehicleDashboardPageHtml(payload);
+      const content = executiveVehicleDashboardPageHtml(payload, req.path);
 
       renderLayout(res, "Yönetici Araç Zekâsı", content, "/executive-vehicle-dashboard", req, {
         pageTitle: "Yönetici Araç Zekâsı",

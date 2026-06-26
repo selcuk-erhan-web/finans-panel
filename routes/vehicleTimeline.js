@@ -62,6 +62,7 @@ function registerVehicleTimeline(app) {
           date_to: options.date_to || "",
           limit: options.limit || vehicleTimelineService.DEFAULT_LIMIT,
         },
+        path: req.path,
       });
 
       renderLayout(res, "Araç Operasyon Geçmişi", content, "/vehicle-timeline", req, {

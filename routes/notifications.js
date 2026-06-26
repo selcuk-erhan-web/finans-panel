@@ -54,6 +54,7 @@ function registerNotifications(app) {
         notifications: payload.notifications,
         unreadCount: payload.unread_count,
         filter,
+        path: req.path,
       });
 
       renderLayout(res, "Uygunluk Bildirimleri", content, "/notifications", req, {

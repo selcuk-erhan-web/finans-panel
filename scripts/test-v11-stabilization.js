@@ -77,13 +77,12 @@ const V11_ROUTES = [
   ["/api/executive-vehicle-dashboard", "routes/executiveVehicleDashboard.js"],
 ];
 
-const EXPECTED_FLEET_VI = [
-  "Araç Merkezi",
+const EXPECTED_FLEET_NAV = [
+  "Araçlar",
   "Araç Zekâsı",
-  "Araç Sağlık Skoru",
-  "Araç Operasyon Geçmişi",
-  "Araç Kâr / Risk Analizi",
-  "Yönetici Araç Zekâsı",
+  "Uygunluk",
+  "Bakım",
+  "Lastik",
 ];
 
 function pass(name) {
@@ -183,9 +182,10 @@ function main() {
     assert(fleet, "fleet group");
 
     const labels = fleet.items.map(([, label]) => label);
-    for (let i = 0; i < EXPECTED_FLEET_VI.length; i += 1) {
-      assert(labels[i] === EXPECTED_FLEET_VI[i], `fleet[${i}] expected ${EXPECTED_FLEET_VI[i]}, got ${labels[i]}`);
+    for (let i = 0; i < EXPECTED_FLEET_NAV.length; i += 1) {
+      assert(labels[i] === EXPECTED_FLEET_NAV[i], `fleet[${i}] expected ${EXPECTED_FLEET_NAV[i]}, got ${labels[i]}`);
     }
+    assert(labels.length === 5, `fleet nav should have 5 items, got ${labels.length}`);
 
     const hrefs = fleet.items.map(([href]) => href);
     const uniqueHrefs = new Set(hrefs);
@@ -313,7 +313,7 @@ function main() {
   });
 
   test("layout version updated", () => {
-    assert(LAYOUT_VERSION === "fleetos-prd2-v11-production-01", LAYOUT_VERSION);
+    assert(LAYOUT_VERSION === "fleetos-stb6f-executive-information-architecture-01", LAYOUT_VERSION);
   });
 
   test("Turkish terminology on v1.1 hub pages", () => {

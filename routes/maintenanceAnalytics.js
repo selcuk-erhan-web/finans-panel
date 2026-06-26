@@ -18,7 +18,7 @@ function registerMaintenanceAnalytics(app) {
     try {
       const ref = req.query.date ? new Date(String(req.query.date)) : new Date();
       const analytics = maintenanceAnalyticsService.buildMaintenanceAnalytics(ref);
-      const content = maintenanceAnalyticsPageHtml(analytics);
+      const content = maintenanceAnalyticsPageHtml(analytics, req.path);
 
       renderLayout(res, "Bakım Analitiği", content, "/maintenance-analytics", req, {
         pageTitle: "Bakım Analitiği",

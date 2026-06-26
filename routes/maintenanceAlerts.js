@@ -70,6 +70,7 @@ function registerMaintenanceAlerts(app) {
         alerts: payload.alerts,
         unreadCount: payload.unread_count,
         filter,
+        path: req.path,
       });
 
       renderLayout(res, "Bakım Uyarıları", content, "/maintenance-alerts", req, {

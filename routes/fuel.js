@@ -354,7 +354,7 @@ function registerFuel(app) {
       <div class="dash page-enter">
         ${glassPanel({
           title: "Yakıt düzenle",
-          body: `<form method="POST" action="/fuel/edit/${f.id}" class="form-grid" style="max-width:520px">
+          body: `<form method="POST" action="/fuel/edit/${f.id}" class="form-grid form-panel--narrow">
             <select name="vehicle_id">${vehicleOptions(vehicles, f.vehicle_id)}<option value="">— Eşleşmedi —</option></select>
             <input name="liter" type="number" step="0.01" value="${f.liter}" required/>
             <input name="price_per_liter" type="number" step="0.01" value="${f.price_per_liter || ""}"/>

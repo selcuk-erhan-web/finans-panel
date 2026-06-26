@@ -21,7 +21,7 @@ const css = fs.readFileSync(path.join(root, "public/css/main.css"), "utf8");
 const centerSrc = fs.readFileSync(path.join(root, "lib/components/vehicle360Center.js"), "utf8");
 const vehiclesRoute = fs.readFileSync(path.join(root, "routes/vehicles.js"), "utf8");
 
-assert(LAYOUT_VERSION === "fleetos-stb5i-vehicle-executive-scoreboard-01", `layout version: ${LAYOUT_VERSION}`);
+assert(LAYOUT_VERSION === "fleetos-stb6f-executive-information-architecture-01", `layout version: ${LAYOUT_VERSION}`);
 
 assert(centerSrc.includes("buildVehicleExecutiveScoreboard"), "scoreboard engine imported");
 assert(centerSrc.includes("vehicle360ExecutiveScoreboardHtml"), "scoreboard html helper exists");
@@ -75,7 +75,7 @@ const ins = db
 const bundle = getVehicleCenterBundle(ins.lastInsertRowid);
 const html = vehicle360PageHtml(bundle);
 
-assert(html.includes('data-layout="fleetos-stb5i-vehicle-executive-scoreboard-01"') === false, "layout version on page wrapper is layout.js concern");
+assert(html.includes('data-layout="fleetos-stb6f-executive-information-architecture-01"') === false, "layout version on page wrapper is layout.js concern");
 assert(html.includes("vehicle-executive-scoreboard"), "scoreboard section in HTML");
 assert((html.match(/vehicle-score-card/g) || []).length >= 5, "scoreboard cards in HTML");
 
@@ -91,13 +91,21 @@ assert(!html.match(/<section class="vehicle-360-decision-strip"/), "decision str
 assert(!html.match(/<section class="vehicle-focus-strip"/), "focus strip not visible");
 assert(!html.includes("En Büyük Maliyet"), "old decision strip label not visible");
 
+const cockpitPos = html.indexOf("vehicle-executive-cockpit");
 const scoreboardPos = html.indexOf("vehicle-executive-scoreboard");
-const actionPos = html.indexOf("vehicle-action-intelligence");
-const kpiPos = html.indexOf("executive-kpi-grid--compact");
+const actionPos = html.indexOf("vehicle-action-intelligence--ticker");
+const kpiPos = html.indexOf("executive-kpi-grid--grouped");
+const ribbonsPos = html.indexOf("vehicle-intelligence-ribbons");
 const accordionPos = html.indexOf("vehicle-detail-accordions");
-assert(scoreboardPos > 0 && scoreboardPos < actionPos, "scoreboard before action intelligence");
+const comparisonPos = html.indexOf('aria-label="Fleet Comparison Intelligence"');
+const predictivePos = html.indexOf('aria-label="Executive Predictive Intelligence"');
+assert(cockpitPos > 0 && cockpitPos < scoreboardPos, "cockpit before scoreboard");
+assert(scoreboardPos < actionPos, "scoreboard before action ticker");
 assert(actionPos < kpiPos, "action before KPI");
-assert(kpiPos < accordionPos, "KPI before accordions");
+assert(kpiPos < ribbonsPos, "KPI before ribbons");
+assert(ribbonsPos < accordionPos, "ribbons before accordions");
+assert(comparisonPos > accordionPos, "full comparison inside accordions");
+assert(predictivePos > accordionPos, "full predictive inside accordions");
 
 const accordionBody = html.slice(accordionPos);
 assert(accordionBody.includes("vehicle-executive-scoreboard") === false, "scoreboard not inside accordion");
